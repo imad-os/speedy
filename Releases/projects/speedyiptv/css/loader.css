@@ -1,0 +1,112 @@
+/* --- 2. OVERLAY CONTAINER --- */
+#loader-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgb(0 0 0 / 33%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    /* Hide by default */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    
+    /* Hint to browser: promote this whole layer to GPU */
+    will-change: opacity;
+
+    transform-origin: top left;
+
+}
+
+#loader-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- 3. LOADER WRAPPER --- */
+.loader-box {
+    position: relative;
+    width: 90px; 
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- 4. THE ORBITS (Optimized CSS) --- */
+.orbit {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: transparent;
+    will-change: transform; /* CRITICAL for TV Performance */
+}
+
+/* Outer Ring */
+.orbit-outer {
+    width: 60px;
+    height: 60px;
+    border-width: 4px;
+    border-top-color: #ffffff;    /* White */
+    border-bottom-color: #ffffff; /* White */
+}
+
+/* Inner Ring */
+.orbit-inner {
+    width: 30px;
+    height: 30px;
+    border-width: 4px;
+    border-left-color: #00AAFF;   /* Blue */
+    border-right-color: #00AAFF;  /* Blue */
+}
+
+/* --- 5. TEXT LABEL --- */
+.loader-text {
+    margin-top: 20px;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px black; /* Cheap shadow for readability */
+}
+
+/* --- 6. ANIMATIONS --- */
+
+/* Indeterminate State (Spinning) */
+@keyframes spin-cw { 100% { transform: rotate(360deg); } }
+@keyframes spin-ccw { 100% { transform: rotate(-360deg); } }
+
+/* When 'indeterminate' class is active */
+#loader-overlay.indeterminate .orbit-outer {
+    animation: spin-cw 1.5s linear infinite;
+}
+#loader-overlay.indeterminate .orbit-inner {
+    animation: spin-ccw 1s linear infinite;
+}
+
+/* When 'determinate' class is active (Progress) */
+#loader-overlay.determinate .orbit-outer,
+#loader-overlay.determinate .orbit-inner {
+    animation: none; /* Stop animation so JS can control angle */
+    transition: transform 0.1s linear; /* Smooth update */
+}
+
+
+
+/* Loader */
+.loader {
+    border: 4px solid var(--color-bg-alt);
+    border-top: 4px solid var(--color-primary);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+.loader.loader-sm {
+    width: 34px;
+    height: 34px;
+}

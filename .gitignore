@@ -1,0 +1,5 @@
+# Ignore assets folder
+assets/
+
+# Ignore Debug folder
+Debug/

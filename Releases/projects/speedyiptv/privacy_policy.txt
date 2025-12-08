@@ -1,0 +1,23 @@
+PRIVACY POLICY FOR Speedy IPTV
+
+Last Updated: December 6, 2025
+
+1. Data Collection & Purpose Speedy IPTV strictly limits data collection to the minimum necessary for the application to function. We collect the following device identifiers:
+
+MAC Address & Tizen ID: These are used as unique identifiers for your user profile. This allows the app to save your playlists, favorites, and settings without requiring a login or password.
+
+Model Name: This is used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.
+
+2. Data Usage This information is used solely for:
+
+Authenticating your device.
+
+Restoring your user preferences.
+
+Technical troubleshooting.
+
+3. Third-Party Sharing We do not sell, trade, or transfer your data (MAC Address, Tizen ID, or Model Name) to outside parties. We do not use this data for advertising or tracking purposes.
+
+4. User Consent By launching Speedy IPTV and clicking "Agree," you consent to this collection. You may withdraw consent by uninstalling the application.
+
+5. Contact If you have questions regarding this policy, please contact us at: support@geekspro.us

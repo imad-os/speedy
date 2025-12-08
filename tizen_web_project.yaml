@@ -1,0 +1,98 @@
+# Project type [web_app, test_runner]
+project_type: web_app
+
+# Default profile, Tizen API version
+profile: tv
+api_version: "2.3"
+
+# Build type [Debug/ Release/ Test]
+build_type: Releases
+
+# Output name for application
+output_name: speedyiptv
+
+# Output path for build
+output_path: ""
+
+# Enable size optimization of wgt for web workspace
+opt: false
+
+# Signing profile to be used for Tizen package signing
+# If value is empty: "", active signing profile will be used
+# Else If value is ".", default signing profile will be used
+signing_profile: ""
+
+# list of certs in web project (.trust-anchor)
+trust_anchor: []
+
+# list of files in web project (.html,.css etc) and resources
+files:
+  - .project
+  - .tproject
+  - assets/errored.jpg
+  - assets/icon_256.png
+  - assets/icon_400.jpg
+  - assets/icon_full.jpg
+  - assets/placeholder.jpg
+  - css/loader.css
+  - css/player.css
+  - css/style.css
+  - index.html
+  - js/core/api.js
+  - js/core/data.js
+  - js/core/language.js
+  - js/core/loader.js
+  - js/core/router.js
+  - js/core/safeFetch.js
+  - js/core/state.js
+  - js/core/subtitles.js
+  - js/core/user.js
+  - js/core/utils.js
+  - js/engine/AIEngine.js
+  - js/engine/player-overlay.js
+  - js/engine/video-engine.js
+  - js/engine/virtual-list.js
+  - js/libs/qr.js
+  - js/libs/tailwindcss.js
+  - js/main.js
+  - js/managers/cache-manager.js
+  - js/managers/focus-manager.js
+  - js/managers/input-manager.js
+  - js/managers/media-server.js
+  - js/managers/player-controller.js
+  - js/navigation/details-nav.js
+  - js/navigation/live-nav.js
+  - js/navigation/navigation-router.js
+  - js/navigation/virtual-nav.js
+  - js/ui/ui-common.js
+  - js/views/view-details.js
+  - js/views/view-livetv.js
+  - js/views/view-vod.js
+
+# list of files to exclude based on the matched patterns
+excludes:
+  - .Build/*
+  - .buildResult/*
+  - .csproj
+  - .externalToolBuilders/*
+  - .gn
+  - .obj/*
+  - .package/*
+  - .project
+  - .rds_delta
+  - .sdk_delta.info
+  - .settings/*
+  - .sign/*
+  - .tizen-ui-builder-tool.xml
+  - .tproject
+  - .wgt
+  - Build/*
+  - Release/*
+  - Debug/*
+  - Directory.Build.targets
+  - webUnitTest/*
+  - README.md
+
+# project dependencies
+deps: []
+

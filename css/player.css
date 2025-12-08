@@ -1,0 +1,345 @@
+/* ----------------------------------------------------------------------------------
+   3. SKIN: NETFLIX STYLE (Big Play Button, Timeline separation)
+   - Play/Pause is massive and centered.
+   - Timeline is distinctly separate above controls.
+   - Red accent.
+   - "10s" skip buttons emphasis (we reuse arrow keys visually if we had icons).
+   ---------------------------------------------------------------------------------- */
+.skin-netflix .overlay-bottom {
+    display: block; /* Break flex column to allow absolute positioning */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.5) 100%);
+    padding: 0;
+}
+
+/* Progress Bar: Positioned at top of the bottom block */
+.skin-netflix .flex.items-center.gap-4.w-full.mb-4 {
+    position: absolute;
+    top: 20px;
+    left: 5%;
+    width: 90%;
+}
+.skin-netflix #tizen-progress-bar {
+    height: 4px;
+    background-color: #4d4d4d;
+    border-radius: 2px;
+}
+.skin-netflix #tizen-progress-fill {
+    background-color: #e50914; /* Netflix Red */
+}
+.skin-netflix #tizen-progress-thumb {
+    width: 16px; height: 16px;
+    background-color: #e50914;
+    border: 2px solid white;
+}
+
+/* Controls: Centered cluster */
+.skin-netflix .controls-row {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+    gap: 40px;
+}
+
+/* Play Button: Circle border */
+.skin-netflix #btn-playpause {
+    width: 80px; height: 80px;
+    border: 2px solid rgba(255,255,255,0.7);
+    background: transparent !important;
+    border-radius: 50%;
+    padding: 20px;
+}
+.skin-netflix #btn-playpause:focus, 
+.skin-netflix #btn-subtitles:focus, 
+.skin-netflix #btn-audio:focus, 
+.skin-netflix #btn-sub-settings:focus {
+    background: rgba(255, 255, 255, 0.63) !important;
+    color: black;
+    border-color: rgba(151, 147, 147, 0.884);
+    transform: scale(1.1);
+}
+
+/* Secondary buttons: Text labels usually, but here icons */
+.skin-netflix #btn-subtitles, 
+.skin-netflix #btn-audio, 
+.skin-netflix #btn-sub-settings {
+    background: transparent !important;
+}
+.skin-netflix .nav-item:focus:not(#tizen-progress-bar) {
+    transform: scale(1.01);
+    border-color: #939393 !important;}
+
+/* Modals: Standard Black */
+.skin-netflix #tizen-track-modal .bg-card {
+    background-color: #000;
+    border: 1px solid #333;
+}
+
+/* ----------------------------------------------------------------------------------
+   4. SKIN: NEON BOLT (Formerly IPTV+ / Electric Bolt Style)
+   - Sharp angles (skewed containers).
+   - Electric Cyan/Blue Glows.
+   - Dark, metallic backgrounds.
+   - High-tech feel.
+   ---------------------------------------------------------------------------------- */
+.skin-neon-bolt .overlay-bottom {
+    background: linear-gradient(181deg, rgb(5 11 20 / 89%) 0%, rgb(16 33 43 / 29%) 100%);
+    border-top: 2px solid #00f2ff; /* Electric Cyan */
+    box-shadow: 0 -4px 20px rgba(0, 242, 255, 0.3); /* Cyan Glow */
+    padding: 1rem;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    width: auto;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Progress Bar: Techy & Slanted */
+.skin-neon-bolt #tizen-progress-bar {
+    height: 10px;
+    background-color: #0b0f14;
+    border: 1px solid #1f2937;
+    transform: skewX(-20deg); /* Aggressive slant */
+    border-radius: 0;
+}
+.skin-neon-bolt #tizen-progress-fill {
+    background: linear-gradient(90deg, #00f2ff83, #0066ff8e);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.24);
+    border-radius: 0;
+    border-width: 1px;
+    border-color: #07fff261;
+}
+
+
+.skin-neon-bolt #tizen-progress-bar:focus #tizen-progress-fill {
+    background-color: #03a0e687;
+    border-width: 1px;
+    border-color: #00fff2;
+
+}
+.skin-neon-bolt #tizen-progress-bar:focus #tizen-progress-thumb {
+    transform: skewX(-20deg) scale(1.5);
+    border: 2px solid #00f2ff;
+    box-shadow: 0 0 13px #00f2ff;
+}
+.skin-neon-bolt #tizen-progress-thumb {
+    background-color: #fff;
+    width: 12px; height: 32px;
+    border-radius: 0;
+    transform: skewX(-20deg);
+    border: 2px solid #00f2ff9d;
+    box-shadow: 0 0 5px #00f2ffb6;
+    top: 50%;
+}
+
+
+/* Controls: Spaced out */
+.skin-neon-bolt .controls-row {
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Buttons: Rhombus/Slanted Shape */
+.skin-neon-bolt .nav-item {
+    border-radius: 2px;
+    transform: skewX(-15deg); /* Slanted Buttons */
+    background: rgba(16, 33, 43, 0.6);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    transition: all 0.2s ease;
+    padding: 12px;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Counter-skew icons so they look straight inside skewed buttons */
+.skin-neon-bolt .nav-item svg,
+.skin-neon-bolt .nav-item span {
+    transform: skewX(15deg); 
+    display: inline-block;
+}
+
+/* Focus State: High Energy Glow */
+.skin-neon-bolt .nav-item:focus {
+    background-color: rgba(0, 242, 255, 0.15) !important;
+    border-color: #00f2ff !important;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.5), inset 0 0 10px rgba(0, 242, 255, 0.2);
+    transform: skewX(-15deg) scale(1.05);
+    z-index: 10;
+}
+
+.skin-neon-bolt #btn-playpause {
+    background: rgba(0, 242, 255, 0.1) !important;
+    border: 2px solid #00f2ff6b;
+    width: 80px; height: 90px;
+}
+.skin-neon-bolt #btn-playpause:focus {
+    background: rgba(0, 242, 255, 0.1) !important;
+    border: 2px solid #00f2ff;
+    transform: skewX(-15deg) scale(1.05);
+    color: #00f2ff;
+}
+.skin-neon-bolt #btn-playpause svg {
+    fill: #00f2ff;
+    filter: drop-shadow(0 0 5px rgba(0,242,255,0.8));
+}
+.skin-neon-bolt #btn-playpause:focus svg {
+    fill: #fff !important;
+}
+
+/* Modals: Tech borders & Dark BG */
+.skin-neon-bolt #tizen-track-modal .bg-card,
+.skin-neon-bolt #subtitle-settings-modal .bg-card {
+    background-color: rgba(5, 11, 20, 0.98);
+    border: 2px solid #00f2ff;
+    border-radius: 0; /* Sharp corners */
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+    /* Clip path for tech corner cut */
+    clip-path: polygon(
+        0 0, 
+        100% 0, 
+        100% calc(100% - 20px), 
+        calc(100% - 20px) 100%, 
+        0 100%
+    );
+}
+
+/* Modal Headers */
+.skin-neon-bolt h2, .skin-neon-bolt h3 {
+    color: #00f2ff;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', sans-serif; /* Or a mono font if available */
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+    border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+    padding-bottom: 10px;
+}
+
+/* Modal List Items */
+.skin-neon-bolt #tizen-track-modal .nav-item,
+.skin-neon-bolt #subtitle-settings-modal .nav-item {
+    border: none !important;
+    border-left: 2px solid rgba(0, 242, 255, 0.2) !important;
+    background: transparent;
+    margin-bottom: 4px;
+    color: #a0aec0;
+}
+.skin-neon-bolt #tizen-track-modal .nav-item:focus,
+.skin-neon-bolt #subtitle-settings-modal .nav-item:focus {
+    background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent) !important;
+    border-left: 4px solid #00f2ff !important;
+    color: #fff;
+    box-shadow: none;
+    transform: none; /* No skew for list items for readability */
+}
+.skin-neon-bolt #subtitle-settings-modal .nav-item.selected, .skin-neon-bolt #subtitle-settings-modal .nav-item.selected{
+    background: linear-gradient(30deg, rgba(0, 242, 255, 0.1), transparent) !important;
+}
+
+.skin-neon-bolt #tizen-track-modal .nav-item svg{
+    float: left;
+}
+
+
+
+.skin-lite .overlay-bottom {
+    display: block; /* Break flex column to allow absolute positioning */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(to top, #0000003d, #00000000);
+    padding: 0;
+}
+.skin-lite #tizen-player-overlay {
+    background-color: #0000001a !important;
+}
+/* Progress Bar: Positioned at top of the bottom block */
+.skin-lite .flex.items-center.gap-4.w-full.mb-4 {
+    position: absolute;
+    top: 20px;
+    left: 5%;
+    width: 90%;
+}
+.skin-lite #tizen-progress-bar {
+    height: 12px;
+    background-color: #4d4d4d3d;
+    border-radius: 4px;
+}
+.skin-lite #tizen-progress-fill {
+    background-color: #ffffff4d;
+}
+.skin-lite #tizen-progress-bar:focus #tizen-progress-fill {
+    background-color: #ffffffe0;
+    border-width: 1px;
+    border-color: #bebebeb0;
+}
+.skin-lite #tizen-progress-bar:focus #tizen-progress-thumb {
+    transform: scale(2);
+}
+.skin-lite #tizen-progress-thumb {
+    width: 16px; height: 16px;
+    background-color: #ffffff;
+    border: 2px solid rgb(185, 185, 185);
+}
+
+/* Controls: Centered cluster */
+.skin-lite .controls-row {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+    gap: 40px;
+}
+
+/* Play Button: Circle border */
+.skin-lite #btn-playpause {
+    width: 80px; height: 80px;
+    border-width: 0px;
+    background: #ffffff21 !important;
+    border-radius: 50%;
+    padding: 20px;
+}
+.skin-lite #btn-playpause:focus{
+    background: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0);
+    border-width: 0px;
+    transform: scale(1.1) !important;
+}
+.skin-lite #btn-subtitles:focus, 
+.skin-lite #btn-audio:focus, 
+.skin-lite #btn-sub-settings:focus {
+    background: rgba(255, 255, 255, 0) !important;
+    color: rgb(255, 255, 255);
+    border-width: 0px;
+    transform: scale(1.5) !important;
+}
+
+/* Secondary buttons: Text labels usually, but here icons */
+.skin-lite #btn-subtitles, 
+.skin-lite #btn-audio, 
+.skin-lite #btn-sub-settings {
+    color: rgba(255, 255, 255, 0.671);
+    border-width: 0px;
+    background: #00000000 !important;
+    border-radius: 50%;
+    padding: 10px;
+}
+.skin-lite .nav-item:focus:not(#tizen-progress-bar) {
+    transform: scale(1.01);
+    border-color: #939393 !important;
+}
+
+/* Modals: Standard Black */
+.skin-lite #tizen-track-modal .bg-card {
+    background-color: #0000009f;
+    /*border: 1px solid #333;*/
+}
+
+
