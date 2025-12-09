@@ -1,11 +1,11 @@
 "use strict";
 
+
+var firebaseUrl = "https://us-central1-iptv-8b60c.cloudfunctions.net";
+
 var SubtitleFetcher = {
-    // IMPORTANT: Replace this with your deployed Firebase Functions Base URL
-    // Example: "https://us-central1-your-project-id.cloudfunctions.net"
-    firebaseUrlFetch: "https://fetchsubtitles-yuq4wxoqiq-uc.a.run.app",
-    firebaseUrlDownload: "https://downloadsubtitle-yuq4wxoqiq-uc.a.run.app",
-    
+    firebaseUrlFetch: `${firebaseUrl}/fetchSubtitles`,
+    firebaseUrlDownload: `${firebaseUrl}/downloadSubtitle`,
     cache: {},
 
     /**
