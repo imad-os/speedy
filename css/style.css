@@ -201,8 +201,16 @@ body.video-active #app-container {
 }
 #subtitle-container span {
     background-color: var(--sub-bg, rgba(0,0,0,0));
-    padding: 2px 8px; border-radius: 4px;
+    border-radius: 4px;
+    padding: 4px 12px;
+
     box-decoration-break: clone; -webkit-box-decoration-break: clone; line-height: 1.4;
+
+    /*to test on real device */
+    text-shadow: 
+        0 0 3px rgb(0 0 0 / 40%),
+        0 0 5px rgb(0 0 0 / 40%), 
+        2px 2px 2px rgb(0 0 0 / 45%);
 }
 
 .overlay-top {
