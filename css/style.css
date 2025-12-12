@@ -19,6 +19,8 @@ body {
     font-family: 'Inter', sans-serif;
     overscroll-behavior: none;
     overflow: hidden;
+
+    font-family: 'Noto Kufi Arabic';  
 }
 
 /* TIZEN VIDEO FIX: Ensure transparency when video is playing */
