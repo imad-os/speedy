@@ -134,7 +134,7 @@ const FocusManager = (function() {
             container = modalAbout;
         }
         if(container===false){ return false;}
-        const buttons = Array.from( container.querySelectorAll("button") );
+        const buttons = Array.from( container.querySelectorAll("button") ).filter(b=> isVisible(b));
         const focused = document.activeElement;
         let index = buttons.indexOf(focused);
 

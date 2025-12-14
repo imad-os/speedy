@@ -7,7 +7,7 @@ var SubtitleFetcher = {
     firebaseUrlFetch: `${firebaseUrl}/fetchSubtitles`,
     firebaseUrlDownload: `${firebaseUrl}/downloadSubtitle`,
     cache: {},
-
+    isAvailable:true,
     /**
      * Call Firebase to get the list of subtitles
      */

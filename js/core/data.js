@@ -137,3 +137,16 @@ function filterContent() {
     // 2. Determine Context and Re-render
     return filtered;
 }
+
+function toggleCacheAllItems(){
+    userSettings.cacheAllCategorieItems = !userSettings.cacheAllCategorieItems;
+    updateSettingsCache();
+}
+function updateSettingsCache(){
+    if(userSettings.cacheAllCategorieItems){
+        $("#btn-toggle-cache .custom-checkbox").classList.add("checked")
+    }else{
+        $("#btn-toggle-cache .custom-checkbox").classList.remove("checked")
+
+    }
+}

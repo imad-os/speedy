@@ -1,5 +1,4 @@
 // === API Interaction Layer ===
-
 // Helpers
 function nonBlockingParse(text) {
     return new Promise((resolve, reject) => {

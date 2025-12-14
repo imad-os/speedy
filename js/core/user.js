@@ -133,9 +133,9 @@ function getCapabilitiesObject() {
  * @param {string} action - The XC API action (e.g., 'get_live_streams')
  * @param {object} params - The parameters (e.g., {series_id: 123}), mostly ignored in static mode
  */
-
 async function handleUserLogin() {
     Loader.show("")
+    console.log("handleUserLoginhandleUserLoginhandleUserLoginhandleUserLogin")
     $("#add-playlist-status").textContent = "No playlist found";
 
     loadUserSettings(); // Load local stuff (favorites/watching)
@@ -165,11 +165,17 @@ async function handleUserLogin() {
                     if (playlists && Array.isArray(playlists)) {
                         userSettings.xtreamConfig = playlists;
                         userSettings.pl = 0; // Default to first
-                        saveUserSettings();
+                        if(handleApiConnect(null, true)){
+                            saveUserSettings();
+
+                        }
                         
                         // Auto Connect
-                        handleApiConnect(null, true);
+                        
                         return;
+                    }else{
+                        console.log("ERRORR NOT VALID PLAYLIST")
+                        return
                     }
                 }catch(e){
                 }
@@ -179,7 +185,7 @@ async function handleUserLogin() {
                 signupDevice(docRef);
             }
             if(!doc.exists || !doc.data()?.playlists) {
-                console.log("No playlist found. Showing QR Code.");
+                console.log(" ---------- No playlist found. Showing QR Code.");
                 $("#add-playlist-status").textContent = "No playlist found";
                 _showQrModal(docRef);
                 Loader.hide()
@@ -202,6 +208,7 @@ async function handleUserLogin() {
     if (config && config.host && config.username && config.password) {
         handleApiConnect(null, true); 
     } else {
+        console.log("-------- no config, show login/setup")
         // If no config, show login/setup
         const u = document.getElementById('api-username');
         if(u) u.textContent = currentUsername;
@@ -218,6 +225,7 @@ function unsubscribe_docref(){
     }
 }
 function _hideModal(){
+    console.log("$$$$$$$ hide modal")
     const modal = document.getElementById('modal-add-playlist');
     const qrContainer = document.getElementById('qrcode-container');
 
@@ -227,6 +235,7 @@ function _hideModal(){
 
 }
 function _showQrModal(docRef) {
+    Loader.hide();
     const modal = $('#modal-add-playlist');
     const qrContainer = $('#qrcode-container');
     const macDisplay = $('#device-mac-display');
@@ -249,11 +258,13 @@ function _showQrModal(docRef) {
         unsubscribe_docref_firebase = docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                if (data.playlists) {
+                if (data.playlists && checkPlaylist(data.playlists)) {
                     console.log("Playlist added remotely!");
                     unsubscribe_docref();
                     modal.classList.add('hidden');
                     handleUserLogin(); // Retry login
+                }else{
+                    showError("Play list badly formed")
                 }
             }
         });
@@ -271,6 +282,12 @@ function handleLogout() {
     showPage('page-user-login');
 }
 
+function checkPlaylist(playlists){
+    if(!playlists || !playlists[0] || !playlists[0].host || playlists[0].username || !playlists[0].password){
+        return false;
+    }
+    return true
+}
 async function handleApiConnect(e, isAutoLogin = false) {
     let currentIndex = userSettings.pl;
     if (typeof currentIndex === 'undefined' || currentIndex < 0 || currentIndex >= userSettings.xtreamConfig.length) {
@@ -282,27 +299,17 @@ async function handleApiConnect(e, isAutoLogin = false) {
     
     if (!xtreamConfig) {
         if (!isAutoLogin) showError('No playlist config found.');
+        console.log("--------- no playlist")
         _showQrModal();
 
         return;
     }
 
-    // Form Data (Only if manual)
-    if (!isAutoLogin) {
-        const newTitle = document.getElementById('playlist-title').value.trim();
-        const newHost = document.getElementById('host').value.trim();
-        const newUser = document.getElementById('api-user').value.trim();
-        const newPass = document.getElementById('api-pass').value.trim();
-        
-        xtreamConfig.title = newTitle || `Playlist ${currentIndex + 1}`;
-        xtreamConfig.host = newHost;
-        xtreamConfig.username = newUser;
-        xtreamConfig.password = newPass;
-    }
-
     if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
-        if (!isAutoLogin) showError('Please fill in all fields.');
-        _showQrModal(docRef);
+         showError('playlist is not valide.');
+        console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
+        //infinit loop
+        _showQrModal();
 
         return;
     }
@@ -329,7 +336,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
     } catch (error) {
         console.error('Connect failed:', error);
         showError(`API Error: ${error.message}`);
-        _showQrModal(docRef);
+        _showQrModal();
 
     }
 

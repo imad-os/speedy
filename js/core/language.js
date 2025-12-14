@@ -72,9 +72,13 @@ const LanguageManager = (function() {
             
             // NEW PRIVACY KEYS
             "settings_privacy": "Privacy Policy",
+            "settings_privacy_policy": "Privacy Policy",
             "privacy_terms_title": "Terms of Service & Privacy Policy",
             "btn_agree": "AGREE",
             "btn_exit": "EXIT",
+
+            // CACHE / PERFORMANCE
+            "settings_cache_all_categories": "Cache All Categories",
 
             // PLAYLISTS
             "playlists_title": "My Playlists",
@@ -176,9 +180,13 @@ const LanguageManager = (function() {
 
             // NEW PRIVACY KEYS
             "settings_privacy": "Politique de Confidentialité",
+            "settings_privacy_policy": "Politique de Confidentialité",
             "privacy_terms_title": "Conditions d'utilisation & Confidentialité",
             "btn_agree": "ACCEPTER",
-            "btn_exit": "QUINNNTER",
+            "btn_exit": "QUITTER",
+
+            // CACHE / PERFORMANCE
+            "settings_cache_all_categories": "Mettre en cache toutes les catégories",
 
             // PLAYLISTS
             "playlists_title": "Mes Playlists",
@@ -280,9 +288,13 @@ const LanguageManager = (function() {
 
             // NEW PRIVACY KEYS
             "settings_privacy": "Política de Privacidad",
+            "settings_privacy_policy": "Política de Privacidad",
             "privacy_terms_title": "Términos y Privacidad",
             "btn_agree": "ACEPTAR",
             "btn_exit": "SALIR",
+
+            // CACHE / PERFORMANCE
+            "settings_cache_all_categories": "Caché de todas las categorías",
 
             // PLAYLISTS
             "playlists_title": "Mis Playlists",
@@ -384,9 +396,13 @@ const LanguageManager = (function() {
 
             // NEW PRIVACY KEYS
             "settings_privacy": "سياسة الخصوصية",
+            "settings_privacy_policy": "سياسة الخصوصية",
             "privacy_terms_title": "شروط الخدمة والخصوصية",
             "btn_agree": "موافق",
             "btn_exit": "خروج",
+
+            // CACHE / PERFORMANCE
+            "settings_cache_all_categories": "تخزين كافة التصنيفات مؤقتاً",
 
             // PLAYLISTS
             "playlists_title": "قوائم التشغيل",

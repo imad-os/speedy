@@ -355,3 +355,42 @@ body.video-active #app-container {
 #modal-privacy-view #privacy-full-text{
     font-size: 1.5em;
 }
+/* --- CUSTOM CHECKBOX --- */
+.custom-checkbox {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 3px solid var(--color-text-alt);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background-color: transparent;
+}
+
+.custom-checkbox.checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+}
+
+.custom-checkbox svg {
+    display: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-bg); /* Icon color */
+    stroke-width: 3;
+}
+
+.custom-checkbox.checked svg {
+    display: block;
+}
+
+/* Focused state for the parent button affects the checkbox */
+.nav-item:focus .custom-checkbox {
+    border-color: var(--color-primary);
+}
+.nav-item:focus .custom-checkbox.checked {
+    border-color: white; /* Contrast when focused */
+}
+

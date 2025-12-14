@@ -505,6 +505,24 @@
                     </div>
                 </div>
 
+                <!-- Performance / Caching (NEW) -->
+                <div>
+                    <h3 class="font-semibold mb-2 text-main">Performance</h3>
+                    <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
+                        <button id="btn-toggle-cache" onclick="toggleCacheAllItems()" class="nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors flex items-center justify-between gap-4 min-w-[280px]">
+                            <div class="flex flex-col items-start">
+                                <span data-i18n="settings_cache_all_categories">Cache All Categories</span>
+                                <span class="text-lg text-alt font-normal opacity-75">Preload items for speed</span>
+                            </div>
+                            
+                            <!-- Custom Styled Checkbox -->
+                            <div class="custom-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- General Actions -->
                 <div>
                     <h3 class=" font-semibold mb-2 text-main" data-i18n="settings_cache">General Actions</h3>
@@ -515,7 +533,7 @@
                 </div>
                 
                 <div>
-                    <h3 class=" font-semibold mb-2 text-main" data-i18n="settings_cache">Privacy Policy:</h3>
+                    <h3 class=" font-semibold mb-2 text-main" data-i18n="settings_cprivacy_policy">Privacy Policy:</h3>
                     <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
                         <!-- NEW PRIVACY BUTTON -->
                         <button id="settings-privacy-button" onclick="showPrivacySettings()" class="nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors flex items-center gap-2">

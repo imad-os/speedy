@@ -373,7 +373,7 @@ function showSettingsPage() {
     pushToNavStack('page-settings');
     
     updateLanguageSelectionUI(); // Refresh UI to show correct language
-    
+    updateSettingsCache();
     // Focus first button
     const firstBtn = document.querySelector('#page-settings button');
     if(firstBtn) firstBtn.focus();
@@ -587,16 +587,11 @@ function showErrorModal(title, message, errorCode = "", retryCallback = null) {
         });
     }
 
-    modal.classList.remove('hidden');
-    FocusManager.setLayer( FocusManager.LAYERS.MODAL );
-    
+    modal.classList.remove('hidden');    
     if (typeof FocusManager !== 'undefined') {
         FocusManager.setLayer(FocusManager.LAYERS.MODAL);
     }
     
-    setTimeout(() => {
-        if (closeBtn) closeBtn.focus();
-    }, 100);
 }
 
 function hideErrorModal() {

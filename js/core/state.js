@@ -4,7 +4,7 @@
 const isTizen = typeof webapis !== 'undefined' && webapis.avplay;
 var _MacAddr =  typeof webapis !== 'undefined' ? webapis.network.getEthernetMac() : "web";
 _MacAddr = _MacAddr.toLowerCase();
-MacAddr = _MacAddr;//"v2_"+_MacAddr;
+const MacAddr = "v2_"+_MacAddr;
 
 let isTestMode = false;
 // 1. ADD: Configuration Constants

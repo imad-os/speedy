@@ -19,3 +19,11 @@ http://speedy.geekspro.us/
 
 ## TODO
 - Add sorting by rating and by year
+
+
+BUUUG
+
+url ERROR when modal AR is visible , the focus stay still on  QR modal
+errror modal should be first served in focusManager
+
+check error management at first sratt when QR modal is on

@@ -5,6 +5,7 @@ const FETCH_TIMEOUT = 8000;      // 8 sec
 const FETCH_RETRIES = 2;         // retry X times after failure
 const RETRY_DELAY = 500;         // wait 0.5 sec before retry
 // ---------------------------
+const USER_AGENT = 'Mozilla/5.0 (Linux; Android X; Device Model) AppleWebKit/537.36 (KHTML, like Gecko) SpeedyIPTV/Version';
 
 
 // Check internet using Tizen API
@@ -59,7 +60,8 @@ async function safeFetch(url, options = {}) {
 
             const response = await fetch(url, {
                 ...options,
-                signal: controller.signal
+                signal: controller.signal,
+                //headers:{"User-Agent": USER_AGENT}
             });
 
             clearTimeout(timeoutId);
