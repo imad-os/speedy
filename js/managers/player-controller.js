@@ -57,7 +57,7 @@ const PlayerController = (function() {
 
     }
     function handleVisibilityChange() {
-        if (!webapis?.avplay) return;
+        if (typeof webapis==="undefined" || !webapis?.avplay) return;
 
         if (document.hidden) {
             try {

@@ -159,7 +159,7 @@ async function handleUserLogin() {
                 console.log("Playlist found via Firebase!", data);
                 let playlists;
                 try{
-                    playlists = JSON.parse(atob(data.playlists)).xtreamConfig;
+                    playlists = data.playlists.xtreamConfig;
                     console.log("Decoded Playlists:", playlists);
                     // Merge Firebase Data
                     if (playlists && Array.isArray(playlists)) {
@@ -170,11 +170,10 @@ async function handleUserLogin() {
 
                         }
                         
-                        // Auto Connect
-                        
                         return;
                     }else{
-                        console.log("ERRORR NOT VALID PLAYLIST")
+                        console.log("ERRORR NOT VALID PLAYLIST");
+                        _showQrModal()
                         return
                     }
                 }catch(e){

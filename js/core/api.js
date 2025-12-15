@@ -39,6 +39,21 @@ async function fetchFreshXtream(params, onProgress) {
         throw new Error("Invalid playlist configuration");
     }
 
+    if(params.action === "get_user_info"){
+        const _urlParams = new URLSearchParams({
+            username: xtreamConfig.username,
+            password: xtreamConfig.password,
+            action:"get_user_info"
+        });
+        let new_url = await resolvePlaylistUrl(`${apiBaseUrl}?${_urlParams.toString()}`);
+        new_url = new_url ? new_url.split("?")[0] : new_url;
+        if(new_url !== apiBaseUrl){
+            apiBaseUrl = new_url;
+            userSettings.xtreamConfig[userSettings.pl].host = apiBaseUrl;
+            saveUserSettings();
+        }
+    }
+
     // Extract signal so it doesn't get stringified into URL params
     const { signal, ...apiParams } = params || {};
 
@@ -48,7 +63,7 @@ async function fetchFreshXtream(params, onProgress) {
         ...apiParams
     });
 
-    const url = `${apiBaseUrl}?${urlParams.toString()}`;
+    let url = `${apiBaseUrl}?${urlParams.toString()}`;
 
     try {
         let response;
