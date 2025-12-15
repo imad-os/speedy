@@ -157,6 +157,12 @@ async function handleUserLogin() {
             if (doc.exists) {
                 const data = doc.data();
                 console.log("Playlist found via Firebase!", data);
+                
+                // RENDER SUBSCRIPTION INFO (NEW)
+                if (typeof renderSubscriptionInfo === 'function') {
+                    renderSubscriptionInfo(data);
+                }
+
                 let playlists;
                 try{
                     playlists = data.playlists.xtreamConfig;
@@ -283,7 +289,6 @@ function handleLogout() {
 
 function checkPlaylist(playlists){
     if(!playlists || !playlists[0] || !playlists[0].host || playlists[0].username || !playlists[0].password){
-        console.log(playlists)
         return false;
     }
     return true

@@ -88,7 +88,7 @@ const LanguageManager = (function() {
             "waiting_playlist": "Waiting for playlist...",
             "scan_hint": "Scan to add your playlist",
 
-            // USER INFO (NEW)
+            // PLAYLIST USER INFO
             "user_trial_tag": "Trial Account",
             "user_status": "Status",
             "user_expires": "Expires",
@@ -98,6 +98,15 @@ const LanguageManager = (function() {
             "user_expired": "Expired",
             "user_unlimited": "Unlimited",
             "user_days_left": "days left",
+
+            // DEVICE / SUBSCRIPTION INFO (NEW)
+            "sub_device_info": "Device Info",
+            "sub_status": "Status",
+            "sub_mac": "MAC Address",
+            "sub_created": "Created",
+            "sub_playlists_count": "Playlists",
+            "sub_active": "Active",
+            "sub_trial": "Trial",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -207,7 +216,7 @@ const LanguageManager = (function() {
             "waiting_playlist": "En attente de playlist...",
             "scan_hint": "Scannez pour ajouter",
 
-            // USER INFO (NEW)
+            // PLAYLIST USER INFO
             "user_trial_tag": "Compte d'essai",
             "user_status": "Statut",
             "user_expires": "Expire le",
@@ -217,6 +226,15 @@ const LanguageManager = (function() {
             "user_expired": "Expiré",
             "user_unlimited": "Illimité",
             "user_days_left": "jours restants",
+
+            // DEVICE / SUBSCRIPTION INFO
+            "sub_device_info": "Info Appareil",
+            "sub_status": "Statut",
+            "sub_mac": "Adresse MAC",
+            "sub_created": "Créé le",
+            "sub_playlists_count": "Playlists",
+            "sub_active": "Actif",
+            "sub_trial": "Essai",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -326,7 +344,7 @@ const LanguageManager = (function() {
             "waiting_playlist": "Esperando playlist...",
             "scan_hint": "Escanear para añadir",
 
-            // USER INFO (NEW)
+            // PLAYLIST USER INFO
             "user_trial_tag": "Cuenta de Prueba",
             "user_status": "Estado",
             "user_expires": "Caduca",
@@ -336,6 +354,15 @@ const LanguageManager = (function() {
             "user_expired": "Caducado",
             "user_unlimited": "Ilimitado",
             "user_days_left": "días restantes",
+
+            // DEVICE / SUBSCRIPTION INFO
+            "sub_device_info": "Info Dispositivo",
+            "sub_status": "Estado",
+            "sub_mac": "Dirección MAC",
+            "sub_created": "Creado",
+            "sub_playlists_count": "Listas",
+            "sub_active": "Activo",
+            "sub_trial": "Prueba",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -445,7 +472,7 @@ const LanguageManager = (function() {
             "waiting_playlist": "بانتظار القائمة...",
             "scan_hint": "امسح الرمز للإضافة",
 
-            // USER INFO (NEW)
+            // PLAYLIST USER INFO
             "user_trial_tag": "حساب تجريبي",
             "user_status": "الحالة",
             "user_expires": "الانتهاء",
@@ -455,6 +482,15 @@ const LanguageManager = (function() {
             "user_expired": "منتهي",
             "user_unlimited": "غير محدود",
             "user_days_left": "أيام متبقية",
+
+            // DEVICE / SUBSCRIPTION INFO
+            "sub_device_info": "معلومات الجهاز",
+            "sub_status": "الحالة",
+            "sub_mac": "عنوان MAC",
+            "sub_created": "تاريخ الإنشاء",
+            "sub_playlists_count": "القوائم",
+            "sub_active": "نشط",
+            "sub_trial": "تجريبي",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",

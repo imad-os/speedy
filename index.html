@@ -290,14 +290,14 @@
         <!-- PAGE: MAIN MENU -->
         <div id="page-main" class="page flex flex-col items-center justify-center p-10 pt-20">
             
-            <!-- Hero Section: User Info + Logo -->
-            <div class="flex flex-row items-center justify-center w-full max-w-5xl gap-10" style="min-height: 38vh;">
+            <!-- Hero Section: User Info + Logo + Subscription Info -->
+            <div class="flex flex-row items-center justify-center w-full  gap-16 " style="min-height: 35vh;">
                 
-                <!-- Left: User Info Panel (Hidden by default, populated via JS) -->
-                <div id="main-user-info" class="hidden flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
+                <!-- Left: Playlist User Info Panel -->
+                <div id="main-user-info" class="hidden flex-1 flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
                     
                     <!-- Trial Badge -->
-                    <div id="user-trial-badge" class="hidden   mb-2 text-yellow-400 font-bold uppercase tracking-wider text-lg border border-yellow-400/50 px-2 py-1 rounded  w-fit" data-i18n="user_trial_tag">Trial Account</div>
+                    <div id="user-trial-badge" class="hidden mb-2 text-yellow-400 font-bold uppercase tracking-wider text-lg border border-yellow-400/50 px-2 py-1 rounded  w-fit" data-i18n="user_trial_tag">Trial Account</div>
                     
                     <div class="space-y-2 text-lg text-gray-300">
                         <!-- Status -->
@@ -323,15 +323,46 @@
 
                         <!-- Server -->
                         <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400 text-lg block mb-0.5" data-i18n="user_server">Server</span>
-                            <span id="user-server-val" class="text-primary font-mono text-lg truncate block max-w-[250px]"></span>
+                            <span class="text-gray-400 text-xs block mb-0.5" data-i18n="user_server">Server</span>
+                            <span id="user-server-val" class="text-primary font-mono text-xs truncate block max-w-[250px]"></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Logo -->
-                <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0">
+                <!-- Center: Logo -->
+                <div class="h-64 aspect-square flex items-center justify-center flex-shrink-0">
                     <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
+                </div>
+
+                <!-- Right: Device/Subscription Info Panel -->
+                <div id="main-sub-info" class="hidden flex-1 flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
+                    <div class="space-y-2 text-lg text-gray-300">
+                        <div class="mb-2 text-primary font-bold uppercase tracking-wider text-lg border border-primary/50 px-2 py-1 rounded inline-block w-fit" data-i18n="sub_device_info">Device Info</div>
+
+                        <!-- Status -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400" data-i18n="sub_status">Status</span>
+                            <span id="sub-status-val" class="font-bold"></span>
+                        </div>
+                        
+                        <!-- MAC -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400" data-i18n="sub_mac">MAC</span>
+                            <span id="sub-mac-val" class="font-mono text-white text-right"></span>
+                        </div>
+
+                        <!-- Created -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                             <span class="text-gray-400" data-i18n="sub_created">Created</span>
+                             <span id="sub-created-val" class="text-white"></span>
+                        </div>
+
+                        <!-- Playlists Count -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400" data-i18n="sub_playlists_count">Playlists</span>
+                            <span id="sub-playlists-val" class="text-white font-bold"></span>
+                        </div>
+                    </div>
                 </div>
 
             </div>

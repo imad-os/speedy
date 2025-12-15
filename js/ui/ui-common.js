@@ -696,3 +696,60 @@ function renderUserInfo(data) {
     container.classList.remove('hidden');
     container.style.display = 'flex'; // Ensure flexbox layout works
 }
+
+/**
+ * Updates the Device/Subscription Info Panel on the Main Menu using static selectors
+ * @param {Object} data - The Firebase document data
+ */
+function renderSubscriptionInfo(data) {
+    const container = $('#main-sub-info');
+    const statusVal = $('#sub-status-val');
+    const macVal = $('#sub-mac-val');
+    const createdVal = $('#sub-created-val');
+    const playlistsVal = $('#sub-playlists-val');
+
+    if (!container || !data) return;
+
+    // 1. Status
+    const rawStatus = data.status || "waiting";
+    let localizedStatus = rawStatus;
+    if (rawStatus === "active") localizedStatus = typeof t !== 'undefined' ? t('sub_active') : "Active";
+    else if (rawStatus === "trial") localizedStatus = typeof t !== 'undefined' ? t('sub_trial') : "Trial";
+    
+    statusVal.textContent = localizedStatus.toUpperCase();
+    statusVal.className = (rawStatus === "active" || rawStatus === "trial") ? "font-bold text-green-400" : "font-bold text-yellow-400";
+
+    // 2. MAC Address (Use displayed one if available, otherwise global)
+    macVal.textContent = data.macAddress || (typeof _MacAddr !== 'undefined' ? _MacAddr : "Unknown");
+
+    // 3. Created At
+    if (data.createdAt) {
+        try {
+            // Firebase timestamps might be objects with .seconds
+            let date;
+            if (data.createdAt.seconds) {
+                date = new Date(data.createdAt.seconds * 1000);
+            } else {
+                date = new Date(data.createdAt); // Try parsing standard string/number
+            }
+            
+            const userLang = (typeof userSettings !== 'undefined' && userSettings.language) ? userSettings.language : 'en';
+            createdVal.textContent = date.toLocaleDateString(userLang, { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch(e) {
+            createdVal.textContent = "N/A";
+        }
+    } else {
+        createdVal.textContent = "N/A";
+    }
+
+    // 4. Playlists Count
+    let count = 0;
+    if (data.playlists && data.playlists.xtreamConfig && Array.isArray(data.playlists.xtreamConfig)) {
+        count = data.playlists.xtreamConfig.length;
+    }
+    playlistsVal.textContent = count;
+
+    // Show Container
+    container.classList.remove('hidden');
+    container.style.display = 'flex';
+}
