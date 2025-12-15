@@ -257,7 +257,7 @@ function _showQrModal(docRef) {
         unsubscribe_docref_firebase = docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                if (data.playlists && checkPlaylist(data.playlists)) {
+                if (data.playlists && data.playlists.xtreamConfig &&  checkPlaylist(data.playlists.xtreamConfig)) {
                     console.log("Playlist added remotely!");
                     unsubscribe_docref();
                     modal.classList.add('hidden');
@@ -283,6 +283,7 @@ function handleLogout() {
 
 function checkPlaylist(playlists){
     if(!playlists || !playlists[0] || !playlists[0].host || playlists[0].username || !playlists[0].password){
+        console.log(playlists)
         return false;
     }
     return true
@@ -324,6 +325,11 @@ async function handleApiConnect(e, isAutoLogin = false) {
             console.log('API Connected');
             userSettings.xtreamConfig[currentIndex] = xtreamConfig;
             saveUserSettings();
+
+            // === CALL RENDER UI HERE ===
+            if (typeof renderUserInfo === 'function') {
+                renderUserInfo(data);
+            }
             
             showPage('page-main');
             pushToNavStack('page-main');
@@ -342,9 +348,11 @@ async function handleApiConnect(e, isAutoLogin = false) {
 }
 
 function TestMod(){
+    unsubscribe_docref();
     isTestMode = true;
     handleUserLogin();
 }
 function Refresh(){
+    unsubscribe_docref();
     handleUserLogin()
 }

@@ -608,3 +608,91 @@ function retryLastAction() {
         }, 200);
     }
 }
+
+/**
+ * Updates the User Info Panel on the Main Menu using static selectors
+ * @param {Object} data - The JSON response from get_user_info
+ */
+function renderUserInfo(data) {
+    // 1. Get Elements
+    const container = $('#main-user-info');
+    const badge = $('#user-trial-badge');
+    const statusVal = $('#user-status-val');
+    const expDate = $('#user-exp-date');
+    const daysLeft = $('#user-days-left');
+    const formatsVal = $('#user-formats-val');
+    const serverVal = $('#user-server-val');
+
+    if (!container || !data?.user_info || !data?.server_info) return;
+
+    const u = data.user_info;
+    const s = data.server_info;
+
+    // 2. Update Values
+    
+    // Trial Badge
+    if (u.is_trial === "1" || u.is_trial === 1) {
+        badge.classList.remove('hidden');
+        if(typeof t !== 'undefined') badge.textContent = t('user_trial_tag');
+    } else {
+        badge.classList.add('hidden');
+    }
+
+    // Status
+    const rawStatus = u.status || "Unknown";
+    let localizedStatus = rawStatus;
+    // Attempt basic mapping for active/expired if straightforward
+    if (rawStatus === "Active") localizedStatus = typeof t !== 'undefined' ? t('user_active') : "Active";
+    if (rawStatus === "Expired") localizedStatus = typeof t !== 'undefined' ? t('user_expired') : "Expired";
+    
+    statusVal.textContent = localizedStatus;
+    statusVal.className = (rawStatus === "Active") ? "font-bold text-green-400" : "font-bold text-gray-400";
+
+    // Expiration Date
+    if (u.exp_date && u.exp_date !== "null" && u.exp_date !== null) {
+        const expTimestamp = parseInt(u.exp_date, 10);
+        if (!isNaN(expTimestamp)) {
+            const date = new Date(expTimestamp * 1000);
+            const now = new Date();
+            
+            // Format date based on locale if supported by browser
+            const userLang = (typeof userSettings !== 'undefined' && userSettings.language) ? userSettings.language : 'en';
+            try {
+                expDate.textContent = date.toLocaleDateString(userLang, { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch(e) {
+                expDate.textContent = date.toLocaleDateString();
+            }
+            
+            const diffTime = date - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            const daysLeftText = typeof t !== 'undefined' ? t('user_days_left') : 'days left';
+            const expiredText = typeof t !== 'undefined' ? t('user_expired') : 'Expired';
+
+            if (diffDays > 0) {
+                daysLeft.textContent = `(${diffDays} ${daysLeftText})`;
+            } else {
+                daysLeft.textContent = `(${expiredText})`;
+            }
+        } else {
+            expDate.textContent = "N/A";
+            daysLeft.textContent = "";
+        }
+    } else {
+        expDate.textContent = typeof t !== 'undefined' ? t('user_unlimited') : "Unlimited";
+        daysLeft.textContent = "";
+    }
+
+    // Formats
+    formatsVal.textContent = (u.allowed_output_formats || []).join(", ");
+    formatsVal.title = formatsVal.textContent;
+
+    // Server
+    const proto = s.server_protocol || "http";
+    const url = s.url || "N/A";
+    serverVal.textContent = `${proto}://${url}`;
+
+    // Show Container
+    container.classList.remove('hidden');
+    container.style.display = 'flex'; // Ensure flexbox layout works
+}

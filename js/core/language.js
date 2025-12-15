@@ -88,6 +88,17 @@ const LanguageManager = (function() {
             "waiting_playlist": "Waiting for playlist...",
             "scan_hint": "Scan to add your playlist",
 
+            // USER INFO (NEW)
+            "user_trial_tag": "Trial Account",
+            "user_status": "Status",
+            "user_expires": "Expires",
+            "user_formats": "Formats",
+            "user_server": "Server",
+            "user_active": "Active",
+            "user_expired": "Expired",
+            "user_unlimited": "Unlimited",
+            "user_days_left": "days left",
+
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
             "about_dev": "Developer:",
@@ -195,6 +206,17 @@ const LanguageManager = (function() {
             "visit_url": "Visitez:",
             "waiting_playlist": "En attente de playlist...",
             "scan_hint": "Scannez pour ajouter",
+
+            // USER INFO (NEW)
+            "user_trial_tag": "Compte d'essai",
+            "user_status": "Statut",
+            "user_expires": "Expire le",
+            "user_formats": "Formats",
+            "user_server": "Serveur",
+            "user_active": "Actif",
+            "user_expired": "Expiré",
+            "user_unlimited": "Illimité",
+            "user_days_left": "jours restants",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -304,6 +326,17 @@ const LanguageManager = (function() {
             "waiting_playlist": "Esperando playlist...",
             "scan_hint": "Escanear para añadir",
 
+            // USER INFO (NEW)
+            "user_trial_tag": "Cuenta de Prueba",
+            "user_status": "Estado",
+            "user_expires": "Caduca",
+            "user_formats": "Formatos",
+            "user_server": "Servidor",
+            "user_active": "Activo",
+            "user_expired": "Caducado",
+            "user_unlimited": "Ilimitado",
+            "user_days_left": "días restantes",
+
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
             "about_dev": "Desarrollador:",
@@ -411,6 +444,17 @@ const LanguageManager = (function() {
             "visit_url": "قم بزيارة:",
             "waiting_playlist": "بانتظار القائمة...",
             "scan_hint": "امسح الرمز للإضافة",
+
+            // USER INFO (NEW)
+            "user_trial_tag": "حساب تجريبي",
+            "user_status": "الحالة",
+            "user_expires": "الانتهاء",
+            "user_formats": "الصيغ",
+            "user_server": "السيرفر",
+            "user_active": "نشط",
+            "user_expired": "منتهي",
+            "user_unlimited": "غير محدود",
+            "user_days_left": "أيام متبقية",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",

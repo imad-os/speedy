@@ -289,8 +289,51 @@
 
         <!-- PAGE: MAIN MENU -->
         <div id="page-main" class="page flex flex-col items-center justify-center p-10 pt-20">
-            <div style="height: 42%;" class="justify-center flex mb-2">
-                <img src="assets/icon_400.jpg" alt="Logo" class="h-full app_logo" >
+            
+            <!-- Hero Section: User Info + Logo -->
+            <div class="flex flex-row items-center justify-center w-full max-w-5xl gap-10" style="min-height: 38vh;">
+                
+                <!-- Left: User Info Panel (Hidden by default, populated via JS) -->
+                <div id="main-user-info" class="hidden flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
+                    
+                    <!-- Trial Badge -->
+                    <div id="user-trial-badge" class="hidden   mb-2 text-yellow-400 font-bold uppercase tracking-wider text-lg border border-yellow-400/50 px-2 py-1 rounded  w-fit" data-i18n="user_trial_tag">Trial Account</div>
+                    
+                    <div class="space-y-2 text-lg text-gray-300">
+                        <!-- Status -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400" data-i18n="user_status">Status</span>
+                            <span id="user-status-val" class="font-bold"></span>
+                        </div>
+                        
+                        <!-- Expires -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400" data-i18n="user_expires">Expires</span>
+                            <span class="font-mono text-white text-right">
+                                <span id="user-exp-date"></span> 
+                                <span id="user-days-left" class="text-xs text-gray-500 block"></span>
+                            </span>
+                        </div>
+
+                        <!-- Formats -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                             <span class="text-gray-400" data-i18n="user_formats">Formats</span>
+                             <span id="user-formats-val" class="text-white truncate max-w-[150px]"></span>
+                        </div>
+
+                        <!-- Server -->
+                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                            <span class="text-gray-400 text-lg block mb-0.5" data-i18n="user_server">Server</span>
+                            <span id="user-server-val" class="text-primary font-mono text-lg truncate block max-w-[250px]"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Logo -->
+                <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0">
+                    <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
+                </div>
+
             </div>
             
             <!-- Main Grid -->

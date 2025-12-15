@@ -1,7 +1,7 @@
 // ---------------------------
 // CONFIG
 // ---------------------------
-const FETCH_TIMEOUT = 8000;      // 8 sec
+const FETCH_TIMEOUT = 10000;      // 8 sec
 const FETCH_RETRIES = 2;         // retry X times after failure
 const RETRY_DELAY = 500;         // wait 0.5 sec before retry
 // ---------------------------
@@ -29,7 +29,7 @@ function testUrl(url, timeoutMs) {
     });
 }
 
-async function resolvePlaylistUrl(inputUrl, timeoutMs = 4000) {
+async function resolvePlaylistUrl(inputUrl, timeoutMs = FETCH_TIMEOUT) {
     if (!inputUrl) throw new Error("Empty URL");
   
     let url = inputUrl.trim();
