@@ -556,14 +556,14 @@
     container.style.setProperty('--sub-size', sizeVal);
     container.style.setProperty('--sub-color', colorVal);
     container.style.setProperty('--sub-bg', bgVal);
-    container.style.setProperty('--sub-font', fontVal);
+    //container.style.setProperty('--sub-font', fontVal);
     
     const preview = document.getElementById('sub-preview-box');
     if(preview) {
         preview.style.fontSize = settings.size; 
         preview.style.color = colorVal;
         preview.style.backgroundColor = bgVal;
-        preview.style.fontFamily = fontVal;
+        //preview.style.fontFamily = fontVal;
         if(settings.size === 'small') preview.style.transform = "scale(0.8)";
         else if(settings.size === 'large') preview.style.transform = "scale(1.2)";
         else preview.style.transform = "scale(1)";

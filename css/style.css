@@ -210,9 +210,10 @@ body.video-active #app-container {
 
     /*to test on real device */
     text-shadow: 
-        0 0 3px rgb(0 0 0 / 40%),
-        0 0 5px rgb(0 0 0 / 40%), 
-        2px 2px 2px rgb(0 0 0 / 45%);
+        0 0 3px rgb(0 0 0 / 70%),
+        0 0 5px rgb(0 0 0 / 70%), 
+        2px 2px 2px rgb(0 0 0 / 85%);
+    font-family: "Noto Kufi Arabic";
 }
 
 .overlay-top {

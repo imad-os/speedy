@@ -89,6 +89,7 @@ const LanguageManager = (function() {
             "scan_hint": "Scan to add your playlist",
 
             // PLAYLIST USER INFO
+            "user_info_title": "Playlist Info",
             "user_trial_tag": "Trial Account",
             "user_status": "Status",
             "user_expires": "Expires",
@@ -217,6 +218,7 @@ const LanguageManager = (function() {
             "scan_hint": "Scannez pour ajouter",
 
             // PLAYLIST USER INFO
+            "user_info_title": "Infos Playlist",
             "user_trial_tag": "Compte d'essai",
             "user_status": "Statut",
             "user_expires": "Expire le",
@@ -345,6 +347,7 @@ const LanguageManager = (function() {
             "scan_hint": "Escanear para añadir",
 
             // PLAYLIST USER INFO
+            "user_info_title": "Info Playlist",
             "user_trial_tag": "Cuenta de Prueba",
             "user_status": "Estado",
             "user_expires": "Caduca",
@@ -473,6 +476,7 @@ const LanguageManager = (function() {
             "scan_hint": "امسح الرمز للإضافة",
 
             // PLAYLIST USER INFO
+            "user_info_title": "معلومات القائمة",
             "user_trial_tag": "حساب تجريبي",
             "user_status": "الحالة",
             "user_expires": "الانتهاء",

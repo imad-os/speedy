@@ -177,6 +177,26 @@
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </symbol>
 
+            <!-- NEW: User / Account -->
+            <symbol id="icon-user-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </symbol>
+
+            <!-- NEW: Device / Chip -->
+            <symbol id="icon-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <line x1="9" y1="1" x2="9" y2="4"></line>
+                <line x1="15" y1="1" x2="15" y2="4"></line>
+                <line x1="9" y1="20" x2="9" y2="23"></line>
+                <line x1="15" y1="20" x2="15" y2="23"></line>
+                <line x1="20" y1="9" x2="23" y2="9"></line>
+                <line x1="20" y1="14" x2="23" y2="14"></line>
+                <line x1="1" y1="9" x2="4" y2="9"></line>
+                <line x1="1" y1="14" x2="4" y2="14"></line>
+            </symbol>
+
         </defs>
     </svg>
 
@@ -288,79 +308,95 @@
         </div>
 
         <!-- PAGE: MAIN MENU -->
-        <div id="page-main" class="page flex flex-col items-center justify-center p-10 pt-20">
+        <div id="page-main" class="page flex flex-col items-center justify-center p-10 pt-18">
             
             <!-- Hero Section: User Info + Logo + Subscription Info -->
-            <div class="flex flex-row items-center justify-center w-full  gap-16 " style="min-height: 35vh;">
+            <div class="flex flex-row items-center justify-center w-full gap-16" style="min-height: 35vh;">
                 
                 <!-- Left: Playlist User Info Panel -->
-                <div id="main-user-info" class="hidden flex-1 flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
+                <div id="main-user-info" class="hidden flex-1 flex-col bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full relative overflow-hidden group">
                     
-                    <!-- Trial Badge -->
-                    <div id="user-trial-badge" class="hidden mb-2 text-yellow-400 font-bold uppercase tracking-wider text-lg border border-yellow-400/50 px-2 py-1 rounded  w-fit" data-i18n="user_trial_tag">Trial Account</div>
-                    
-                    <div class="space-y-2 text-lg text-gray-300">
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 pb-4 mb-4 border-b border-white/10 relative z-10">
+                        <div class="p-2.5 rounded-lg bg-blue-500/20 text-blue-400 group-hover:text-blue-300 transition-colors">
+                            <svg class="w-6 h-6"><use href="#icon-user-circle"></use></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-white leading-none" data-i18n="user_info_title">Playlist Info</h3>
+                            <!-- Trial Badge moved here -->
+                            <div id="user-trial-badge" class="hidden text-xs font-bold text-yellow-400 mt-1 uppercase tracking-wider" data-i18n="user_trial_tag">Trial Account</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-lg text-gray-300 relative z-10">
                         <!-- Status -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400" data-i18n="user_status">Status</span>
-                            <span id="user-status-val" class="font-bold"></span>
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-gray-400 text-sm" data-i18n="user_status">Status</span>
+                            <span id="user-status-val" class="font-bold text-white"></span>
                         </div>
                         
                         <!-- Expires -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400" data-i18n="user_expires">Expires</span>
-                            <span class="font-mono text-white text-right">
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-gray-400 text-sm" data-i18n="user_expires">Expires</span>
+                            <span class="font-mono text-white text-right flex flex-col items-end leading-tight">
                                 <span id="user-exp-date"></span> 
                                 <span id="user-days-left" class="text-xs text-gray-500 block"></span>
                             </span>
                         </div>
 
                         <!-- Formats -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                             <span class="text-gray-400" data-i18n="user_formats">Formats</span>
-                             <span id="user-formats-val" class="text-white truncate max-w-[150px]"></span>
+                        <div class="flex justify-between items-center gap-4">
+                             <span class="text-gray-400 text-sm" data-i18n="user_formats">Formats</span>
+                             <span id="user-formats-val" class="text-white truncate max-w-[150px] text-sm"></span>
                         </div>
 
                         <!-- Server -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
+                        <div class="flex justify-between items-center gap-4 pt-2 border-t border-white/5">
                             <span class="text-gray-400 text-xs block mb-0.5" data-i18n="user_server">Server</span>
-                            <span id="user-server-val" class="text-primary font-mono text-xs truncate block max-w-[250px]"></span>
+                            <span id="user-server-val" class="text-primary font-mono text-xs truncate block max-w-[200px]"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Center: Logo -->
-                <div class="h-64 aspect-square flex items-center justify-center flex-shrink-0">
+                <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0">
                     <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
                 </div>
 
                 <!-- Right: Device/Subscription Info Panel -->
-                <div id="main-sub-info" class="hidden flex-1 flex-col justify-center bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full">
-                    <div class="space-y-2 text-lg text-gray-300">
-                        <div class="mb-2 text-primary font-bold uppercase tracking-wider text-lg border border-primary/50 px-2 py-1 rounded inline-block w-fit" data-i18n="sub_device_info">Device Info</div>
+                <div id="main-sub-info" class="hidden flex-1 flex-col bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full relative overflow-hidden group">
+                    
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 pb-4 mb-4 border-b border-white/10 relative z-10">
+                        <div class="p-2.5 rounded-lg bg-purple-500/20 text-purple-400 group-hover:text-purple-300 transition-colors">
+                            <svg class="w-6 h-6"><use href="#icon-cpu"></use></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white" data-i18n="sub_device_info">Device Info</h3>
+                    </div>
 
+                    <div class="space-y-3 text-lg text-gray-300 relative z-10">
                         <!-- Status -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400" data-i18n="sub_status">Status</span>
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-gray-400 text-sm" data-i18n="sub_status">Status</span>
                             <span id="sub-status-val" class="font-bold"></span>
                         </div>
                         
                         <!-- MAC -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400" data-i18n="sub_mac">MAC</span>
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-gray-400 text-sm" data-i18n="sub_mac">MAC</span>
                             <span id="sub-mac-val" class="font-mono text-white text-right"></span>
                         </div>
 
                         <!-- Created -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                             <span class="text-gray-400" data-i18n="sub_created">Created</span>
-                             <span id="sub-created-val" class="text-white"></span>
+                        <div class="flex justify-between items-center gap-4">
+                             <span class="text-gray-400 text-sm" data-i18n="sub_created">Created</span>
+                             <span id="sub-created-val" class="text-white text-sm"></span>
                         </div>
 
                         <!-- Playlists Count -->
-                        <div class="flex justify-between items-center gap-4 border-b border-gray-700/50 pb-1">
-                            <span class="text-gray-400" data-i18n="sub_playlists_count">Playlists</span>
-                            <span id="sub-playlists-val" class="text-white font-bold"></span>
+                        <div class="flex justify-between items-center gap-4 pt-2 border-t border-white/5">
+                            <span class="text-gray-400 text-sm" data-i18n="sub_playlists_count">Playlists</span>
+                            <span id="sub-playlists-val" class="text-white font-bold bg-white/10 px-2 rounded"></span>
                         </div>
                     </div>
                 </div>
