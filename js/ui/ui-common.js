@@ -606,7 +606,6 @@ function changePlayerSkin(skinName) {
         window.playerOverlay.init();
     }
     showAlert("Player Skin Updated");
-    
 }
 
 function showAbout(){
