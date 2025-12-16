@@ -98,6 +98,10 @@ async function signupDevice(docRef) {
         // Use set with merge: true to prevent overwriting existing custom data
         deviceData.status = "waiting";
         deviceData.app_secret = "sec";
+        
+        // Add createdAt timestamp
+        deviceData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+
         await docRef.set(deviceData, { merge: true });
         
         console.log(`Device ${MacAddr} registered successfully.`);
@@ -257,6 +261,9 @@ function _hideModal(){
 
 }
 function _showQrModal(docRef) {
+    // === FIX: STOP PREVIOUS LISTENER FIRST ===
+    unsubscribe_docref(); 
+
     Loader.hide();
     const modal = $('#modal-add-playlist');
     const qrContainer = $('#qrcode-container');
@@ -276,21 +283,30 @@ function _showQrModal(docRef) {
         if(!docRef){
             docRef = firebaseDb.collection("devices").doc(MacAddr);
         }
-        // Real-time Listener for when user adds playlist
         if(unsubscribe_docref_firebase){
             unsubscribe_docref();
         }
+        // Real-time Listener for when user adds playlist
         unsubscribe_docref_firebase = docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                if (data.playlists && data.playlists.xtreamConfig &&  checkPlaylist(data.playlists.xtreamConfig)) {
+
+                // 1. IGNORE IF EMPTY (Don't error out on initial load)
+                if (!data.playlists || !data.playlists.xtreamConfig) {
+                    console.log("Listener fired, but no playlist data yet. Waiting...");
+                    return; 
+                }
+
+                // 2. CHECK IF VALID
+                if (checkPlaylist(data.playlists.xtreamConfig)) {
                     console.log("Playlist added remotely!");
                     unsubscribe_docref();
                     modal.classList.add('hidden');
                     handleUserLogin(); // Retry login
-                }else{
-                    showError("Play list badly formed")
-                    console.og(data.playlists, checkPlaylist(data.playlists.xtreamConfig))
+                } else {
+                     // Only show error if data exists but is BAD
+                    console.log("Playlist data received but incomplete/invalid.");
+                    // Optional: showError("Received invalid playlist data");
                 }
             }
         });
@@ -309,8 +325,8 @@ function handleLogout() {
 }
 
 function checkPlaylist(playlists){
+    // FIX: Added '!' before playlists[0].username
     if(!playlists || !playlists[0] || !playlists[0].host || !playlists[0].username || !playlists[0].password){
-        console.log(!playlists , !playlists[0] , !playlists[0].host , !playlists[0].username , !playlists[0].password)
         return false;
     }
     return true
