@@ -1,5 +1,7 @@
 // === User & Settings Management ===
 
+let isLoginRunning = false; // Prevent double execution
+
 function saveUserSettings() {
     if (!currentUsername) return;
     const { favorites, watching, hiddenCategories, pinnedCategories, ..._userSettings } = userSettings;
@@ -106,7 +108,12 @@ async function signupDevice(docRef) {
         
         console.log(`Device ${MacAddr} registered successfully.`);
     } catch (e) {
-        console.error("Failed to register device in Firebase:", e);
+        // Ignore permission errors if it's likely due to double-registration race conditions
+        if (e.code === 'permission-denied') {
+             console.warn("Device registration permission denied (Device likely already exists):", e.message);
+        } else {
+             console.error("Failed to register device in Firebase:", e);
+        }
     }
 }
 function getCapabilitiesObject() {
@@ -138,6 +145,12 @@ function getCapabilitiesObject() {
  * @param {object} params - The parameters (e.g., {series_id: 123}), mostly ignored in static mode
  */
 async function handleUserLogin() {
+    if (isLoginRunning) {
+        console.log("Login already in progress, skipping double call.");
+        return;
+    }
+    isLoginRunning = true;
+
     // 1. Show page-main immediately with boot status
     showPage('page-main');
     $("#add-playlist-status").textContent = "No playlist found";
@@ -154,6 +167,7 @@ async function handleUserLogin() {
             handleApiConnect(null, true);
         }, 500);
         _hideModal();
+        isLoginRunning = false;
         return true;
     }
 
@@ -186,27 +200,30 @@ async function handleUserLogin() {
                         userSettings.xtreamConfig = playlists;
                         userSettings.pl = 0; // Default to first
                         
-                        if(handleApiConnect(null, true)){
+                        if(await handleApiConnect(null, true)){ // await this to ensure login finishes
                             saveUserSettings();
                         }
-                        
+                        isLoginRunning = false;
                         return;
                     }else{
                         console.log("ERRORR NOT VALID PLAYLIST");
                         updateBootStatus("Invalid Playlist Data");
                         _showQrModal()
+                        isLoginRunning = false;
                         return
                     }
                 }catch(e){
                      updateBootStatus("Data Error");
                      _showQrModal();
+                     isLoginRunning = false;
                      return;
                 }
 
             }else{
                 console.log("No playlist found in Firebase for this device.");
                 updateBootStatus("Registering device...");
-                signupDevice(docRef);
+                // Await this so we don't race ahead if it takes time (though we continue anyway)
+                await signupDevice(docRef); 
             }
             if(!doc.exists || !doc.data()?.playlists) {
                 console.log(" ---------- No playlist found. Showing QR Code.");
@@ -214,16 +231,19 @@ async function handleUserLogin() {
                 // Show QR directly, status remains visible behind it
                 _showQrModal(docRef);
                 Loader.hide()
+                isLoginRunning = false;
                 return; // Stop here, wait for QR scan
             }
         } else {
             console.warn("Firebase not initialized.");
             updateBootStatus("Firebase Init Failed");
+            isLoginRunning = false;
             return
         }
     } catch (e) {
         console.error("Firebase Error:", e);
         updateBootStatus("Connection Error");
+        isLoginRunning = false;
     }
 
     // Fallback to local config if Firebase fails or is skipped
@@ -233,7 +253,7 @@ async function handleUserLogin() {
     Loader.hide();
 
     if (config && config.host && config.username && config.password) {
-        handleApiConnect(null, true); 
+        await handleApiConnect(null, true); 
     } else {
         console.log("-------- no config, show login/setup")
         const u = document.getElementById('api-username');
@@ -241,6 +261,7 @@ async function handleUserLogin() {
         _showQrModal();
 
     }
+    isLoginRunning = false;
 }
 let unsubscribe_docref_firebase;
 function unsubscribe_docref(){
@@ -260,6 +281,15 @@ function _hideModal(){
     unsubscribe_docref();
 
 }
+
+// Helper to compare playlists
+function isSamePlaylist(pl1, pl2) {
+    if (!pl1 || !pl2) return false;
+    return pl1.host === pl2.host && 
+           pl1.username === pl2.username && 
+           pl1.password === pl2.password;
+}
+
 function _showQrModal(docRef) {
     // === FIX: STOP PREVIOUS LISTENER FIRST ===
     unsubscribe_docref(); 
@@ -283,9 +313,6 @@ function _showQrModal(docRef) {
         if(!docRef){
             docRef = firebaseDb.collection("devices").doc(MacAddr);
         }
-        if(unsubscribe_docref_firebase){
-            unsubscribe_docref();
-        }
         // Real-time Listener for when user adds playlist
         unsubscribe_docref_firebase = docRef.onSnapshot((doc) => {
             if (doc.exists) {
@@ -299,7 +326,19 @@ function _showQrModal(docRef) {
 
                 // 2. CHECK IF VALID
                 if (checkPlaylist(data.playlists.xtreamConfig)) {
-                    console.log("Playlist added remotely!");
+                    // NEW: Prevent Infinite Loop
+                    // Check if this new data is actually different from what we already have
+                    // If it is the SAME as the current userSettings (which just failed), don't loop.
+                    const newConfig = data.playlists.xtreamConfig[0];
+                    const currentConfig = userSettings.xtreamConfig ? userSettings.xtreamConfig[0] : null;
+
+                    if (isSamePlaylist(newConfig, currentConfig)) {
+                        console.log("Received same playlist configuration again. Ignoring to prevent loop.");
+                        // Optional: show a specific error toast that "Server is still unreachable"
+                        return;
+                    }
+
+                    console.log("Playlist added/updated remotely!");
                     unsubscribe_docref();
                     modal.classList.add('hidden');
                     handleUserLogin(); // Retry login
