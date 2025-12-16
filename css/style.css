@@ -1,4 +1,9 @@
 /* 3. Custom CSS for Theming, Layouts, and Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 :root { --font-scale: 1; }
 body { font-size: calc(16px * var(--font-scale)); }
@@ -44,6 +49,17 @@ body.video-active #app-container {
     --color-text: #f2fcfc;
     background: radial-gradient(circle at 50% 0%, #000418 0%, #031248 60%) fixed;
 }
+.theme-black { 
+    --color-bg: #000000; 
+    --color-bg-alt: #141414; 
+    --color-card: #181818e6;
+    --color-primary: #E50914;
+    --color-primary-hover: #ff1f2a;
+    --color-text: #e5e5e5;
+    
+    background: radial-gradient(circle at 50% 0%, #2f2f2f 0%, #000000 85%) fixed;
+}
+
 .theme-default { 
     --color-bg: #071146; 
     --color-bg-alt: #1c246b; 
@@ -104,7 +120,6 @@ body.video-active #app-container {
 }
 #page-player.active { display: block; }
 
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
 /* --- NAVIGATION ITEMS --- */
 .nav-item {
@@ -260,7 +275,6 @@ body.video-active #app-container {
 ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 4px; }
 
 #loading_status { width: 250px; height: 50px; color: var(--color-text); font-size: calc(1.25em * var(--font-scale)); }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .season-tab.active { background-color: var(--color-primary); color: var(--color-text); }
 
 /* Subtitle Settings Buttons */
@@ -407,3 +421,7 @@ body.video-active #app-container {
 /* Transition Utilities */
 .opacity-0 { opacity: 0; }
 .opacity-100 { opacity: 1; }
+
+#main-sub-info,#main-user-info, main-menu-grid{
+    animation: fadeIn 0.3s ease-in-out;
+}

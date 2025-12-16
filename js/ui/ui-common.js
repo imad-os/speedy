@@ -262,6 +262,7 @@ function updateLanguageSelectionUI() {
     const activeT = document.querySelector(`#app-theme-options button[title="${theme}"]`);
     if(activeT) {
         activeT.classList.add('scale-130');
+        activeT.classList.add('!border-b-white');
     }
 
     document.querySelectorAll('#player-theme-options button').forEach(btn => {
@@ -271,6 +272,7 @@ function updateLanguageSelectionUI() {
     const activeP = document.querySelector(`#player-theme-options button[title="${themeP}"]`);
     if(activeP) {
         activeP.classList.add('scale-130');
+        activeP.classList.add('!border-b-white');
     }
 
 }
@@ -604,6 +606,7 @@ function changePlayerSkin(skinName) {
         window.playerOverlay.init();
     }
     showAlert("Player Skin Updated");
+    
 }
 
 function showAbout(){
@@ -679,7 +682,6 @@ function renderUserInfo(data) {
     const badge = $('#user-trial-badge');
     const statusVal = $('#user-status-val');
     const expDate = $('#user-exp-date');
-    const daysLeft = $('#user-days-left');
     const formatsVal = $('#user-formats-val');
     const serverVal = $('#user-server-val');
 
@@ -717,10 +719,11 @@ function renderUserInfo(data) {
             
             // Format date based on locale if supported by browser
             const userLang = (typeof userSettings !== 'undefined' && userSettings.language) ? userSettings.language : 'en';
+            let daysLeftTextFull = "";
             try {
-                expDate.textContent = date.toLocaleDateString(userLang, { year: 'numeric', month: 'short', day: 'numeric' });
+                daysLeftTextFull = date.toLocaleDateString(userLang, { year: 'numeric', month: 'short', day: 'numeric' });
             } catch(e) {
-                expDate.textContent = date.toLocaleDateString();
+                daysLeftTextFull = date.toLocaleDateString();
             }
             
             const diffTime = date - now;
@@ -728,19 +731,17 @@ function renderUserInfo(data) {
             
             const daysLeftText = typeof t !== 'undefined' ? t('user_days_left') : 'days left';
             const expiredText = typeof t !== 'undefined' ? t('user_expired') : 'Expired';
-
             if (diffDays > 0) {
-                daysLeft.textContent = `(${diffDays} ${daysLeftText})`;
+                daysLeftTextFull += ` (${diffDays} d)`;
             } else {
-                daysLeft.textContent = `(${expiredText})`;
+                daysLeftTextFull += ` (${expiredText})`;
             }
+            expDate.textContent = daysLeftTextFull
         } else {
             expDate.textContent = "N/A";
-            daysLeft.textContent = "";
         }
     } else {
         expDate.textContent = typeof t !== 'undefined' ? t('user_unlimited') : "Unlimited";
-        daysLeft.textContent = "";
     }
 
     // Formats
@@ -751,10 +752,6 @@ function renderUserInfo(data) {
     const proto = s.server_protocol || "http";
     const url = s.url || "N/A";
     serverVal.textContent = `${proto}://${url}`;
-
-    // Show Container
-    container.classList.remove('hidden');
-    container.style.display = 'flex'; // Ensure flexbox layout works
 }
 
 /**
@@ -771,14 +768,24 @@ function renderSubscriptionInfo(data) {
     if (!container || !data) return;
 
     // 1. Status
-    const rawStatus = data.status || "waiting";
+    const rawStatus = data?.activation?.toLowerCase() || "waiting";
     let localizedStatus = rawStatus;
     if (rawStatus === "active") localizedStatus = typeof t !== 'undefined' ? t('sub_active') : "Active";
     else if (rawStatus === "trial") localizedStatus = typeof t !== 'undefined' ? t('sub_trial') : "Trial";
     
     statusVal.textContent = localizedStatus.toUpperCase();
-    statusVal.className = (rawStatus === "active" || rawStatus === "trial") ? "font-bold text-green-400" : "font-bold text-yellow-400";
-
+    switch (rawStatus) {
+        case "active":
+        case "trial":
+            statusVal.className = "font-bold text-green-400"
+            break;
+        case "expired":
+            statusVal.className = "font-bold text-red-400"
+            break;
+        default:
+            statusVal.className = "font-bold text-yellow-400"
+            break;
+    }
     // 2. MAC Address (Use displayed one if available, otherwise global)
     macVal.textContent = data.macAddress || (typeof _MacAddr !== 'undefined' ? _MacAddr : "Unknown");
 
@@ -808,8 +815,32 @@ function renderSubscriptionInfo(data) {
         count = data.playlists.xtreamConfig.length;
     }
     playlistsVal.textContent = count;
+}
+function showInfos(){
+    $$('#main-sub-info,#main-user-info').forEach((d)=>{
+        d.classList.remove("hidden");
+        d.style.display="flex";
+    })
+}
+function hideInfos(){
+    $$('#main-sub-info,#main-user-info').forEach((d)=>{
+        d.classList.add("hidden");
+        d.style.display="none";
+    })
+}
 
-    // Show Container
-    container.classList.remove('hidden');
-    container.style.display = 'flex';
+async function loadWeather(){
+    const url = "https://api.weatherapi.com/v1/current.json?key=46ba2a7baf9c416a8cc165112251612&q=auto:ip";
+    console.log(`[loadWeather] Fetching: ${url}`);
+    let response;
+    try {
+        response = await safeFetch(url);
+        response = await response.json();
+    } catch (err) {   
+        return false;
+    }
+    let icon_url = response?.current?.condition?.icon;
+    icon_url = icon_url && icon_url.slice(0,2)=="//"? `https:${icon_url}` : icon_url;
+    $("#current-weather img").src = icon_url;
+    $("#current-weather span").textContent = `${response?.current?.temp_c} C`;
 }

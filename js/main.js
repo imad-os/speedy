@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     detectTizen();
     setupEventListeners();
     setupClock();
-    
+    loadWeather();
     // Initialize Language (if module loaded)
     if(typeof LanguageManager !== 'undefined') {
         console.log("Initializing Language Engine...");

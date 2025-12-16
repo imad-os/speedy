@@ -408,7 +408,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
     }
 
     try {
-        const data = await fetchXtream({ action: 'get_user_info' });
+        const data = await fetchXtream({ action: 'get_user_info' }, false);
         if (data) {
             console.log('API Connected');
             updateBootStatus("Connection Successful!");
@@ -420,7 +420,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
             if (typeof renderUserInfo === 'function') {
                 renderUserInfo(data);
             }
-            
+            showInfos();
             showPage('page-main');
             pushToNavStack('page-main');
             
