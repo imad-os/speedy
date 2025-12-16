@@ -1,4 +1,3 @@
-
 // === Initialization ===
 
 function registerTizenKeys() {
@@ -49,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if user has agreed to Privacy Policy
     if (checkPrivacyConsent()) {
         // If true, user has already agreed. Proceed to Login.
+        // handleUserLogin will now show page-main and the Boot Status
         handleUserLogin();
     } else {
         // If false, Modal is now showing. 

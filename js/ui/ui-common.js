@@ -57,6 +57,66 @@ function loadTheme() {
     }
 }
 
+// === BOOT SEQUENCE UI (NEW) ===
+
+function updateBootStatus(text) {
+    const label = document.getElementById('boot-status-label');
+    const container = document.getElementById('main-boot-status');
+    const grid = document.getElementById('main-menu-grid');
+    const actions = document.getElementById('main-menu-actions');
+
+    // Ensure Boot UI is visible
+    if (container) {
+        container.classList.remove('hidden');
+        container.style.display = 'flex';
+    }
+    
+    // Ensure Main Grid is hidden while loading
+    if (grid) grid.classList.add('hidden');
+    if (actions) actions.classList.add('hidden');
+
+    if (label) {
+        // Translate message if possible, otherwise use raw text
+        label.textContent = (typeof t !== 'undefined' && text.startsWith('msg_')) ? t(text) : text;
+    }
+}
+
+function revealMainMenu() {
+    const bootContainer = document.getElementById('main-boot-status');
+    const grid = document.getElementById('main-menu-grid');
+    const actions = document.getElementById('main-menu-actions');
+
+    // Hide Boot Status
+    if (bootContainer) {
+        bootContainer.classList.add('hidden');
+        bootContainer.style.display = 'none'; // Force hide
+    }
+
+    // Reveal Grid
+    if (grid) {
+        grid.classList.remove('hidden');
+        // Small delay for fade effect
+        requestAnimationFrame(() => {
+            grid.classList.remove('opacity-0');
+        });
+    }
+
+    // Reveal Actions
+    if (actions) {
+        actions.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            actions.classList.remove('opacity-0');
+        });
+    }
+    
+    // Focus on Live TV by default
+    setTimeout(() => {
+       const firstBtn = grid.querySelector('button');
+       if(firstBtn) firstBtn.focus();
+    }, 100);
+}
+
+
 // === PRIVACY CONSENT LOGIC ===
 
 function checkPrivacyConsent() {

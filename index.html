@@ -313,7 +313,7 @@
             <!-- Hero Section: User Info + Logo + Subscription Info -->
             <div class="flex flex-row items-center justify-center w-full gap-16" style="min-height: 35vh;">
                 
-                <!-- Left: Playlist User Info Panel -->
+                <!-- Left: Playlist User Info Panel (Hidden by default) -->
                 <div id="main-user-info" class="hidden flex-1 flex-col bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full relative overflow-hidden group">
                     
                     <!-- Header -->
@@ -359,11 +359,19 @@
                 </div>
 
                 <!-- Center: Logo -->
-                <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0">
-                    <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0 mb-4">
+                        <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
+                    </div>
+
+                    <!-- NEW: Boot Status Label & Spinner -->
+                    <div id="main-boot-status" class="flex flex-col items-center transition-all duration-500">
+                        <div class="boot-spinner mb-4"></div>
+                        <p id="boot-status-label" class="text-xl font-bold text-primary animate-pulse">Initializing...</p>
+                    </div>
                 </div>
 
-                <!-- Right: Device/Subscription Info Panel -->
+                <!-- Right: Device/Subscription Info Panel (Hidden by default) -->
                 <div id="main-sub-info" class="hidden flex-1 flex-col bg-card/40 p-6 rounded-xl border border-gray-700/50 shadow-xl backdrop-blur-sm max-w-md text-left transition-all hover:bg-card/60 w-full relative overflow-hidden group">
                     
                     <!-- Header -->
@@ -403,8 +411,8 @@
 
             </div>
             
-            <!-- Main Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl" style="margin: auto;">
+            <!-- Main Grid (Hidden by default) -->
+            <div id="main-menu-grid" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl opacity-0 transition-opacity duration-500" style="margin: auto;">
                 <button onclick="loadCategories('live')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
                     <svg class="icon-xl text-primary"><use href="#icon-tv"></use></svg>
                     <span class="mt-4 font-bold text-main text-4xl" data-i18n="menu_live">Live TV</span>
@@ -419,8 +427,8 @@
                 </button>
             </div>
             
-            <!-- Bottom Action Row (New) -->
-            <div class="flex justify-center gap-4 mt-8 w-full max-w-4xl mx-auto">
+            <!-- Bottom Action Row (Hidden by default) -->
+            <div id="main-menu-actions" class="hidden flex justify-center gap-4 mt-8 w-full max-w-4xl mx-auto opacity-0 transition-opacity duration-500">
                  <button onclick="showSettingsPage()" class="nav-item p-4 bg-card rounded-lg text-main hover:bg-opacity-80 flex items-center gap-2">
                     <svg class="icon-lg text-primary"><use href="#icon-world"></use></svg>
                     <span class="font-bold text-lg" data-i18n="menu_language">Language</span>
@@ -914,12 +922,6 @@
                     <button id="btn-exit-yes" onclick="exitApp()" class="nav-item px-6 py-2 bg-red-600 text-white font-bold rounded hover:bg-red-700" data-i18n="btn_yes">Yes</button>
                     <button id="btn-exit-no" onclick="hideExitModal()" class="nav-item px-6 py-2 bg-gray-600 text-white font-bold rounded hover:bg-gray-500" data-i18n="btn_no">No</button>
                 </div>
-            </div>
-        </div>
-
-        <div id="page-splash" class="page flex items-center justify-center  p-10 pt-20" style="display: block;">
-            <div class="flex flex-col items-center justify-center gap-4">
-                <div id="logo"  class=" bg-no-repeat bg-contain bg-center"></div>
             </div>
         </div>
 

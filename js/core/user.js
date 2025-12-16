@@ -134,27 +134,37 @@ function getCapabilitiesObject() {
  * @param {object} params - The parameters (e.g., {series_id: 123}), mostly ignored in static mode
  */
 async function handleUserLogin() {
-    Loader.show("")
-    console.log("handleUserLoginhandleUserLoginhandleUserLoginhandleUserLogin")
+    // 1. Show page-main immediately with boot status
+    showPage('page-main');
     $("#add-playlist-status").textContent = "No playlist found";
 
-    loadUserSettings(); // Load local stuff (favorites/watching)
+    // 2. Initial Status
+    updateBootStatus("Loading user playlists...");
+
+    loadUserSettings(); 
+    
     if(isTestMode){
-        showPage('page-main');
-        pushToNavStack('page-main');
+        updateBootStatus("Entering Test Mode...");
+        // Short delay for visual effect
+        setTimeout(() => {
+            handleApiConnect(null, true);
+        }, 500);
         _hideModal();
         return true;
     }
+
     // --- FIREBASE CHECK ---
     const deviceId = typeof MacAddr !== 'undefined' ? MacAddr : "web-test-device";
     console.log("Checking Firebase for Device:", deviceId);
 
     try {
         if (firebaseDb) {
+            updateBootStatus("Verifying device...");
             const docRef = firebaseDb.collection("devices").doc(deviceId);
             const doc = await docRef.get();
 
             if (doc.exists) {
+                updateBootStatus("Fetching user info...");
                 const data = doc.data();
                 console.log("Playlist found via Firebase!", data);
                 
@@ -171,37 +181,45 @@ async function handleUserLogin() {
                     if (playlists && Array.isArray(playlists)) {
                         userSettings.xtreamConfig = playlists;
                         userSettings.pl = 0; // Default to first
+                        
                         if(handleApiConnect(null, true)){
                             saveUserSettings();
-
                         }
                         
                         return;
                     }else{
                         console.log("ERRORR NOT VALID PLAYLIST");
+                        updateBootStatus("Invalid Playlist Data");
                         _showQrModal()
                         return
                     }
                 }catch(e){
+                     updateBootStatus("Data Error");
+                     _showQrModal();
+                     return;
                 }
 
             }else{
                 console.log("No playlist found in Firebase for this device.");
+                updateBootStatus("Registering device...");
                 signupDevice(docRef);
             }
             if(!doc.exists || !doc.data()?.playlists) {
                 console.log(" ---------- No playlist found. Showing QR Code.");
                 $("#add-playlist-status").textContent = "No playlist found";
+                // Show QR directly, status remains visible behind it
                 _showQrModal(docRef);
                 Loader.hide()
                 return; // Stop here, wait for QR scan
             }
         } else {
             console.warn("Firebase not initialized.");
+            updateBootStatus("Firebase Init Failed");
             return
         }
     } catch (e) {
         console.error("Firebase Error:", e);
+        updateBootStatus("Connection Error");
     }
 
     // Fallback to local config if Firebase fails or is skipped
@@ -214,7 +232,6 @@ async function handleUserLogin() {
         handleApiConnect(null, true); 
     } else {
         console.log("-------- no config, show login/setup")
-        // If no config, show login/setup
         const u = document.getElementById('api-username');
         if(u) u.textContent = currentUsername;
         _showQrModal();
@@ -260,6 +277,9 @@ function _showQrModal(docRef) {
             docRef = firebaseDb.collection("devices").doc(MacAddr);
         }
         // Real-time Listener for when user adds playlist
+        if(unsubscribe_docref_firebase){
+            unsubscribe_docref();
+        }
         unsubscribe_docref_firebase = docRef.onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
@@ -270,6 +290,7 @@ function _showQrModal(docRef) {
                     handleUserLogin(); // Retry login
                 }else{
                     showError("Play list badly formed")
+                    console.og(data.playlists, checkPlaylist(data.playlists.xtreamConfig))
                 }
             }
         });
@@ -288,7 +309,8 @@ function handleLogout() {
 }
 
 function checkPlaylist(playlists){
-    if(!playlists || !playlists[0] || !playlists[0].host || playlists[0].username || !playlists[0].password){
+    if(!playlists || !playlists[0] || !playlists[0].host || !playlists[0].username || !playlists[0].password){
+        console.log(!playlists , !playlists[0] , !playlists[0].host , !playlists[0].username , !playlists[0].password)
         return false;
     }
     return true
@@ -307,27 +329,35 @@ async function handleApiConnect(e, isAutoLogin = false) {
         console.log("--------- no playlist")
         _showQrModal();
 
-        return;
+        return false; // Return false to indicate failure
     }
 
     if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
-         showError('playlist is not valide.');
+        if (!isAutoLogin) showError('playlist is not valid.');
         console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
-        //infinit loop
         _showQrModal();
 
-        return;
+        return false;
     }
     
     if (!xtreamConfig.host.startsWith('http')) xtreamConfig.host = 'http://' + xtreamConfig.host;
     if (xtreamConfig.host.endsWith('/')) xtreamConfig.host = xtreamConfig.host.slice(0, -1);
 
     apiBaseUrl = `${xtreamConfig.host}/player_api.php`;
+    
+    // UPDATE STATUS
+    if (xtreamConfig.host.startsWith("https")) {
+        updateBootStatus("Trying HTTPS connection...");
+    } else {
+        updateBootStatus("Trying HTTP connection...");
+    }
 
     try {
         const data = await fetchXtream({ action: 'get_user_info' });
         if (data) {
             console.log('API Connected');
+            updateBootStatus("Connection Successful!");
+
             userSettings.xtreamConfig[currentIndex] = xtreamConfig;
             saveUserSettings();
 
@@ -338,16 +368,30 @@ async function handleApiConnect(e, isAutoLogin = false) {
             
             showPage('page-main');
             pushToNavStack('page-main');
+            
+            // === SUCCESS: REVEAL UI ===
             _hideModal();
+            setTimeout(() => {
+                revealMainMenu();
+            }, 500); // Small delay so user sees "Success"
+            
+            return true;
 
         } else {
             throw new Error("Auth failed");
         }
     } catch (error) {
         console.error('Connect failed:', error);
-        showError(`API Error: ${error.message}`);
-        _showQrModal();
-
+        
+        updateBootStatus("Connection Failed");
+        
+        setTimeout(() => {
+             // Only show QR if it was an auto-login attempt at startup
+             if(isAutoLogin) _showQrModal();
+             else showError(`API Error: ${error.message}`);
+        }, 1000);
+        
+        return false;
     }
 
 }

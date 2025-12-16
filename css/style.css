@@ -210,10 +210,9 @@ body.video-active #app-container {
 
     /*to test on real device */
     text-shadow: 
-        0 0 3px rgb(0 0 0 / 70%),
-        0 0 5px rgb(0 0 0 / 70%), 
-        2px 2px 2px rgb(0 0 0 / 85%);
-    font-family: "Noto Kufi Arabic";
+        0 0 3px rgb(0 0 0 / 40%),
+        0 0 5px rgb(0 0 0 / 40%), 
+        2px 2px 2px rgb(0 0 0 / 45%);
 }
 
 .overlay-top {
@@ -395,3 +394,16 @@ body.video-active #app-container {
     border-color: white; /* Contrast when focused */
 }
 
+/* --- NEW: BOOT SPINNER & ANIMATIONS --- */
+.boot-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Transition Utilities */
+.opacity-0 { opacity: 0; }
+.opacity-100 { opacity: 1; }
