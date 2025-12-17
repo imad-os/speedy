@@ -1,4 +1,4 @@
-// === Video Engine (Tizen/Web Abstraction) ===
+// video-engine.js
 
 const VideoEngine = (function() {
 
@@ -7,6 +7,11 @@ const VideoEngine = (function() {
     let _callbacks = {};
     let _isTizen = false;
     let allowOverlay = true;
+    
+    // Store current URL internally to allow restarting without passing it back in
+    let currentUrl = ""; 
+    let currentRect = null;
+
     let playerTracks = { 
             video:{}, 
             currentSubtitle: {},
@@ -16,7 +21,7 @@ const VideoEngine = (function() {
             audios: [],
             downloadedSubtitles:[],
          };
-    let currentItem = {};
+
     function init() {
         _isTizen = (typeof webapis !== 'undefined' && webapis.avplay);
         webPlayer = document.getElementById('web-video-player');
@@ -25,6 +30,8 @@ const VideoEngine = (function() {
     function start(url, startTime, callbacks = {}, isLive = false, rect = null) {
         if (!_isTizen && !webPlayer) init();
         _callbacks = callbacks;
+        currentUrl = url; // Save for restart
+        currentRect = rect;
 
         if (_isTizen) {
             _startTizen(url, startTime, isLive, rect);
@@ -33,29 +40,83 @@ const VideoEngine = (function() {
         }
     }
 
-    function stop() {
+    // UPDATED: Added keepDom parameter
+    function stop(keepDom = false) {
         if (_isTizen && tizenPlayer) {
             try {
+                // 1. Stop playback
                 webapis.avplay.stop();
-                webapis.avplay.setDisplayRect(0,0,0,0); 
-                webapis.avplay.close();
-                PlayerController.isActive = false;
                 
-                const container = document.getElementById('tizen-player-container');
-                if(container) {
-                    container.innerHTML = '';
-                    container.style.display = 'none';
+                // 2. CRITICAL: Hide the video plane BEFORE closing the session
+                // If we close first, setDisplayRect fails and leaves a black screen.
+                if(!keepDom) {
+                    try {
+                        webapis.avplay.setDisplayRect(0,0,0,0); 
+                    } catch(e) { console.warn("Rect clear failed", e); }
                 }
-            } catch (e) { console.warn("AVPlay stop error", e); }
-            tizenPlayer = null;
+
+                // 3. Now we can safely close the session (resets tracks)
+                webapis.avplay.close(); 
+                
+                // 4. Cleanup DOM elements
+                if(!keepDom) {
+                    PlayerController.isActive = false;
+                    const container = document.getElementById('tizen-player-container');
+                    if(container) {
+                        container.innerHTML = '';
+                        container.style.display = 'none';
+                    }
+                    tizenPlayer = null;
+                }
+            } catch (e) { 
+                console.warn("AVPlay stop error", e); 
+                
+                // Emergency cleanup if main block fails
+                if(!keepDom) {
+                    try { webapis.avplay.setDisplayRect(0,0,0,0); } catch(z){}
+                    const container = document.getElementById('tizen-player-container');
+                    if(container) container.style.display = 'none';
+                }
+            }
         }
 
-        if (webPlayer) {
+        if (webPlayer && !keepDom) {
             webPlayer.pause();
             webPlayer.src = '';
             webPlayer.style.display = 'none';
         }
         playerOverlay.isBuffering= false;
+    }
+
+    // NEW: Soft Restart Function
+    function reloadForSubtitle(targetSubtitleIndex) {
+        if (!_isTizen) return;
+
+        console.log("[VideoEngine] Soft restarting for subtitle switch...");
+        
+        // 1. Capture current state
+        let currentTime = 0;
+        try { currentTime = webapis.avplay.getCurrentTime() / 1000; } catch(e){}
+        
+        // Find current audio index to restore it
+        let currentAudioIndex = -1;
+        parseCurrentTracks(); // Refresh track data first
+        if(playerTracks.currentAudio && playerTracks.currentAudio.index !== undefined){
+            currentAudioIndex = playerTracks.currentAudio.index;
+        }
+
+        // 2. Clear the external subtitle flag so the new session is clean
+        playerTracks.currentOnlineSubtitle = null;
+
+        // 3. Stop player but KEEP DOM (prevents black flash/re-layout)
+        stop(true);
+
+        // 4. Restart using the existing DOM, passing restore options
+        // We assume 'vod' (false for isLive) because we are syncing subs
+        _startTizen(currentUrl, currentTime, false, currentRect, true, {
+            audioIndex: currentAudioIndex,
+            subtitleIndex: targetSubtitleIndex
+        });
     }
 
     function togglePlay() {
@@ -74,7 +135,6 @@ const VideoEngine = (function() {
         } else {
             if (webPlayer.paused) webPlayer.play();
             else webPlayer.pause();
-            
             if (_callbacks.onStateChange) _callbacks.onStateChange(webPlayer.paused ? 'paused' : 'playing');
         }
     }
@@ -95,29 +155,28 @@ const VideoEngine = (function() {
         }
     }
 
-    // NEW: Updates the player size and position dynamically
     function setRect(rect) {
+        if(!rect && currentRect) rect = currentRect; // Use cached if available
         if (PlayerController.currentState.isFullscreen) {
             rect = { x: 0, y: 0, w: window.innerWidth, h: window.innerHeight };
         }
+        currentRect = rect; // Update cache
+
         if (_isTizen) {
             try {
-                // Update the container DIV
                 const container = document.getElementById('tizen-player-container');
                 if (container) {
-                    container.style.position = 'absolute'; // Ensure absolute positioning
+                    container.style.position = 'absolute'; 
                     container.style.left = rect.x + 'px';
                     container.style.top = rect.y + 'px';
                     container.style.width = rect.w + 'px';
                     container.style.height = rect.h + 'px';
                 }
-                // Update the hardware video plane
                 webapis.avplay.setDisplayRect(rect.x, rect.y, rect.w, rect.h);
             } catch (e) {
                 console.error("Failed to set Display Rect", e);
             }
         } else {
-            // Update Web Player
             if (webPlayer) {
                 webPlayer.style.position = 'absolute';
                 webPlayer.style.left = rect.x + 'px';
@@ -127,6 +186,7 @@ const VideoEngine = (function() {
             }
         }
     }
+
     function parseTrackLanguage(extra, i) {
         const Unknown = `Track ${i}`;
         if(!extra) return Unknown;
@@ -134,45 +194,44 @@ const VideoEngine = (function() {
     }
 
     function parseTracks() {
-        const total = webapis.avplay.getTotalTrackInfo();
-        const audioTracks = [];
-        const subtitleTracks = [];
-        let videoTrack = {};
-        for (let i = 0; i < total.length; i++) {
-            const track = total[i];
-            let extra = {};
-            try {
-                extra = JSON.parse(track.extra_info || '{}');
-            } catch (e) {
-                console.error('Failed to parse extra_info:', track.extra_info, e);
+        try {
+            const total = webapis.avplay.getTotalTrackInfo();
+            const audioTracks = [];
+            const subtitleTracks = [];
+            let videoTrack = {};
+            for (let i = 0; i < total.length; i++) {
+                const track = total[i];
+                let extra = {};
+                try { extra = JSON.parse(track.extra_info || '{}'); } catch (e) {}
+                
+                if (track.type === 'AUDIO') {
+                    audioTracks.push({
+                        index: track.index,
+                        language: parseTrackLanguage(extra, track.index),
+                        channels: extra.channels || '',
+                        sampleRate: extra.sample_rate || '',
+                        bitRate: extra.bit_rate || '',
+                        codec: extra.fourCC || ''
+                    });
+                } else if (track.type === 'TEXT') {
+                    subtitleTracks.push({
+                        index: track.index,
+                        language: parseTrackLanguage(extra, track.index),
+                        type: extra.subtitle_type || '',
+                        codec: extra.fourCC || ''
+                    });
+                } else if (track.type === 'VIDEO') {
+                    videoTrack = extra || {};
+                    videoTrack.Width = extra.Width || 0;
+                    videoTrack.Height = extra.Height || 0;
+                }
             }
-            if (track.type === 'AUDIO') {
-                audioTracks.push({
-                    index: track.index,
-                    language: parseTrackLanguage(extra, track.index),
-                    channels: extra.channels || '',
-                    sampleRate: extra.sample_rate || '',
-                    bitRate: extra.bit_rate || '',
-                    codec: extra.fourCC || ''
-                });
-            } else if (track.type === 'TEXT') {
-                subtitleTracks.push({
-                    index: track.index,
-                    language: parseTrackLanguage(extra, track.index),
-                    type: extra.subtitle_type || '',
-                    codec: extra.fourCC || ''
-                });
-            } else if (track.type === 'VIDEO') {
-                videoTrack = extra || {};
-                videoTrack.Width = extra.Width || 0;
-                videoTrack.Height = extra.Height || 0;
-            }
-            
             playerTracks.video = videoTrack;
             playerTracks.audios = audioTracks;
             playerTracks.subtitles = subtitleTracks;
-        }
+        } catch(e) { console.warn("Error parsing tracks", e); }
     }
+
     function parseCurrentTracks() {
         try {
             if(!_isTizen) return;
@@ -181,42 +240,28 @@ const VideoEngine = (function() {
             const tracks = webapis.avplay.getCurrentStreamInfo();
             for (let i = 0; i < tracks.length; i++) {
                 const track = tracks[i];
-                let extra = {};
-                try {
-                    extra = JSON.parse(track.extra_info || '{}');
-                } catch (e) {
-                    console.error('Failed to parse extra_info:', track.extra_info, e);
-                }
                 if (track.type === 'AUDIO') {
-                    playerTracks.audios.map(a => {
-                        a.isCurrent = (a.index === track.index);
-                        return a;
-                    });
+                    playerTracks.audios.map(a => { a.isCurrent = (a.index === track.index); return a; });
                     playerTracks.currentAudio = playerTracks.audios.find(a => a.isCurrent) || {};
-                }else if (track.type === 'TEXT') {
-                    playerTracks.subtitles.map(a => {
-                        a.isCurrent = (a.index === track.index);
-                        return a;
-                    });
+                } else if (track.type === 'TEXT') {
+                    playerTracks.subtitles.map(a => { a.isCurrent = (a.index === track.index); return a; });
                     playerTracks.currentSubtitle = playerTracks.subtitles.find(s => s.isCurrent) || {};
                 }
             }
-                    
-        } catch (e) {
-            console.error('Failed to get current track info:', e);
-        }
+        } catch (e) { console.error('Failed to get current track info:', e); }
     }                
+
     function updateResolution() {
         const v = playerTracks.video || {};
-        const {qualityClass,qualityTag, resolution} = ViewDetails.resToTag(v.Width, v.Height);
-        window.playerOverlay.updateStreamInfo({ resolution,quality:qualityTag })
+        if(typeof ViewDetails !== 'undefined'){
+             const {qualityClass,qualityTag, resolution} = ViewDetails.resToTag(v.Width, v.Height);
+             window.playerOverlay.updateStreamInfo({ resolution, quality:qualityTag })
+        }
     }
+
     function switchToFullscreen() {
         if (_isTizen) {
-            try {
-                // Use setRect for consistency, pass full screen dimensions
-                setRect();
-            } catch (e) {}
+            try { setRect(); } catch (e) {}
         } else {
             webPlayer.style.position = 'fixed';
             webPlayer.style.top = '0';
@@ -225,31 +270,29 @@ const VideoEngine = (function() {
             webPlayer.style.height = '100%';
         }
         allowOverlay= true;
-
     }
 
-    function _startTizen(url, startTime, isLive, rect) {
+    // UPDATED: Added reuseDom and restoreOpts
+    function _startTizen(url, startTime, isLive, rect, reuseDom = false, restoreOpts = null) {
         const container = document.getElementById('tizen-player-container');
-        container.innerHTML = '<object type="application/avplayer" id="av-player" style="width:100%; height:100%;"></object>';
-        container.style.display = 'block'; 
-        tizenPlayer = document.getElementById('av-player');
+        
+        // ONLY recreate DOM if NOT reusing (standard start)
+        if (!reuseDom) {
+            container.innerHTML = '<object type="application/avplayer" id="av-player" style="width:100%; height:100%;"></object>';
+            container.style.display = 'block'; 
+            tizenPlayer = document.getElementById('av-player');
+        } else {
+            // We are reusing, ensure object exists
+            tizenPlayer = document.getElementById('av-player');
+            if(!tizenPlayer) {
+                 // Fallback if missing
+                 return _startTizen(url, startTime, isLive, rect, false, restoreOpts);
+            }
+        }
+
         allowOverlay = !isLive || !rect ;
         PlayerController.isPlaying(false);
 
-        /*
-        [Callback=FunctionOnly, NoInterfaceObject] interface AVPlayPlaybackCallback {
-        void onbufferingstart();
-        void onbufferingprogress(unsigned long percent);
-        void onbufferingcomplete();
-        void oncurrentplaytime(unsigned long currentTime);
-        void onstreamcompleted();
-        void onevent(AVPlayEvent eventid, DOMString data);
-        void onerror(AVPlayError eventid);
-        void onerrormsg(AVPlayError eventid, DOMString errorMsg);
-        void ondrmevent(AVPlayDrmType type, drmData data);
-        void onsubtitlechange(DOMString duration, DOMString subtitles, DOMString type, AVPlaySubtitleAttribute[] attributes);
-        };
-        */
        const subtitles_container = $('#subtitle-container');
        let subtitleClearTimer = null;
         const listeners = {
@@ -258,32 +301,22 @@ const VideoEngine = (function() {
                 playerOverlay.isBuffering = true;
                 if(_callbacks.onStateChange) _callbacks.onStateChange('buffering'); 
             },
-
             onbufferingprogress: function (percent) {
-                if(PlayerController.isActive){
-                    Loader.progress(percent);
-                }
-                //console.log("Buffering Progress: " + percent + "%");
+                if(PlayerController.isActive) Loader.progress(percent);
                 if (window.playerOverlay) window.playerOverlay.updateStreamInfo({ buffer_progress: percent });
             },
-        
             onbufferingcomplete: () => { 
                 Loader.hide("bf complted");
                 playerOverlay.isBuffering = false;
-                if (window.playerOverlay) window.playerOverlay.updateStreamInfo({ buffer_progress: 0,status:"PLAYIN" });
-
+                if (window.playerOverlay) window.playerOverlay.updateStreamInfo({ buffer_progress: 0,status:"PLAYING" });
                 if(_callbacks.onStateChange) _callbacks.onStateChange('playing'); 
-                //applyRect(); 
             },
             onstreamcompleted: () => { 
                 parseCurrentTracks();
                 if(_callbacks.onStateChange) _callbacks.onStateChange('ended'); 
-
             },
             oncurrentplaytime: (time) => { 
-                if(!PlayerController.isPlaying()){
-                    PlayerController.isPlaying(true);
-                }
+                if(!PlayerController.isPlaying()) PlayerController.isPlaying(true);
                 if(_callbacks.onTimeUpdate) {
                      let dur = 0; 
                      try { dur = webapis.avplay.getDuration(); } catch(e){}
@@ -291,57 +324,43 @@ const VideoEngine = (function() {
                 }
             },
             onerror: (e) => { 
-                if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
-                    showError("Video format not supported!");
-                }else if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
-                    showError("Video Connection failed!");
-                }else{
-                    showError("Streaming Video failed!");
-                }
                 if(_callbacks.onError) _callbacks.onError(e); 
-                console.log(e)
             },
-            onevent: (eventid, data) => { 
-                // Handle other events if needed
-                console.log("************************AVPlay Event:", eventid, data);
-            },
-            //subtitle related callbacks can be added here
+            onevent: (eventid, data) => {},
             onsubtitlechange: (duration, text, data3, data4) => {
-                if (subtitleClearTimer) {
-                    clearTimeout(subtitleClearTimer);
-                    subtitleClearTimer = null;
-                }
+                if (subtitleClearTimer) { clearTimeout(subtitleClearTimer); subtitleClearTimer = null; }
                 if (!subtitles_container) return;
-            
-                if (!text || text.trim() === '') {
-                    subtitles_container.innerHTML = '';
-                    return;
-                }
+                if (!text || text.trim() === '') { subtitles_container.innerHTML = ''; return; }
                 try { duration = parseInt(duration); } catch (e) { duration = 0; }
-                const subtitle_line=`<span>${text.trim()}</span>`;
-                subtitles_container.innerHTML = subtitle_line;
-                
+                subtitles_container.innerHTML = `<span>${text.trim()}</span>`;
                 if (duration > 300) {
-                    subtitleClearTimer = setTimeout(() => {
-                        subtitles_container.innerHTML = '';
-                        subtitleClearTimer = null;
-                    }, duration - 100);
+                    subtitleClearTimer = setTimeout(() => { subtitles_container.innerHTML = ''; subtitleClearTimer = null; }, duration - 100);
                 }
             },
-            
         };
 
         try {
             subtitles_container.innerHTML = '';
+            
+            // Standard Open sequence
             webapis.avplay.open(url);
             webapis.avplay.setListener(listeners);
-            setRect(rect);
-            PlayerController.isActive = true;
-            Loader.show("CONNECTING");
+            
+            // Apply logic for soft restart if needed
+            if (reuseDom) {
+                PlayerController.isActive = true; 
+                // We don't show "CONNECTING" loader on soft restart to make it feel instant
+            } else {
+                setRect(rect);
+                PlayerController.isActive = true;
+                Loader.show("CONNECTING");
+            }
 
             webapis.avplay.prepareAsync(() => {
-                setRect(rect);
+                setRect(rect); // Ensure rect is correct
                 playerOverlay.setProgressBar();
+                
+                // 1. Restore/Set Start Time
                 if (startTime > 0) {
                     webapis.avplay.seekTo(startTime * 1000, 
                         () => webapis.avplay.play(),
@@ -350,8 +369,31 @@ const VideoEngine = (function() {
                 } else {
                     webapis.avplay.play();
                 }
+
+                // 2. Parse Tracks (Crucial for Tizen to re-index internal subs)
                 parseTracks();
                 updateResolution();
+
+                // 3. Apply Restore Options (Audio/Subtitle)
+                if (restoreOpts) {
+                    // Restore Audio
+                    if (restoreOpts.audioIndex !== undefined && restoreOpts.audioIndex !== -1) {
+                         try { 
+                             webapis.avplay.setSelectTrack('AUDIO', restoreOpts.audioIndex); 
+                             console.log("[VideoEngine] Restored Audio Track:", restoreOpts.audioIndex);
+                         } catch(e) { console.warn("Audio restore failed", e); }
+                    }
+                    // Apply the Target Internal Subtitle
+                    if (restoreOpts.subtitleIndex !== undefined && restoreOpts.subtitleIndex > -1) {
+                         try {
+                             webapis.avplay.setSilentSubtitle(false);
+                             webapis.avplay.setSelectTrack('TEXT', restoreOpts.subtitleIndex);
+                             console.log("[VideoEngine] Applied Internal Subtitle:", restoreOpts.subtitleIndex);
+                             if(window.showAlert) showAlert("Internal Subtitle Applied");
+                         } catch(e) { console.warn("Subtitle apply failed", e); }
+                    }
+                }
+
                 if(_callbacks.onReady) _callbacks.onReady();
             }, (e) => {
                if(_callbacks.onError) _callbacks.onError("AVPlay Prepare Error: " + e.message);
@@ -363,47 +405,32 @@ const VideoEngine = (function() {
     }
 
     function _startWeb(url, startTime, isLive, rect) {
+        // ... (Same as your original code) ...
         webPlayer.src = url;
         webPlayer.style.display = 'block';
-
-        if (rect) {
-            setRect(rect);
-        } else {
+        if (rect) setRect(rect);
+        else {
             webPlayer.style.position = 'fixed';
             webPlayer.style.inset = '0';
         }
-
         webPlayer.currentTime = startTime;
         webPlayer.play().catch(e => console.log("Autoplay blocked", e));
-        webPlayer.onStateChange = () => {
-            if(_callbacks.onStateChange) {
-                const state = webPlayer.paused ? 'paused' : 'playing';
-                _callbacks.onStateChange(state);
-            }
-        }
-        webPlayer.ontimeupdate = () => {
-             if(_callbacks.onTimeUpdate) _callbacks.onTimeUpdate(webPlayer.currentTime, webPlayer.duration);
-        };
-        webPlayer.onended = () => {
-             if(_callbacks.onStateChange) _callbacks.onStateChange('ended');
-        };
+        webPlayer.onStateChange = () => { if(_callbacks.onStateChange) _callbacks.onStateChange(webPlayer.paused ? 'paused' : 'playing'); }
+        webPlayer.ontimeupdate = () => { if(_callbacks.onTimeUpdate) _callbacks.onTimeUpdate(webPlayer.currentTime, webPlayer.duration); };
+        webPlayer.onended = () => { if(_callbacks.onStateChange) _callbacks.onStateChange('ended'); };
     }
 
     return {
         init,
         start,
         stop,
+        reloadForSubtitle, // Exported new function
         togglePlay,
         getTimeInfo,
         switchToFullscreen,
         setRect,
         parseCurrentTracks,
-        get playerTracks() {
-            return playerTracks;
-        },
-        get allowOverlay() {
-            return allowOverlay;
-        },
-
+        get playerTracks() { return playerTracks; },
+        get allowOverlay() { return allowOverlay; },
     };
 })();

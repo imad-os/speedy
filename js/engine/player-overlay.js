@@ -362,20 +362,39 @@
       if(cache.btnSub && document.body.contains(cache.btnSub)) cache.btnSub.focus();
   }
 
+// Inside player-overlay.js
+
   function _setSubtitle(index) {
     if(playerOverlay.isBuffering){
         return;
     }
+    
+    // --- NEW LOGIC START ---
+    // Check if we are currently using an External Subtitle
+    const isExternalActive = (VideoEngine.playerTracks.currentOnlineSubtitle !== null);
+    // Check if we are trying to switch to an Internal Subtitle (Index >= 0)
+    const isSwitchingToInternal = (index >= 0);
+
+    if (isExternalActive && isSwitchingToInternal) {
+        // We must restart the player to clean the track list
+        VideoEngine.reloadForSubtitle(index);
+        return;
+    }
+    // --- NEW LOGIC END ---
+
     webapis.avplay.setSilentSubtitle(false);
-        VideoEngine.playerTracks.currentOnlineSubtitle = null;
+    
+    // Clear external flag if we are just turning it off (-1)
+    if(index === -1) VideoEngine.playerTracks.currentOnlineSubtitle = null;
+
       const p = getActivePlayer();
       if (p && p.type === 'tizen') {
           try {
-              // FIX: Clear the UI immediately to avoid ghosting
               const subContainer = document.getElementById('subtitle-container');
               if(subContainer) subContainer.innerHTML = '';
 
               if (index !== -1) {
+                // Normal switching logic
                 webapis.avplay.pause();
                 webapis.avplay.setSelectTrack('TEXT', index);
                 setTimeout(() => {
@@ -383,7 +402,6 @@
                 }, 200);
                   showAlert(`Subtitle Track ${index} selected`);
               } else {
-                  //webapis.avplay.setSelectTrack('TEXT', -1); 
                   webapis.avplay.setSilentSubtitle(true);
                   showAlert("Subtitles Off");
               }
