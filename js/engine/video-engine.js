@@ -73,8 +73,7 @@ const VideoEngine = (function() {
                 
                 // Emergency cleanup if main block fails
                 if(!keepDom) {
-                    try { webapis.avplay.setDisplayRect(0,0,0,0); } catch(z){}
-                    const container = document.getElementById('tizen-player-container');
+                    ocument.getElementById('tizen-player-container');
                     if(container) container.style.display = 'none';
                 }
             }
