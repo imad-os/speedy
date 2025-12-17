@@ -419,15 +419,15 @@
             
             <!-- Main Grid (Hidden by default) -->
             <div id="main-menu-grid" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl opacity-0 transition-opacity duration-500" style="margin: auto;">
-                <button onclick="loadCategories('live')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
+                <button id="main-menu-live" onclick="loadCategories('live')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
                     <svg class="icon-xl text-primary"><use href="#icon-tv"></use></svg>
                     <span class="mt-4 font-bold text-main text-4xl" data-i18n="menu_live">Live TV</span>
                 </button>
-                <button onclick="loadCategories('vod')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
+                <button id="main-menu-movies" onclick="loadCategories('vod')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
                     <svg class="icon-xl text-primary"><use href="#icon-film"></use></svg>
                     <span class="mt-4 font-bold text-main text-4xl" data-i18n="menu_movies">Movies</span>
                 </button>
-                <button onclick="loadCategories('series')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
+                <button id="main-menu-series" onclick="loadCategories('series')" class="nav-item flex flex-col items-center justify-center p-12 rounded-lg shadow bg-card hover:bg-opacity-80 transition-all h-48">
                     <svg class="icon-xl text-primary"><use href="#icon-series"></use></svg>
                     <span class="mt-4 font-bold text-main text-4xl" data-i18n="menu_series">Series</span>
                 </button>

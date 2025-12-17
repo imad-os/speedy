@@ -10,8 +10,8 @@ const Loader = {
     _label: null,
     _prev:null,
     _rectScreen:null,
-    _isFullscreen:true,
     _loader_speed:5,
+    _hidden:[],
     // Initialize DOM elements lazily
     _init() {
         if (this._el) return; // Already initialized
@@ -33,7 +33,7 @@ const Loader = {
             this.setRect();
 
         }
-        console.log("[LOADER] SHOWING : ",text, "_isFullscreen:",this._isFullscreen)
+        console.log("[LOADER] SHOWING : ",text)
 
         this._init();
         this._el.classList.add('visible');
@@ -73,16 +73,42 @@ const Loader = {
         console.log("[LOADER] HIDING : ",msg)
         this._init();
         this._el.classList.remove('visible');
+        if(this._hidden.length){
+            this._hidden.map(e=>e.classList.remove("hidden"));
+            this._hidden=[]
+        }
     },
-
-    setRect(){
-        if(!this._el)return;
+    DetrmineRect(){
         let rect = {...this._rectScreen};
-        console.log("setting rect : ",this._isFullscreen , PlayerController.currentState.isFullscreen)
+
         if (!PlayerController.currentState.isFullscreen && PlayerController.isActive) {
             rect = this._prev.getBoundingClientRect();
+            return rect;
         }
-        this._isFullscreen=PlayerController.currentState.isFullscreen;
+        const activeE = document.activeElement;
+        const activeP = activeE ? activeE?.parentElement : null;
+        if(activeE && activeP){
+            if(activeE.id=="main-menu-live"){
+                rect = $("#live-categories-list").getBoundingClientRect();
+            }else if(activeE.id=="main-menu-movies"){
+                rect = $("#vod-category-list").getBoundingClientRect();
+            }else if(activeE.id=="main-menu-series"){
+                rect = $("#vod-category-list").getBoundingClientRect();
+            }else if(activeP.id=="live-categories-list"){
+                rect = $("#live-channels-list").getBoundingClientRect();
+            }else if(activeP.id=="vod-category-list"){
+                rect = $("#content-grid").getBoundingClientRect();
+            }else if(activeE.classList.contains("vitem")){
+                rect = activeE.getBoundingClientRect();
+            }
+        }
+        return rect;
+    },
+    setRect(){
+        if(!this._el)return;
+        let rect = this.DetrmineRect();
+        console.log("setting rect : ",PlayerController.isActive , PlayerController.currentState.isFullscreen)
+        
         console.log("setting rect:",rect);
         this._el.style.cssText = `
             position:absolute;

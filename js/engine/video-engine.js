@@ -42,8 +42,10 @@ const VideoEngine = (function() {
 
     // UPDATED: Added keepDom parameter
     function stop(keepDom = false) {
+        console.log("[videoEngine]  stop")
         if (_isTizen && tizenPlayer) {
             try {
+                console.log("[videoEngine]  stop 1")
                 // 1. Stop playback
                 webapis.avplay.stop();
                 
@@ -57,12 +59,13 @@ const VideoEngine = (function() {
 
                 // 3. Now we can safely close the session (resets tracks)
                 webapis.avplay.close(); 
-                
+                PlayerController.isActive = false;
+                console.log("[videoEngine]  stop 2")
                 // 4. Cleanup DOM elements
                 if(!keepDom) {
-                    PlayerController.isActive = false;
                     const container = document.getElementById('tizen-player-container');
                     if(container) {
+                        console.log("[videoEngine]  stop 3")
                         container.innerHTML = '';
                         container.style.display = 'none';
                     }
@@ -228,7 +231,13 @@ const VideoEngine = (function() {
             playerTracks.video = videoTrack;
             playerTracks.audios = audioTracks;
             playerTracks.subtitles = subtitleTracks;
-        } catch(e) { console.warn("Error parsing tracks", e); }
+        } catch(e) { 
+            playerTracks.video = {};
+            playerTracks.audios = [];
+            playerTracks.subtitles = [];
+
+            console.warn("Error parsing tracks", e); 
+        }
     }
 
     function parseCurrentTracks() {
@@ -282,11 +291,11 @@ const VideoEngine = (function() {
         } else {
             // We are reusing, ensure object exists
             if(!tizenPlayer) {
-                 // Fallback if missing
                  return _startTizen(url, startTime, isLive, rect, false, restoreOpts);
             }
         }
-
+        //this is required n case created in this call
+        tizenPlayer = document.getElementById('av-player');
         allowOverlay = !isLive || !rect ;
         PlayerController.isPlaying(false);
 
@@ -358,15 +367,15 @@ const VideoEngine = (function() {
             // Standard Open sequence
             webapis.avplay.open(url);
             webapis.avplay.setListener(listeners);
-            
-            Loader.show("CONNECTING");
+
             PlayerController.isActive = true;
+            Loader.show("CONNECTING");
             // Apply logic for soft restart if needed
             if (!reuseDom){
                 setRect(rect);
-                PlayerController.isActive = true;
             }
-
+            parseTracks();
+            updateResolution();
             webapis.avplay.prepareAsync(() => {
                 setRect(rect); // Ensure rect is correct
                 playerOverlay.setProgressBar();

@@ -146,6 +146,7 @@ const PlayerController = (function() {
 
     function stop() {
         console.log("[PlayerController] Stopping...");
+        playerOverlay.hideOverlay();
         currentState.isPlaying = false;
         currentState.isFullscreen = false;
 
@@ -158,9 +159,7 @@ const PlayerController = (function() {
         currentState.isPlaying = false;
         currentState.isFullscreen = false;
         
-        if (window.playerOverlay && typeof window.playerOverlay.hideOverlay === 'function') {
-            window.playerOverlay.hideOverlay();
-        }
+        
         
         const liveContainer = document.getElementById('tizen-player-container');
         if(liveContainer) {

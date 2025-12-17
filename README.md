@@ -37,8 +37,11 @@ it deos not show connecting or loaders
 readd error handling onError
 
 
-theme to remove
+onprevhyw loader spect
 
-theme-default
-theme-orange
-theme-aurora
+
+
+clear overlay values on start preview or full
+
+
+hide subtitle and settings button in overly for live

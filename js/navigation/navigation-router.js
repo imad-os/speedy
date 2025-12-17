@@ -13,7 +13,7 @@ const NavigationRouter = (function() {
             return false; 
         }
 
-        if ([ 'Select', 'Enter'].includes(key) ){
+        if ([ 'Select', 'Enter',"ArrowDown"].includes(key) ){
             toggleSearchBar(false);
             return true;
         }
