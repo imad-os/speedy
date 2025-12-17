@@ -207,21 +207,9 @@ const VideoEngine = (function() {
         }
     }                
     function updateResolution() {
-        let resolution = '';
-        let quality = '--';
-        try {
-            const v = playerTracks.video || {};
-            if (!v.Height || !v.Width) return;
-            const width = parseInt(v.Width, 10) || 0;
-            const height = parseInt(v.Height, 10) || 0;
-            if (width && height) {
-                resolution = `${width}x${height}`;
-                quality = height >= 2000 ? '4K' : height >= 1000 ? 'FHD' : height >= 700 ? 'HD' : 'SD';
-            }
-        } catch (e) {
-            console.warn("Error updating resolution:", e);
-        }
-        window.playerOverlay.updateStreamInfo({ resolution,quality })
+        const v = playerTracks.video || {};
+        const {qualityClass,qualityTag, resolution} = ViewDetails.resToTag(v.Width, v.Height);
+        window.playerOverlay.updateStreamInfo({ resolution,quality:qualityTag })
     }
     function switchToFullscreen() {
         if (_isTizen) {

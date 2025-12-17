@@ -248,14 +248,17 @@ body.video-active #app-container {
 #tizen-progress-bar:focus #tizen-progress-thumb { display: block; }
 
 /* Tags */
-.tag_SD { color: #D1D5DB; border-color: #4B5563; background: rgba(75, 85, 99, 0.27); }
-.tag_HD { color: #60A5FA; border-color: #3B82F6; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 8px rgba(59, 130, 246, 0.27); }
-.tag_FHD { color: #34D399; border-color: #10B981; background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 8px rgba(16, 185, 129, 0.27); }
-.tag_4K { color: #FCD34D; border-color: #F59E0B; background: rgba(245, 158, 11, 0.15); box-shadow: 0 0 8px rgba(245, 158, 11, 0.27); }
+.tag_SD { color: #D1D5DB !important; border-color: #4B5563 !important; background: rgba(75, 85, 99, 0.27) !important; }
+.tag_HD { color: #60A5FA !important; border-color: #3B82F6 !important; background: rgba(59, 130, 246, 0.15) !important; box-shadow: 0 0 8px rgba(59, 130, 246, 0.27) !important; }
+.tag_FHD { color: #34D399 !important; border-color: #10B981 !important; background: rgba(16, 185, 129, 0.15) !important; box-shadow: 0 0 8px rgba(16, 185, 129, 0.27) !important; }
+.tag_4K { color: #FCD34D !important; border-color: #F59E0B !important; background: rgba(245, 158, 11, 0.15) !important; box-shadow: 0 0 8px rgba(245, 158, 11, 0.27) !important; }
 
 #detail-title{ font-size: calc(2.5em * var(--font-scale)); font-weight: bold; margin-bottom: 0.1rem; }
 #detail-plot,#detail-rating,#detail-year,#detail-duration,#detail-genre{ font-size: calc( 1.2em * var(--font-scale)); }
-
+#detail-plot{
+    max-height: 25vh;
+    overflow-y: auto;
+}
 #btn-playpause { 
     padding: 0; border-radius: 10px; background-color:rgb(255 255 255 / 19%);
     width: 100px; height: 100px; border-color: #979797bd;
@@ -289,7 +292,7 @@ body.video-active #app-container {
 #stream-quality { position: absolute; right: 20px; width: 80px; font-size: 26px; border-width: 1px; border-radius: 10px; }
 .rtl-layout #stream-quality { right: auto; left: 20px; }
 
-#tizen-progress-time, #tizen-progress-duration{ font-size: 24px; }
+#tizen-progress-time, #tizen-progress-duration{ font-size: 24px;width: 100px;padding: 5px; }
 .glow { color: #c8fcfc; text-shadow: 0 0 7px #5ad8d6, 0 0 10px #82dad7; animation: glow 1s ease-in-out infinite alternate; }
 
 .vitem .icon_fav,.vitem .rating_box{ position: absolute; top: 2px;padding-right: 10px;padding-left: 10px; border-radius: 10px; background-color: #000000a4; }
@@ -424,4 +427,38 @@ body.video-active #app-container {
 
 #main-sub-info,#main-user-info, main-menu-grid{
     animation: fadeIn 0.3s ease-in-out;
+}
+
+/* === TECH INFO BADGES === */
+.tech-group {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.4em;
+
+}
+.tech-label {
+    font-size: 0.8rem;
+    color: var(--color-text-alt);
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    font-size: 1.1em;
+}
+.tech-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: var(--color-card);
+    color: var(--color-text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.badge-sub {
+    font-size: 0.75rem; 
+    padding: 2px 6px; 
+    background-color: rgba(255, 255, 255, 0.1); 
+    color: #e5e7eb;
 }

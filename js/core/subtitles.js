@@ -51,7 +51,14 @@ var SubtitleFetcher = {
             if (errorCallback) errorCallback(err.message || "Fetch error");
         });
     },
+    setSubtitle:function(fullPath){
+        webapis.avplay.pause();
+        webapis.avplay.setExternalSubtitlePath(fullPath);
 
+        setTimeout(() => {
+        webapis.avplay.play();
+        }, 200);
+    },
     /**
      * Tizen Download Logic using Firebase Proxy
      */
@@ -89,7 +96,7 @@ var SubtitleFetcher = {
                     console.log("Download completed to: " + fullPath);
                     try {
                         if (typeof webapis !== 'undefined' && webapis.avplay) {
-                            webapis.avplay.setExternalSubtitlePath(fullPath);
+                            SubtitleFetcher.setSubtitle(fullPath);
                             self.cache[originalUrl] = fullPath;
                             
                             if (successCallback) successCallback(fullPath);

@@ -363,6 +363,10 @@
   }
 
   function _setSubtitle(index) {
+    if(playerOverlay.isBuffering){
+        return;
+    }
+    webapis.avplay.setSilentSubtitle(false);
         VideoEngine.playerTracks.currentOnlineSubtitle = null;
       const p = getActivePlayer();
       if (p && p.type === 'tizen') {
@@ -372,23 +376,17 @@
               if(subContainer) subContainer.innerHTML = '';
 
               if (index !== -1) {
-                webapis.avplay.setSilentSubtitle(false);
-                  webapis.avplay.setSelectTrack('TEXT', index);
+                webapis.avplay.pause();
+                webapis.avplay.setSelectTrack('TEXT', index);
+                setTimeout(() => {
+                    webapis.avplay.play();
+                }, 200);
                   showAlert(`Subtitle Track ${index} selected`);
               } else {
                   //webapis.avplay.setSelectTrack('TEXT', -1); 
                   webapis.avplay.setSilentSubtitle(true);
                   showAlert("Subtitles Off");
               }
-
-               // FIX: Seek to current time to flush buffers 
-               // This fixes the "2-3 phrases" delay and the external->internal switch issue
-               try {
-                   const curTime = webapis.avplay.getCurrentTime();
-                   webapis.avplay.seekTo(curTime, () => {}, (e) => console.warn("Subtitle seek fix failed", e));
-               } catch(e) {
-                   console.warn("Subtitle seek error", e);
-               }
 
           } catch(e) { 
               console.warn("Subtitle set error", e);
@@ -431,12 +429,6 @@
                             showAlert("Subtitle Applied!");
                               closeTrackModal();
                               VideoEngine.playerTracks.currentOnlineSubtitle=sub.file;
-
-                              // FIX: Seek here too to ensure external sub appears immediately
-                              try {
-                                const curTime = webapis.avplay.getCurrentTime();
-                                webapis.avplay.seekTo(curTime, noop, noop);
-                              } catch(e){}
 
                           }, (err) => {
                             showAlert("Download Failed: " + err);
