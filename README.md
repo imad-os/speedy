@@ -32,3 +32,4 @@ check error management at first sratt when QR modal is on
 
 onsubtitl soft  restart :
 it doesnot keep tracks audio and subitle
+it deos not show connecting or loaders
