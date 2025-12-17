@@ -368,49 +368,38 @@
     if(playerOverlay.isBuffering){
         return;
     }
-    
-    // --- NEW LOGIC START ---
-    // Check if we are currently using an External Subtitle
     const isExternalActive = (VideoEngine.playerTracks.currentOnlineSubtitle !== null);
-    // Check if we are trying to switch to an Internal Subtitle (Index >= 0)
-    const isSwitchingToInternal = (index >= 0);
-
-    if (isExternalActive && isSwitchingToInternal) {
-        // We must restart the player to clean the track list
+    VideoEngine.playerTracks.currentOnlineSubtitle = null;
+    if (isExternalActive) {
         VideoEngine.reloadForSubtitle(index);
         return;
     }
-    // --- NEW LOGIC END ---
-
     webapis.avplay.setSilentSubtitle(false);
-    
-    // Clear external flag if we are just turning it off (-1)
-    if(index === -1) VideoEngine.playerTracks.currentOnlineSubtitle = null;
 
-      const p = getActivePlayer();
-      if (p && p.type === 'tizen') {
-          try {
-              const subContainer = document.getElementById('subtitle-container');
-              if(subContainer) subContainer.innerHTML = '';
+    const p = getActivePlayer();
+    if (p && p.type === 'tizen') {
+        try {
+            const subContainer = document.getElementById('subtitle-container');
+            if(subContainer) subContainer.innerHTML = '';
 
-              if (index !== -1) {
-                // Normal switching logic
-                webapis.avplay.pause();
-                webapis.avplay.setSelectTrack('TEXT', index);
-                setTimeout(() => {
-                    webapis.avplay.play();
-                }, 200);
-                  showAlert(`Subtitle Track ${index} selected`);
-              } else {
-                  webapis.avplay.setSilentSubtitle(true);
-                  showAlert("Subtitles Off");
-              }
+            if (index !== -1) {
+            // Normal switching logic
+            webapis.avplay.pause();
+            webapis.avplay.setSelectTrack('TEXT', index);
+            setTimeout(() => {
+                webapis.avplay.play();
+            }, 200);
+                showAlert(`Subtitle Track ${index} selected`);
+            } else {
+                webapis.avplay.setSilentSubtitle(true);
+                showAlert("Subtitles Off");
+            }
 
-          } catch(e) { 
-              console.warn("Subtitle set error", e);
-              if (index === -1) showAlert("Subtitles Off");
-          }
-      }
+        } catch(e) { 
+            console.warn("Subtitle set error", e);
+            if (index === -1) showAlert("Subtitles Off");
+        }
+    }
   }
 
   function _setAudio(index) {
@@ -554,17 +543,16 @@
           case 'ArrowDown': 
               if (_overlaySpatialNav(key)) return true;
               return false; 
-          case 'Back': 
-              //seems like i missed something, so this to hide overlay on back key
+          case 'Back':             
+          case 'Escape':
+            //seems like i missed something, so this to hide overlay on back key
             
             if(overlayVisible && !playerOverlay.isBuffering
                 //(streamInfo.status.toLocaleLowerCase() !== 'buffering' ||!PlayerController.isPlaying() )
             ) {
                 hideOverlay()
                 return true;
-              }
-            
-          case 'Escape':
+            }
       }
       return false;
   }
@@ -745,6 +733,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
         if(cache.progressContainer)cache.progressContainer.classList.add("hidden");
     }
   }
+
   function init() {
     cache.overlay = document.getElementById('tizen-player-overlay');
     if (!cache.overlay) return; 
@@ -753,7 +742,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     const pagePlayer = document.getElementById('page-player');
     if (pagePlayer) {
         // Reset classes
-        pagePlayer.classList.remove('skin-youtube', 'skin-apple', 'skin-netflix', 'skin-iptvplus');
+        pagePlayer.classList.remove(playerSkins.map(s=>s.id));
         // Add current skin class
         const currentSkin = userSettings.player_skin || 'skin-neo-olt';
         for(let i=0;i<playerSkins.length;i++){
@@ -818,6 +807,8 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     closeTrackModal, 
     applySubtitleSettings,
     setProgressBar,
+    _setAudio,
+    _setSubtitle,
     streamInfo 
 };
 })();

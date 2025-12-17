@@ -557,7 +557,7 @@ function showSkinSelector() {
         btn.textContent = skin.name;
         
         btn.onclick = () => {
-            applySkin(skin.id);
+            changePlayerSkin(skin.id);
             modal.classList.add('hidden');
             if (typeof FocusManager !== 'undefined') FocusManager.restorePreviousLayer();
             $('#change-skin-button').focus();
@@ -574,17 +574,6 @@ function showSkinSelector() {
         if(first) first.focus();
     }, 100);
 
-}
-function applySkin(skinId) {
-    console.log("Applying Skin:", skinId);
-    userSettings.player_skin = skinId;
-    saveUserSettings();
-
-    if (window.playerOverlay && typeof window.playerOverlay.init === 'function') {
-        window.playerOverlay.init();
-    }
-    
-    showAlert("Skin Applied: " + skinId.replace('skin-', ''));
 }
 
 

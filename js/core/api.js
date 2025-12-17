@@ -179,7 +179,9 @@ async function fetchXtream(params, loading = true) {
     const categoryId = params.category_id;
     const useCache = (typeof userSettings !== 'undefined' && userSettings.useCache);
     if(isTestMode){
-        return getTestModeApi(action);
+        res = getTestModeApi(action, params);
+        console.log(action, params,res)
+        return res;
     }
     try {
         // --- FEATURE: Load All Logic ---
@@ -228,7 +230,7 @@ async function fetchXtream(params, loading = true) {
         if (loading && typeof Loader !== 'undefined') Loader.hide("Complete");
     }
 }
-
+var tesMod_vods = {};
 async function getTestModeApi(action, params = {}) {
     // ... existing test mode code (unchanged) ...
     const GITHUB_BASE_URL = "https://speedy.geekspro.us/testmode/";
@@ -241,6 +243,7 @@ async function getTestModeApi(action, params = {}) {
         'get_series':            'get_series.json',
         'get_series_info':       'get_series_info.json',
         'get_vod_info':          'get_vod_info.json',
+        'get_user_info':         'get_user_info.json',
     };
     const fileName = !action ? "player_api.json" : apiMap[action];
     if (!fileName) return null;
@@ -255,9 +258,22 @@ async function getTestModeApi(action, params = {}) {
              // ... error handling ...
             return false;
         }
-
+        const res = await response.json();
+        if(action === "get_vod_streams"){
+            tesMod_vods = res;
+        }else if(action=="get_vod_info"){
+            const vod = tesMod_vods.filter(v=>v.stream_id===params.vod_id)[0];
+            if(vod && res){
+                res.movie_data.stream_id = vod.stream_id;
+                res.movie_data.name = vod.name;
+                res.movie_data.direct_source = vod.direct_source;
+                res.info.movie_image = vod.stream_icon;
+                res.info.rating = vod.rating;
+                res.info.youtube_trailer = "";
+            }
+        }
         Loader.hide("");
-        return await response.json();
+        return res 
     } catch (error) {
         console.error("Test Mode Fetch Error:", error);
         return { error: "Failed to load test data" };

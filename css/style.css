@@ -25,7 +25,7 @@ body {
     overscroll-behavior: none;
     overflow: hidden;
 
-    font-family: 'Noto Kufi Arabic';  
+    font-family: 'Kufi Arabic';  
 }
 
 /* TIZEN VIDEO FIX: Ensure transparency when video is playing */
@@ -34,40 +34,6 @@ body.video-active {
 }
 body.video-active #app-container {
     background-color: transparent !important;
-}
-
-/* Theme classes ... */
-.theme-red { --color-bg: #0e0808; --color-bg-alt: #3f2525; --color-card: #4a2a2a; --color-primary: #EF4444; }
-.theme-green { --color-bg: #0e0808; --color-bg-alt: #1a2c1f; --color-card: #2a4a31; --color-primary: #22C55E; }
-.theme-orange { --color-bg: #0e0808; --color-bg-alt: #30201a; --color-card: #54352a; --color-primary: #F97316; }
-.theme-sonic { 
-    --color-bg: #000830; 
-    --color-bg-alt: #041145; 
-    --color-card: #051e64c9; 
-    --color-primary: #0191e6;
-    --color-primary-hover: #0ea5e9;
-    --color-text: #f2fcfc;
-    background: radial-gradient(circle at 50% 0%, #000418 0%, #031248 60%) fixed;
-}
-.theme-black { 
-    --color-bg: #000000; 
-    --color-bg-alt: #141414; 
-    --color-card: #181818e6;
-    --color-primary: #E50914;
-    --color-primary-hover: #ff1f2a;
-    --color-text: #e5e5e5;
-    
-    background: radial-gradient(circle at 50% 0%, #2f2f2f 0%, #000000 85%) fixed;
-}
-
-.theme-default { 
-    --color-bg: #071146; 
-    --color-bg-alt: #1c246b; 
-    --color-card: rgba(46, 49, 89, 0.74); 
-    --color-primary: #6279ce;
-    --color-primary-hover: #0ea5e9;
-    --color-text: #dbdff7;
-    background: radial-gradient(circle at 50% 0%, #06093b 0%, #182f83 90%) fixed;
 }
 
 #page-splash #logo {
@@ -213,10 +179,10 @@ body.video-active #app-container {
     text-align: center; pointer-events: none; z-index: 11 !important;
     color: var(--sub-color, #FFFFFF);
     font-size: var(--sub-size, 1.5rem);
-    font-family: var(--sub-font, 'Arial');
     text-shadow: 2px 2px 2px #000000;
 }
 #subtitle-container span {
+    font-family: "Kufi Arabic";
     background-color: var(--sub-bg, rgba(0,0,0,0));
     border-radius: 4px;
     padding: 4px 12px;
@@ -292,7 +258,7 @@ body.video-active #app-container {
 #stream-quality { position: absolute; right: 20px; width: 80px; font-size: 26px; border-width: 1px; border-radius: 10px; }
 .rtl-layout #stream-quality { right: auto; left: 20px; }
 
-#tizen-progress-time, #tizen-progress-duration{ font-size: 24px;width: 100px;padding: 5px; }
+#tizen-progress-time, #tizen-progress-duration{ font-size: 24px;width: 100px;padding: 5px;text-align: center; }
 .glow { color: #c8fcfc; text-shadow: 0 0 7px #5ad8d6, 0 0 10px #82dad7; animation: glow 1s ease-in-out infinite alternate; }
 
 .vitem .icon_fav,.vitem .rating_box{ position: absolute; top: 2px;padding-right: 10px;padding-left: 10px; border-radius: 10px; background-color: #000000a4; }

@@ -1,0 +1,39 @@
+/* Theme classes ... */
+.theme-red { --color-bg: #0e0808; --color-bg-alt: #3f2525; --color-card: #4a2a2a; --color-primary: #EF4444; }
+.theme-green { --color-bg: #0e0808; --color-bg-alt: #1a2c1f; --color-card: #2a4a31; --color-primary: #22C55E;
+    background: radial-gradient(circle at 50% 0%, #2a4a31 0%, #000000 85%) fixed;
+ }
+.theme-sonic { 
+    --color-bg: #000830; 
+    --color-bg-alt: #041145; 
+    --color-card: #051e64c9; 
+    --color-primary: #0191e6;
+    --color-primary-hover: #0ea5e9;
+    --color-text: #f2fcfc;
+    background: radial-gradient(circle at 50% 0%, #000418 0%, #031248 60%) fixed;
+}
+.theme-carbon { 
+    --color-bg: #000000; 
+    --color-bg-alt: #141414; 
+    --color-card: #181818e6;
+    --color-primary: #E50914;
+    --color-primary-hover: #ff1f2a;
+    --color-text: #e5e5e5;
+    
+    background: radial-gradient(circle at 50% 0%, #2f2f2f 0%, #000000 85%) fixed;
+}
+
+.theme-quantum {
+    --color-bg: #05070d;
+    --color-bg-alt: rgba(15,23,42,0.65);
+    --color-card: rgba(30,41,59,0.45);
+    --color-primary: #38bdf8;
+    --color-primary-hover: #0ea5e9;
+    --color-text: #e5f6ff;
+
+    background:
+        radial-gradient(circle at 20% 0%, #0c1a3a, transparent 40%),
+        radial-gradient(circle at 80% 0%, #1e3a8a, transparent 45%),
+        #05070d;
+}
+

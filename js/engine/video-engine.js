@@ -274,15 +274,13 @@ const VideoEngine = (function() {
     // UPDATED: Added reuseDom and restoreOpts
     function _startTizen(url, startTime, isLive, rect, reuseDom = false, restoreOpts = null) {
         const container = document.getElementById('tizen-player-container');
-        
+        tizenPlayer = document.getElementById('av-player');
         // ONLY recreate DOM if NOT reusing (standard start)
         if (!reuseDom) {
             container.innerHTML = '<object type="application/avplayer" id="av-player" style="width:100%; height:100%;"></object>';
             container.style.display = 'block'; 
-            tizenPlayer = document.getElementById('av-player');
         } else {
             // We are reusing, ensure object exists
-            tizenPlayer = document.getElementById('av-player');
             if(!tizenPlayer) {
                  // Fallback if missing
                  return _startTizen(url, startTime, isLive, rect, false, restoreOpts);
@@ -322,18 +320,34 @@ const VideoEngine = (function() {
                      _callbacks.onTimeUpdate(time/1000, dur/1000);
                 }
             },
-            onerror: (e) => { 
+            onerror: (e) => {
+                if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
+                    showError("Video format not supported!");
+                }else if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
+                    showError("Video Connection failed!");
+                }else{
+                    showError("Streaming Video failed!");
+                }
                 if(_callbacks.onError) _callbacks.onError(e); 
             },
             onevent: (eventid, data) => {},
             onsubtitlechange: (duration, text, data3, data4) => {
-                if (subtitleClearTimer) { clearTimeout(subtitleClearTimer); subtitleClearTimer = null; }
+                if (subtitleClearTimer) { 
+                    clearTimeout(subtitleClearTimer); 
+                    subtitleClearTimer = null; 
+                }
                 if (!subtitles_container) return;
-                if (!text || text.trim() === '') { subtitles_container.innerHTML = ''; return; }
+                if (!text || text.trim() === '') { 
+                    subtitles_container.innerHTML = ''; 
+                    return; 
+                }
                 try { duration = parseInt(duration); } catch (e) { duration = 0; }
                 subtitles_container.innerHTML = `<span>${text.trim()}</span>`;
                 if (duration > 300) {
-                    subtitleClearTimer = setTimeout(() => { subtitles_container.innerHTML = ''; subtitleClearTimer = null; }, duration - 100);
+                    subtitleClearTimer = setTimeout(() => { 
+                        subtitles_container.innerHTML = ''; 
+                        subtitleClearTimer = null; 
+                    }, duration - 50);
                 }
             },
         };
@@ -345,14 +359,12 @@ const VideoEngine = (function() {
             webapis.avplay.open(url);
             webapis.avplay.setListener(listeners);
             
+            Loader.show("CONNECTING");
+            PlayerController.isActive = true;
             // Apply logic for soft restart if needed
-            if (reuseDom) {
-                PlayerController.isActive = true; 
-                // We don't show "CONNECTING" loader on soft restart to make it feel instant
-            } else {
+            if (!reuseDom){
                 setRect(rect);
                 PlayerController.isActive = true;
-                Loader.show("CONNECTING");
             }
 
             webapis.avplay.prepareAsync(() => {
@@ -377,19 +389,18 @@ const VideoEngine = (function() {
                 if (restoreOpts) {
                     // Restore Audio
                     if (restoreOpts.audioIndex !== undefined && restoreOpts.audioIndex !== -1) {
-                         try { 
-                             webapis.avplay.setSelectTrack('AUDIO', restoreOpts.audioIndex); 
-                             console.log("[VideoEngine] Restored Audio Track:", restoreOpts.audioIndex);
-                         } catch(e) { console.warn("Audio restore failed", e); }
+                        try { 
+                            playerOverlay._setAudio(restoreOpts.audioIndex);
+                            console.log("[VideoEngine] Restored Audio Track:", restoreOpts.audioIndex);
+                        } catch(e) { console.warn("Audio restore failed", e); }
                     }
                     // Apply the Target Internal Subtitle
                     if (restoreOpts.subtitleIndex !== undefined && restoreOpts.subtitleIndex > -1) {
-                         try {
-                             webapis.avplay.setSilentSubtitle(false);
-                             webapis.avplay.setSelectTrack('TEXT', restoreOpts.subtitleIndex);
-                             console.log("[VideoEngine] Applied Internal Subtitle:", restoreOpts.subtitleIndex);
-                             if(window.showAlert) showAlert("Internal Subtitle Applied");
-                         } catch(e) { console.warn("Subtitle apply failed", e); }
+                        try {
+                            playerOverlay._setSubtitle(restoreOpts.subtitleIndex);
+                            console.log("[VideoEngine] Applied Internal Subtitle:", restoreOpts.subtitleIndex);
+                            if(window.showAlert) showAlert("Internal Subtitle Applied");
+                        } catch(e) { console.warn("Subtitle apply failed", e); }
                     }
                 }
 

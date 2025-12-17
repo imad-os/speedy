@@ -1,0 +1,349 @@
+/* ============================================================
+   SKIN: CARBON PRO (FULL SYSTEM SKIN)
+   Reference: skin-lite (COMPLETE)
+   ============================================================ */
+
+/* ---------- Overlay Base ---------- */
+.skin-carbon .overlay-bottom {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 190px;
+    background:
+        linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.15));
+    padding: 0;
+}
+
+.skin-carbon .overlay-top {
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    padding: 2rem;
+}
+
+/* ---------- Progress Bar ---------- */
+.skin-carbon #tizen-progress-bar {
+    height: 6px;
+    background-color: #2b2b2b;
+    border-radius: 4px;
+}
+
+.skin-carbon #tizen-progress-fill {
+    background: linear-gradient(90deg, #ff3b3b, #ff8c3b);
+    box-shadow: 0 0 10px rgba(255,80,80,0.35);
+}
+
+.skin-carbon #tizen-progress-thumb {
+    width: 14px;
+    height: 14px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 2px solid #ff3b3b;
+    top: 50%;
+}
+
+.skin-carbon #tizen-progress-bar:focus #tizen-progress-thumb {
+    transform: scale(1.4);
+    box-shadow: 0 0 12px rgba(255,80,80,0.9);
+}
+
+/* ---------- Controls Layout ---------- */
+.skin-carbon .controls-row {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    padding: 0 5%;
+    justify-content: space-between;
+}
+
+/* ---------- Buttons ---------- */
+.skin-carbon .nav-item {
+    background: rgba(20,20,20,0.65);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 12px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.skin-carbon .nav-item:focus {
+    border-color: #ff3b3b;
+    background: rgba(255,60,60,0.15);
+    box-shadow:
+        0 0 12px rgba(255,60,60,0.55),
+        inset 0 0 8px rgba(255,60,60,0.25);
+    transform: scale(1.12);
+}
+
+/* ---------- Play / Pause ---------- */
+.skin-carbon #btn-playpause {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    border: 2px solid #ff3b3b;
+    background: rgba(0,0,0,0.7);
+}
+
+.skin-carbon #btn-playpause svg {
+    fill: #ff3b3b;
+}
+
+.skin-carbon #btn-playpause:focus svg {
+    fill: #ffffff;
+}
+
+/* ---------- Stream Tags ---------- */
+.skin-carbon .tag_SD { color: #bbb; }
+.skin-carbon .tag_HD { color: #5aa9ff; box-shadow: 0 0 6px rgba(90,169,255,0.4); }
+.skin-carbon .tag_FHD { color: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.4); }
+.skin-carbon .tag_4K { color: #facc15; box-shadow: 0 0 8px rgba(250,204,21,0.6); }
+
+/* ---------- Modals ---------- */
+.skin-carbon #tizen-track-modal .bg-card,
+.skin-carbon #subtitle-settings-modal .bg-card {
+    background: rgba(10,10,10,0.96);
+    border: 2px solid rgba(255,60,60,0.6);
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(255,60,60,0.25);
+}
+
+/* ---------- Modal Items ---------- */
+.skin-carbon #tizen-track-modal .nav-item,
+.skin-carbon #subtitle-settings-modal .nav-item {
+    background: transparent;
+    border-left: 3px solid transparent;
+    color: #d1d5db;
+}
+
+.skin-carbon #tizen-track-modal .nav-item:focus,
+.skin-carbon #subtitle-settings-modal .nav-item:focus {
+    border-left-color: #ff3b3b;
+    background: linear-gradient(90deg, rgba(255,60,60,0.15), transparent);
+    transform: none;
+}
+
+/* ---------- RTL ---------- */
+.rtl-layout.skin-carbon .controls-row {
+    flex-direction: row-reverse;
+}
+
+
+
+
+/* ============================================================
+   SKIN: SONIC WAVE
+   Pair: theme-sonic
+   FULL SYSTEM SKIN (beyond skin-lite)
+   ============================================================ */
+
+.skin-sonic {
+    --sonic-main: #00e0ff;
+    --sonic-accent: #7c7cff;
+    --sonic-warn: #ffb703;
+    --sonic-bg: rgba(0,0,0,0.9);
+}
+
+/* ============================================================
+   OVERLAYS
+   ============================================================ */
+
+/* Bottom Overlay (angled wave cut) */
+.skin-sonic .overlay-bottom {
+    height: 200px;
+    background:
+        linear-gradient(165deg,
+            rgba(0,0,0,0.95) 0%,
+            rgba(0,0,0,0.7) 60%,
+            transparent 100%);
+    clip-path: polygon(
+        0 15%,
+        100% 0,
+        100% 100%,
+        0 100%
+    );
+}
+
+/* Top Overlay */
+.skin-sonic .overlay-top {
+    background:
+        linear-gradient(to bottom,
+            rgba(0,0,0,0.85),
+            rgba(0,0,0,0.1));
+    padding: 2rem;
+}
+
+/* ============================================================
+   PROGRESS BAR (ENERGY FLOW)
+   ============================================================ */
+
+.skin-sonic #tizen-progress-bar {
+    height: 6px;
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.12),
+        rgba(255,255,255,0.05)
+    );
+    overflow: visible;
+}
+
+.skin-sonic #tizen-progress-fill {
+    background: linear-gradient(
+        90deg,
+        var(--sonic-main),
+        var(--sonic-accent)
+    );
+    box-shadow:
+        0 0 12px rgba(0,224,255,0.8),
+        0 0 30px rgba(124,124,255,0.4);
+}
+
+.skin-sonic #tizen-progress-thumb {
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 3px solid var(--sonic-main);
+    transform: rotate(45deg);
+    box-shadow: 0 0 12px rgba(0,224,255,1);
+}
+
+.skin-sonic #tizen-progress-bar:focus #tizen-progress-thumb {
+    transform: rotate(45deg) scale(1.4);
+}
+
+/* ============================================================
+   CONTROLS LAYOUT
+   ============================================================ */
+
+.skin-sonic .controls-row {
+    bottom: 44px;
+    padding: 0 6%;
+    justify-content: space-between;
+}
+
+/* ============================================================
+   NAV BUTTONS (ANGLED)
+   ============================================================ */
+
+.skin-sonic .nav-item {
+    background: linear-gradient(
+        135deg,
+        rgba(0,224,255,0.15),
+        rgba(0,0,0,0.7)
+    );
+    border: 2px solid transparent;
+    clip-path: polygon(
+        10% 0,
+        100% 0,
+        90% 100%,
+        0 100%
+    );
+    padding: 14px 18px;
+}
+
+.skin-sonic .nav-item:focus {
+    border-color: var(--sonic-main);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,224,255,0.35),
+            rgba(124,124,255,0.25)
+        );
+    box-shadow:
+        0 0 16px rgba(0,224,255,0.9),
+        inset 0 0 10px rgba(0,224,255,0.4);
+    transform: scale(1.12);
+}
+
+/* ============================================================
+   PLAY / PAUSE (DIAMOND CORE)
+   ============================================================ */
+
+.skin-sonic #btn-playpause {
+    width: 82px;
+    height: 82px;
+    background: radial-gradient(
+        circle,
+        rgba(0,224,255,0.35),
+        rgba(0,0,0,0.9)
+    );
+    border: 3px solid var(--sonic-main);
+    transform: rotate(45deg);
+}
+
+.skin-sonic #btn-playpause svg {
+    transform: rotate(-45deg);
+    fill: var(--sonic-main);
+}
+
+.skin-sonic #btn-playpause:focus {
+    box-shadow:
+        0 0 22px rgba(0,224,255,1),
+        0 0 50px rgba(124,124,255,0.6);
+}
+
+/* ============================================================
+   STREAM TAGS
+   ============================================================ */
+
+.skin-sonic .tag_SD { color: #b3b3b3; }
+.skin-sonic .tag_HD { color: var(--sonic-main); }
+.skin-sonic .tag_FHD {
+    color: #4ade80;
+    box-shadow: 0 0 8px rgba(74,222,128,0.5);
+}
+.skin-sonic .tag_4K {
+    color: var(--sonic-warn);
+    box-shadow: 0 0 10px rgba(255,183,3,0.8);
+}
+
+/* ============================================================
+   MODALS (TRACKS / SUBTITLES)
+   ============================================================ */
+
+.skin-sonic #tizen-track-modal .bg-card,
+.skin-sonic #subtitle-settings-modal .bg-card {
+    background:
+        linear-gradient(
+            160deg,
+            rgba(0,224,255,0.12),
+            rgba(0,0,0,0.95)
+        );
+    border-left: 4px solid var(--sonic-main);
+    box-shadow: 0 0 30px rgba(0,224,255,0.35);
+}
+
+/* Modal Items */
+.skin-sonic #tizen-track-modal .nav-item,
+.skin-sonic #subtitle-settings-modal .nav-item {
+    background: transparent;
+    border-left: 3px solid transparent;
+}
+
+.skin-sonic #tizen-track-modal .nav-item:focus,
+.skin-sonic #subtitle-settings-modal .nav-item:focus {
+    border-left-color: var(--sonic-main);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,224,255,0.25),
+            transparent
+        );
+    box-shadow: none;
+}
+
+/* ============================================================
+   RTL SUPPORT
+   ============================================================ */
+
+.rtl-layout.skin-sonic .controls-row {
+    flex-direction: row-reverse;
+}
+
+.rtl-layout.skin-sonic .nav-item {
+    clip-path: polygon(
+        0 0,
+        90% 0,
+        100% 100%,
+        10% 100%
+    );
+}

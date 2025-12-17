@@ -22,9 +22,18 @@ var SubtitleFetcher = {
             if (successCallback) successCallback(this.cache[cacheKey]);
             return;
         }
+        const _year = movieData.releasedate ? movieData.releasedate.split("-")[0] : null;
+        const episode = PlayerController?.currentState?.episode || {};
+        const _movieData = {
+            name : movieData.o_name || movieData.name || movieData.title,
+            tmdb_id : movieData.tmdb_id || movieData.tmdb || 0,
+            year:_year || movieData.year || "",
+            season : episode.season,
+            episode_num : episode.episode_num,
+        }
         var payload = {
-            movieData: movieData,
-            movieType: movieType // 'movie' or 'series'
+            movieData: _movieData,
+            movieType: movieType
         };
 
         fetch(this.firebaseUrlFetch, {

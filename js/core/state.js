@@ -42,15 +42,17 @@ const playerSkins = [
     { id: 'skin-netflix', name: 'Netflex style' },
     { id: 'skin-neon-bolt', name: 'Neon Bolt' },
     { id: 'skin-simple', name: 'Simple' },
-
+    { id: 'skin-sonic', name: 'Sonic' },
+    { id: 'skin-carbon', name: 'Black' },
 ];
+const appThems=["theme-sonic","theme-red","theme-green","theme-carbon","theme-quantum"];
 // Default Settings
 const defaultUserSettings = {
     username: 'default',
     language: 'en', // <--- NEW: Default Language
     favorites: [], 
     watching: {}, 
-    theme: 'theme-sonic',
+    theme: appThems[0],
     player_skin: playerSkins[0].id,
     hiddenCategories: [],
     pinnedCategories: [],

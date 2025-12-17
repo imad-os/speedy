@@ -208,13 +208,13 @@ async function handleUserLogin() {
                     }else{
                         console.log("ERRORR NOT VALID PLAYLIST");
                         updateBootStatus("Invalid Playlist Data");
-                        _showQrModal()
+                        _showQrModal(null, "Data Invalid Playlist Data")
                         isLoginRunning = false;
                         return
                     }
                 }catch(e){
                      updateBootStatus("Data Error");
-                     _showQrModal();
+                     _showQrModal(null, "Data Error");
                      isLoginRunning = false;
                      return;
                 }
@@ -229,7 +229,7 @@ async function handleUserLogin() {
                 console.log(" ---------- No playlist found. Showing QR Code.");
                 $("#add-playlist-status").textContent = "No playlist found";
                 // Show QR directly, status remains visible behind it
-                _showQrModal(docRef);
+                _showQrModal(docRef, "No playlist found");
                 Loader.hide()
                 isLoginRunning = false;
                 return; // Stop here, wait for QR scan
@@ -290,7 +290,7 @@ function isSamePlaylist(pl1, pl2) {
            pl1.password === pl2.password;
 }
 
-function _showQrModal(docRef) {
+function _showQrModal(docRef, error=null) {
     // === FIX: STOP PREVIOUS LISTENER FIRST ===
     unsubscribe_docref(); 
 
@@ -299,7 +299,14 @@ function _showQrModal(docRef) {
     const qrContainer = $('#qrcode-container');
     const macDisplay = $('#device-mac-display');
     const btnRefresh = $('#btn-playlist-refresh');
-    
+    const Status = $('#add-playlist-status');
+    if(error){
+        Status.textContent=`Error: ${error}`;
+        Status.classList.add("text-red-400");
+    }else{
+        Status.textContent=``;
+        Status.classList.remove("text-red-400");
+    }
     if (modal && qrContainer) {
         macDisplay.textContent = _MacAddr;
         qrContainer.innerHTML = '';
@@ -382,7 +389,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
     if (!xtreamConfig) {
         if (!isAutoLogin) showError('No playlist config found.');
         console.log("--------- no playlist")
-        _showQrModal();
+        _showQrModal(null, 'No playlist config found.');
 
         return false; // Return false to indicate failure
     }
@@ -390,7 +397,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
     if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
         if (!isAutoLogin) showError('playlist is not valid.');
         console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
-        _showQrModal();
+        _showQrModal(null, 'playlist is not containing host or username or password.');
 
         return false;
     }
@@ -442,7 +449,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
         
         setTimeout(() => {
              // Only show QR if it was an auto-login attempt at startup
-             if(isAutoLogin) _showQrModal();
+             if(isAutoLogin) _showQrModal(null, "Connection Failed");
              else showError(`API Error: ${error.message}`);
         }, 1000);
         
