@@ -27,3 +27,8 @@ url ERROR when modal AR is visible , the focus stay still on  QR modal
 errror modal should be first served in focusManager
 
 check error management at first sratt when QR modal is on
+
+
+
+onsubtitl soft  restart :
+it doesnot keep tracks audio and subitle
