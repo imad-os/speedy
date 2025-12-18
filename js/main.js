@@ -151,6 +151,16 @@ function setupEventListeners() {
             saveUserSettings();
             showAlert(typeof t !== 'undefined' ? t('msg_watch_cleared') : 'Watching progress cleared.');
     });
+
+    // --- Speed Test Listeners ---
+    const btnSpeedTest = $('#btn-open-speedtest');
+    if(btnSpeedTest) btnSpeedTest.addEventListener('click', showSpeedTest);
+
+    const btnSpeedStart = $('#btn-speed-start');
+    if(btnSpeedStart) btnSpeedStart.addEventListener('click', runSpeedTest);
+
+    const btnSpeedClose = $('#btn-speed-close');
+    if(btnSpeedClose) btnSpeedClose.addEventListener('click', hideSpeedTest);
     
     // === VIEW BINDINGS ===
     window.loadCategories = function(type) {

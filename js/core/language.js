@@ -18,6 +18,7 @@ const LanguageManager = (function() {
             "menu_live": "Live TV",
             "menu_movies": "Movies",
             "menu_series": "Series",
+            "menu_speedtest": "Speed Test",
             "menu_language": "Language",
             "menu_settings": "Settings",
             "menu_about": "About",
@@ -41,6 +42,7 @@ const LanguageManager = (function() {
             "btn_remove_fav": "Remove Favorite",
             "btn_add_fav": "Add Favorite",
             "btn_trailer": "Trailer",
+            "btn_start": "Start",
             "btn_close": "Close",
             "btn_refresh": "Refresh",
             "btn_test_mode": "Test Mode",
@@ -76,6 +78,9 @@ const LanguageManager = (function() {
             "privacy_terms_title": "Terms of Service & Privacy Policy",
             "btn_agree": "AGREE",
             "btn_exit": "EXIT",
+
+            // SPEED TEST
+            "speedtest_title": "Network Speed Test",
 
             // CACHE / PERFORMANCE
             "settings_cache_all_categories": "Cache All Categories",
@@ -147,6 +152,7 @@ const LanguageManager = (function() {
             "menu_live": "TV Direct",
             "menu_movies": "Films",
             "menu_series": "Séries",
+            "menu_speedtest": "Test de Vitesse",
             "menu_language": "Langue",
             "menu_settings": "Paramètres",
             "menu_about": "À propos",
@@ -170,6 +176,7 @@ const LanguageManager = (function() {
             "btn_remove_fav": "Retirer Favoris",
             "btn_add_fav": "Ajouter Favoris",
             "btn_trailer": "Bande-annonce",
+            "btn_start": "Démarrer",
             "btn_close": "Fermer",
             "btn_refresh": "Actualiser",
             "btn_test_mode": "Mode Test",
@@ -205,6 +212,9 @@ const LanguageManager = (function() {
             "privacy_terms_title": "Conditions d'utilisation & Confidentialité",
             "btn_agree": "ACCEPTER",
             "btn_exit": "QUITTER",
+
+            // SPEED TEST
+            "speedtest_title": "Test de Vitesse Réseau",
 
             // CACHE / PERFORMANCE
             "settings_cache_all_categories": "Mettre en cache toutes les catégories",
@@ -276,6 +286,7 @@ const LanguageManager = (function() {
             "menu_live": "TV en Vivo",
             "menu_movies": "Películas",
             "menu_series": "Series",
+            "menu_speedtest": "Test de Velocidad",
             "menu_language": "Idioma",
             "menu_settings": "Ajustes",
             "menu_about": "Acerca de",
@@ -299,6 +310,7 @@ const LanguageManager = (function() {
             "btn_remove_fav": "Quitar Favorito",
             "btn_add_fav": "Añadir Favorito",
             "btn_trailer": "Tráiler",
+            "btn_start": "Iniciar",
             "btn_close": "Cerrar",
             "btn_refresh": "Actualizar",
             "btn_test_mode": "Modo Prueba",
@@ -334,6 +346,9 @@ const LanguageManager = (function() {
             "privacy_terms_title": "Términos y Privacidad",
             "btn_agree": "ACEPTAR",
             "btn_exit": "SALIR",
+
+            // SPEED TEST
+            "speedtest_title": "Prueba de Velocidad de Red",
 
             // CACHE / PERFORMANCE
             "settings_cache_all_categories": "Caché de todas las categorías",
@@ -405,6 +420,7 @@ const LanguageManager = (function() {
             "menu_live": "بث مباشر",
             "menu_movies": "أفلام",
             "menu_series": "مسلسلات",
+            "menu_speedtest": "اختبار السرعة",
             "menu_language": "اللغة",
             "menu_settings": "الإعدادات",
             "menu_about": "حول التطبيق",
@@ -428,6 +444,7 @@ const LanguageManager = (function() {
             "btn_remove_fav": "إزالة من المفضلة",
             "btn_add_fav": "إضافة للمفضلة",
             "btn_trailer": "إعلان",
+            "btn_start": "بدء",
             "btn_close": "إغلاق",
             "btn_refresh": "تحديث",
             "btn_test_mode": "وضع التجربة",
@@ -463,6 +480,9 @@ const LanguageManager = (function() {
             "privacy_terms_title": "شروط الخدمة والخصوصية",
             "btn_agree": "موافق",
             "btn_exit": "خروج",
+
+            // SPEED TEST
+            "speedtest_title": "اختبار سرعة الشبكة",
 
             // CACHE / PERFORMANCE
             "settings_cache_all_categories": "تخزين كافة التصنيفات مؤقتاً",

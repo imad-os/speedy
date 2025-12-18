@@ -428,3 +428,33 @@ body.video-active #app-container {
     background-color: rgba(255, 255, 255, 0.1); 
     color: #e5e7eb;
 }
+
+/* NEW: Speed Test Modal & Optimizations */
+#modal-speedtest { z-index: 310 !important; }
+
+#speed-needle {
+    will-change: transform;
+    /* Force GPU acceleration on Tizen/Webkit */
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg-alt); }
+
+#speed-needle{
+    transform: translateX(-50%) rotate(28.26deg); 
+    border-radius: 2px;
+    background: radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0) 10%, rgb(255, 255, 255) 90%) fixed; 
+    clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+}
+
+/* Speed Test Progress Bar */
+#speed-progress-container {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+#speed-progress-bar {
+    background: linear-gradient(90deg, var(--color-primary) 0%, #22c55e 100%);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}

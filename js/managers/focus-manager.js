@@ -115,8 +115,13 @@ const FocusManager = (function() {
         const modalAbout = $('#modal-about');
         const modalPrivacy = $('#modal-privacy-consent');
         const modalPrivacyView = $('#modal-privacy-view');
+        
+        // NEW: Speed Test Modal
+        const modalSpeedTest = $('#modal-speedtest');
+        
         const textArea = $('#privacy-full-text');
         let container = false;
+        
         if(modalPrivacy && !modalPrivacy.classList.contains('hidden')){
             container = modalPrivacy;
             if(InputManager.isBack(key)){
@@ -133,6 +138,15 @@ const FocusManager = (function() {
         }else if(modalAbout && !modalAbout.classList.contains('hidden')){
             container = modalAbout;
         }
+        // NEW: Check for Speed Test
+        else if(modalSpeedTest && !modalSpeedTest.classList.contains('hidden')){
+            container = modalSpeedTest;
+            if(InputManager.isBack(key)){
+                hideSpeedTest();
+                return true;
+            }
+        }
+        
         if(container===false){ return false;}
         const buttons = Array.from( container.querySelectorAll("button") ).filter(b=> isVisible(b));
         const focused = document.activeElement;
@@ -160,6 +174,9 @@ const FocusManager = (function() {
         }else if ( InputManager.isBack(key) ) {
             modalAbout.classList.add("hidden");
             modalError.classList.add("hidden");
+            // Speed Test is handled above via explicit check, but good to have fallback
+            if(modalSpeedTest) modalSpeedTest.classList.add("hidden"); 
+            
             FocusManager.restorePreviousLayer();
         }
         return true;

@@ -832,3 +832,147 @@ async function loadWeather(){
     $("#current-weather img").src = icon_url;
     $("#current-weather span").textContent = `${response?.current?.temp_c} C`;
 }
+
+function hideSpeedTest() {
+    const modal = document.getElementById('modal-speedtest');
+    if (modal) {
+        modal.classList.add('hidden');
+        
+        // Restore layer
+        if (typeof FocusManager !== 'undefined') {
+            FocusManager.restorePreviousLayer();
+        }
+        
+        // Refocus Main Menu Trigger
+        setTimeout(() => {
+            const btn = document.getElementById('btn-open-speedtest');
+            if (btn) btn.focus();
+        }, 150);
+    }
+}
+
+function updateSpeedGauge(speedMbps, avgMbps) {
+    const needle = document.getElementById('speed-needle');
+    //const speedVal = document.getElementById('speed-val');
+    const avgVal = document.getElementById('speed-avg-val');
+
+    //if(speedVal) speedVal.textContent = speedMbps;
+    if(avgVal) avgVal.textContent = avgMbps;
+
+    if (needle) {
+        // Map 0-100 Mbps to -90 to 90 degrees
+        // Simple linear scale for 0-100Mbps
+        let speed = parseFloat(avgMbps);
+        if (isNaN(speed)) speed = 0;
+        
+        let percent = Math.min(speed, 100) / 100; 
+        let deg = (percent * 180) - 90;
+        needle.style.transform = `translateX(-50%) rotate(${deg}deg)`;
+    }
+}
+
+// === SPEED TEST LOGIC ===
+function showSpeedTest() {
+    const modal = document.getElementById('modal-speedtest');
+    if (modal) {
+        modal.classList.remove('hidden');
+        if (typeof FocusManager !== 'undefined') {
+            FocusManager.setLayer(FocusManager.LAYERS.MODAL);
+        }
+        
+        updateSpeedGauge(0, 0);
+        updateSpeedProgress(0);
+        
+        const btnStart = document.getElementById('btn-speed-start');
+        const btnClose = document.getElementById('btn-speed-close');
+        const progressContainer = document.getElementById('speed-progress-container');
+        
+        if (btnStart) {
+            btnStart.style.display = 'block';
+            btnStart.disabled = false;
+        }
+        if (btnClose) btnClose.disabled = false;
+        if (progressContainer) progressContainer.classList.add('hidden');
+
+        setTimeout(() => {
+            if (btnStart) btnStart.focus();
+        }, 150);
+    }
+}
+
+// ... existing hideSpeedTest() and updateSpeedGauge() ...
+function updateSpeedProgress(percent) {
+    const progressBar = document.getElementById('speed-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${percent}%`;
+    }
+}
+
+function runSpeedTest() {
+    const btnStart = document.getElementById('btn-speed-start');
+    const btnClose = document.getElementById('btn-speed-close');
+    const progressContainer = document.getElementById('speed-progress-container');
+    
+    if(btnStart) {
+        btnStart.disabled = true;
+        btnStart.style.display = 'none'; // Hide Start button
+    }
+    if(btnClose) btnClose.disabled = true;
+    if(progressContainer) progressContainer.classList.remove('hidden'); // Show progress bar
+
+    // Use a robust CDN file (25MB)
+    const url = 'https://speed.cloudflare.com/__down?bytes=2500000000'; 
+    
+    // Check if speedTest.js is loaded
+    if (typeof testDownloadSpeedByTime === 'undefined') {
+        showError("Speed Test module not loaded.");
+        if(btnStart) {
+            btnStart.disabled = false;
+            btnStart.style.display = 'block';
+        }
+        if(btnClose) btnClose.disabled = false;
+        if(progressContainer) progressContainer.classList.add('hidden');
+        return;
+    }
+
+    testDownloadSpeedByTime({
+        url: url,
+        durationMs: 10000,
+        intervalMs: 200, // Update every 200ms to save CPU
+        onUpdate: (data) => {
+            // Check if modal is still open, otherwise stop updating UI
+            if (document.getElementById('modal-speedtest').classList.contains('hidden')) return;
+
+            // Convert bits/sec to Mbps
+            const mbps = (data.speed / 1000000).toFixed(1);
+            const avgMbps = (data.speed_avg / 1000000).toFixed(1);
+            
+            updateSpeedGauge(mbps, avgMbps);
+            updateSpeedProgress(data.progress);
+            
+            if (data.is_done) {
+                if(btnStart) {
+                    btnStart.disabled = false;
+                    btnStart.style.display = 'block';
+                    btnStart.focus();
+                }
+                if(btnClose) btnClose.disabled = false;
+                if(progressContainer) progressContainer.classList.add('hidden');
+            }
+        }
+    }).catch(err => {
+        console.error("Speed test error", err);
+        if(btnStart) {
+            btnStart.disabled = false;
+            btnStart.style.display = 'block';
+             btnStart.focus();
+        }
+        if(btnClose) btnClose.disabled = false;
+        if(progressContainer) progressContainer.classList.add('hidden');
+        
+        // Handle AbortError gracefully (user closed modal)
+        if (err.name !== 'AbortError') {
+             showError("Network Error");
+        }
+    });
+}
