@@ -178,7 +178,7 @@ const Router = (function() {
                 const titleEl = document.getElementById('global-header-title');
                 
                 // UPDATE: Use Translation Engine for History Titles
-                if(titleEl) {
+                if(titleEl && 1==2) {
                     if(lastState.pageId === 'page-categories') {
                         titleEl.textContent = typeof t !== 'undefined' ? t('vod_categories') : 'Categories';
                     }

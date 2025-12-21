@@ -149,8 +149,12 @@ const NavigationRouter = (function() {
 
     function _handleBack(activePageId) {
         console.log('Back button pressed on page:', activePageId);
-        if (typeof searchState !== 'undefined' && (searchState.active || (searchState.query && searchState.query.length > 0))) {
-            clearSearch();
+        if (
+            activePageId === 'page-content' &&
+            typeof searchState !== 'undefined' && 
+            (searchState.active || (searchState.query && searchState.query.length > 0)  )
+        ) {
+            clearSearch(true);
             return true;
         }
         

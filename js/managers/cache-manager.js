@@ -284,6 +284,53 @@ const CacheManager = (function() {
         return results;
     }
 
+    function normalize(str) {
+        return str
+            .toLowerCase()
+            // 1. Remove the language prefix (e.g., "ar - ", "en-")
+            .replace(/^[a-z0-9]{2}\s?-/gu, "")
+            // 2. Keep only letters from ANY language (\p{L}) and numbers (\p{N})
+            // We also keep spaces (\s) so words don't mash together
+            .replace(/[^\p{L}\p{N}\s]/gu, "")
+            // 3. Clean up extra whitespace
+            .trim()
+            .replace(/\s+/g, " ");
+    }
+
+    // ---------- Fast Levenshtein (Early-Exit) ----------
+    function fastLev(a, b, maxDist) {
+        const aLen = a.length, bLen = b.length;
+
+        // too different -> skip fast
+        if (Math.abs(aLen - bLen) > maxDist) return maxDist + 1;
+
+        const prev = new Array(bLen + 1);
+        const curr = new Array(bLen + 1);
+
+        for (let j = 0; j <= bLen; j++) prev[j] = j;
+
+        for (let i = 1; i <= aLen; i++) {
+            curr[0] = i;
+            let minRow = curr[0];
+
+            for (let j = 1; j <= bLen; j++) {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                curr[j] = Math.min(
+                    prev[j] + 1,
+                    curr[j - 1] + 1,
+                    prev[j - 1] + cost
+                );
+                if (curr[j] < minRow) minRow = curr[j];
+            }
+
+            if (minRow > maxDist) return maxDist + 1; // early exit
+
+            // copy
+            for (let k = 0; k <= bLen; k++) prev[k] = curr[k];
+        }
+
+        return prev[bLen];
+    }
     function search(type) {
         const query = searchState.query;
         if (!MEMORY_CACHE[type]) return [];
@@ -298,48 +345,6 @@ const CacheManager = (function() {
 
         // Max allowed typo distance (tight)
         const MAX_DIST = qLen <= 5 ? 1 : 2;
-
-        // ---------- Normalizer ----------
-        function normalize(str) {
-            return str
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, ""); // remove dash, space, dots, etc.
-        }
-
-        // ---------- Fast Levenshtein (Early-Exit) ----------
-        function fastLev(a, b, maxDist) {
-            const aLen = a.length, bLen = b.length;
-
-            // too different -> skip fast
-            if (Math.abs(aLen - bLen) > maxDist) return maxDist + 1;
-
-            const prev = new Array(bLen + 1);
-            const curr = new Array(bLen + 1);
-
-            for (let j = 0; j <= bLen; j++) prev[j] = j;
-
-            for (let i = 1; i <= aLen; i++) {
-                curr[0] = i;
-                let minRow = curr[0];
-
-                for (let j = 1; j <= bLen; j++) {
-                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                    curr[j] = Math.min(
-                        prev[j] + 1,
-                        curr[j - 1] + 1,
-                        prev[j - 1] + cost
-                    );
-                    if (curr[j] < minRow) minRow = curr[j];
-                }
-
-                if (minRow > maxDist) return maxDist + 1; // early exit
-
-                // copy
-                for (let k = 0; k <= bLen; k++) prev[k] = curr[k];
-            }
-
-            return prev[bLen];
-        }
 
         // ---------- Main Search ----------
         for (const cid in allCategories) {

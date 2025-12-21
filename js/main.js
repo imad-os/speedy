@@ -113,6 +113,11 @@ function setupEventListeners() {
 
             clearTimeout(searchDebounce);
             searchDebounce = setTimeout(() => {
+                if(searchState.previousQuery === query) {
+                    console.log("Search query unchanged. Skipping search.");
+                    return;
+                }
+                searchState.previousQuery = query;
                 console.log("Executing Search:", query);
                 ViewVOD.search();
             }, 300); 

@@ -344,11 +344,16 @@ function toggleSearchBar(show=null) {
     }
 }
 
-function clearSearch() {
+function clearSearch(goback=false) {
     const input = $('#search-input');
+    const currentCategoryBtn= $(".active-category");
     if(input) input.value = '';
     searchState.query = '';
     toggleSearchBar(false);
+    if(currentCategoryBtn && goback){
+        currentCategoryBtn.click();
+        return;
+    }
     const event = new Event('input', {
         bubbles: true,
         cancelable: true,

@@ -100,6 +100,7 @@ let initialHash = '';
 let searchState = {
     active: false,
     query: '',
+    previousQuery: '',
     originalItems: [] 
 };
 

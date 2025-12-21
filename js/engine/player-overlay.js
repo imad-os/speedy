@@ -74,11 +74,10 @@
       } else {
           //if (loader) loader.classList.add('hidden');
           if (overlayVisible && (!autoHideTimer || streamInfo.status.toLocaleLowerCase() !== 'buffering')) {
-              autoHideTimer = setTimeout(hideOverlay, UI_AUTOHIDE_MS);
+              setTimeoutOverlay()
           }
       }
   }
-
   function getActivePlayer() {
     if (typeof webapis !== 'undefined' && window.webapis && window.webapis.avplay) {
       if (cache.playerType) cache.playerType.textContent = "[native]";
@@ -94,9 +93,7 @@
   function togglePlayPause() {
     const p = getActivePlayer();
     if (!p) return;
-    
-    clearTimeout(autoHideTimer);
-    autoHideTimer = setTimeout(hideOverlay, UI_AUTOHIDE_MS);
+    setTimeoutOverlay();
 
     if (p.type === 'web') {
       const v = p.obj;
@@ -210,7 +207,6 @@
     if(!PlayerController.currentState.isFullscreen){
         return false;
     }
-    console.log("showOverlay called");
     setTimeoutOverlay(autoHide);
 
     if(FocusManager.getCurrentLayer()!==FocusManager.LAYERS.PLAYER){
@@ -260,6 +256,7 @@
   function hideOverlay() {
     console.log("hideOverlay called");
     clearTimeout(autoHideTimer);
+    autoHideTimer=null;
     if (
         (streamInfo.status.toLocaleLowerCase() === 'buffering' &&  PlayerController.isActive ) ||
         isSeeking
@@ -372,6 +369,7 @@
   }
 
   function closeTrackModal() {
+    setTimeoutOverlay();
       $('#tizen-track-modal').classList.add('hidden');
       if (typeof FocusManager !== 'undefined') FocusManager.restorePreviousLayer(); 
       if(cache.btnSub && document.body.contains(cache.btnSub)) cache.btnSub.focus();
@@ -631,6 +629,7 @@ function closeSubtitleSettings() {
     if (modal) modal.classList.add('hidden');
     
     if (cache.btnSubSettings) cache.btnSubSettings.focus();
+    showOverlay();
     
     saveUserSettings();
 }
@@ -809,6 +808,8 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
         cache.overlay.classList.add('opacity-0');
     }
     applySubtitleSettings();
+
+
   }
 
   window.playerOverlay = { 
@@ -824,6 +825,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     setProgressBar,
     _setAudio,
     _setSubtitle,
+    setTimeoutOverlay,
     streamInfo 
 };
 })();

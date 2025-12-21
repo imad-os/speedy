@@ -254,7 +254,7 @@ const FocusManager = (function() {
                 // Try to click the close button if it exists, otherwise force pop
                 const modalTrack = document.getElementById('tizen-track-modal');
                 const modalSub = document.getElementById('subtitle-settings-modal');
-
+                
                 if (modalTrack && !modalTrack.classList.contains('hidden')) {
                     playerOverlay.closeTrackModal();
                     return true;
