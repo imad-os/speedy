@@ -287,7 +287,8 @@ const CacheManager = (function() {
     function search(type) {
         const query = searchState.query;
         if (!MEMORY_CACHE[type]) return [];
-        if (!query || query.trim() === "") return [];
+        //return button to full list , arrowDown utton to navigat searched
+        //if (!query || query.trim() === "") return [];
 
         const q = normalize(query);
         const qLen = q.length;

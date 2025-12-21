@@ -230,7 +230,6 @@ const NavigationRouter = (function() {
 
     function _defaultSpatialNav(key, activePageId) {
         let parentSelector = null;
-        
         if (isVisible($('#category-manager-modal'))) parentSelector = '#category-manager-modal';
         else if (activePageId === 'page-categories') parentSelector = '#category-grid';
         else if (activePageId === 'page-playlists') parentSelector = '#playlists-list';
@@ -239,36 +238,58 @@ const NavigationRouter = (function() {
         const root = parentSelector ? document.querySelector(parentSelector) : document.getElementById(activePageId);
         if (!root) return;
 
-        const focusables = Array.from(root.querySelectorAll('.nav-item, .nav-item-sm, button:not(.hidden)'));
+        // Get all focusables and filter visible ones
+        let focusables = Array.from(root.querySelectorAll('.nav-item, .nav-item-sm, button')).filter(el => isVisible(el));
         
         if (!parentSelector && activePageId !== 'page-movie-details') {
             const header = document.getElementById('global-header');
-            if (header) {
-                focusables.unshift(...Array.from(header.querySelectorAll('button:not(.hidden)')));
+            if (header && isVisible(header)) {
+                focusables.unshift(...Array.from(header.querySelectorAll('button')).filter(el => isVisible(el)));
             }
         }
 
-        if (focusables.length === 0) return;
-
         const current = document.activeElement;
         const currentRect = current.getBoundingClientRect();
+        const currentCenter = {
+            x: currentRect.left + (currentRect.width / 2),
+            y: currentRect.top + (currentRect.height / 2)
+        };
+
         let next = null;
-        let min = Infinity;
+        let minScore = Infinity;
 
         focusables.forEach(item => {
             if (item === current) return;
             const r = item.getBoundingClientRect();
-            let isCand = false;
-            
-            if (key === 'ArrowRight' && r.left >= currentRect.right) isCand = true;
-            if (key === 'ArrowLeft' && r.right <= currentRect.left) isCand = true;
-            if (key === 'ArrowDown' && r.top >= currentRect.bottom) isCand = true;
-            if (key === 'ArrowUp' && r.bottom <= currentRect.top) isCand = true;
+            const itemCenter = {
+                x: r.left + (r.width / 2),
+                y: r.top + (r.height / 2)
+            };
 
-            if (isCand) {
-                const dist = Math.sqrt(Math.pow(r.left - currentRect.left, 2) + Math.pow(r.top - currentRect.top, 2));
-                if (dist < min) {
-                    min = dist;
+            let isCandidate = false;
+            
+            // STRICT DIRECTIONAL BOUNDARIES
+            // This prevents "Movies" -> "Live" when pressing Right
+            if (key === 'ArrowRight' && r.left >= currentRect.right - 5) isCandidate = true;
+            if (key === 'ArrowLeft'  && r.right <= currentRect.left + 5) isCandidate = true;
+            if (key === 'ArrowDown'  && r.top >= currentRect.bottom - 5) isCandidate = true;
+            if (key === 'ArrowUp'    && r.bottom <= currentRect.top + 5) isCandidate = true;
+
+            if (isCandidate) {
+                const dx = Math.abs(currentCenter.x - itemCenter.x);
+                const dy = Math.abs(currentCenter.y - itemCenter.y);
+                
+                let score;
+                if (key === 'ArrowLeft' || key === 'ArrowRight') {
+                    // Horizontal priority: heavily penalize vertical offset
+                    score = dx + (dy * 15); 
+                } else {
+                    // Vertical priority: heavily penalize horizontal offset
+                    score = dy + (dx * 15);
+                }
+
+                if (score < minScore) {
+                    minScore = score;
                     next = item;
                 }
             }
@@ -276,10 +297,10 @@ const NavigationRouter = (function() {
 
         if (next) {
             next.focus();
-            next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Using 'nearest' to prevent jumping the whole page
+            next.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
     }
-
     return {
         handleKey
     };

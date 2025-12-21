@@ -50,11 +50,13 @@
 
       }
 
-
+      
       if (cache.iconPlayPause) {
+            const state = webapis.avplay.getState().toLocaleLowerCase();
+
           const useTag = cache.iconPlayPause.querySelector('use');
           if (useTag) {
-              if (streamInfo.status?.toLowerCase() === 'playing') {
+              if (state === 'playing') {
                   useTag.setAttribute('href', '#icon-pause');
                   PlayerController.isPlaying(true);
               } else {
@@ -63,6 +65,7 @@
               }
           }
       }
+    
 
       //const loader = $('#player-buffer-loader');
       if (streamInfo.status.toLocaleLowerCase() === 'buffering' ) {
@@ -101,11 +104,11 @@
       else { v.pause(); updateStreamInfo({ status: 'paused' }); }
     } else {
       try {
-        const state = webapis.avplay.getState && webapis.avplay.getState();
-        if (state.toLocaleLowerCase() === 'playing') { 
+        const state = webapis.avplay.getState && webapis.avplay.getState() .toLocaleLowerCase();
+        if (state === 'playing') { 
             webapis.avplay.pause(); 
             updateStreamInfo({ status: 'paused' }); 
-        }else { 
+        }else if(state === 'paused' || state === 'ready' || state === 'stopped' ) { 
             webapis.avplay.play(); 
             updateStreamInfo({ status: 'playing' }); 
         }
@@ -207,6 +210,7 @@
     if(!PlayerController.currentState.isFullscreen){
         return false;
     }
+    console.log("showOverlay called");
     setTimeoutOverlay(autoHide);
 
     if(FocusManager.getCurrentLayer()!==FocusManager.LAYERS.PLAYER){
@@ -237,13 +241,24 @@
     startProgressUpdates();
 
   }
-  function setTimeoutOverlay(autoHide=true){
-    if (autoHideTimer) clearTimeout(autoHideTimer);
-    if (autoHide && streamInfo.status.toLocaleLowerCase() !== 'buffering') {
-      autoHideTimer = setTimeout(hideOverlay, UI_AUTOHIDE_MS);
+    function setTimeoutOverlay(autoHide = true) {
+        // 1. Always kill the existing timer first
+        if (autoHideTimer) {
+            clearTimeout(autoHideTimer);
+            autoHideTimer = null;
+        }
+
+        // 2. Only start a new one if requested and NOT buffering
+        if (autoHide && streamInfo.status.toLocaleLowerCase() !== 'buffering') {
+            console.log("Overlay timer started for 4s");
+            autoHideTimer = setTimeout(() => {
+                // Double check visibility before hiding to prevent transition bugs
+                if (overlayVisible) hideOverlay();
+            }, UI_AUTOHIDE_MS);
+        }
     }
-  }
   function hideOverlay() {
+    console.log("hideOverlay called");
     clearTimeout(autoHideTimer);
     if (
         (streamInfo.status.toLocaleLowerCase() === 'buffering' &&  PlayerController.isActive ) ||

@@ -26,13 +26,14 @@ const PlayerController = (function() {
         MC.init();
 
         // Keep visibility handler ready (if used elsewhere)
-        document.addEventListener("visibilitychange", handleVisibilityChange);
+        document.addEventListener("tizenvisibilitychange", handleVisibilityChange);
     }
     function isPlaying(isplaying=null){
         if(isplaying===null){
             return currentState.isPlaying ;
         }
-        currentState.isPlaying = isplaying===true;
+        const state = webapis.avplay.getState().toLocaleLowerCase();
+        currentState.isPlaying = state === 'playing';
 
     }
     function _goBack(){
@@ -58,18 +59,12 @@ const PlayerController = (function() {
     }
     function handleVisibilityChange() {
         if (typeof webapis==="undefined" || !webapis?.avplay) return;
-
         if (document.hidden) {
             try {
                 webapis.avplay.pause();
                 MC.reportMC("PAUSED");
             } catch (e) {}
-        } else {
-            try {
-                webapis.avplay.restore();
-                MC.reportMC("PLAYING");
-            } catch (e) {}
-        }
+        } 
     }
 
 
@@ -180,7 +175,7 @@ const PlayerController = (function() {
 
         try {
             const info = VideoEngine.getTimeInfo() || { current: 0, duration: 0 };
-            MC.reportMC(currentState.isPlaying ? "PLAYING" : "PAUSED", info.current, info.duration);
+            MC.reportMC(isPlaying() ? "PLAYING" : "PAUSED", info.current, info.duration);
         } catch (e) {
             console.warn("[PlayerController] togglePlay reportMC failed:", e);
         }
@@ -337,7 +332,7 @@ const PlayerController = (function() {
         if (currentState) {
             if (!currentState.duration && duration) currentState.duration = duration;
         }
-        try { MC.reportMC(currentState.isPlaying ? "PLAYING" : "PAUSED", time, duration); } catch (e) {}
+        //try { MC.reportMC(currentState.isPlaying ? "PLAYING" : "PAUSED", time, duration); } catch (e) {}
     }
     
     function _handleEnded() {

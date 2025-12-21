@@ -105,6 +105,7 @@ window.MC = (function () {
     }
     // Replace previous reportMC usage with this normalized function
     function reportMC(state, positionSec = 0, durationSec = 0) {
+        console.log("[PlayerController] reportMC:", state, positionSec, durationSec);
         const md = _buildMCMetadata(PlayerController.currentItem || {}, PlayerController.currentState.episode || {}, durationSec);
         // attempt to use mcServer.playback interface first, fallback inside safeWritePlaybackState
         safeWritePlaybackState(state === "PLAYING" ? "PLAY" : (state === "PAUSED" ? "PAUSE" : (state === "STOPPED" ? "STOP" : state)), positionSec, durationSec, md);

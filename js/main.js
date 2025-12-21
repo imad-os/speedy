@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     detectTizen();
     setupEventListeners();
     setupClock();
-    loadWeather();
+    setupWeather();
     // Initialize Language (if module loaded)
     if(typeof LanguageManager !== 'undefined') {
         console.log("Initializing Language Engine...");
@@ -57,11 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-document.addEventListener("visibilitychange", function(){
-    if (typeof PlayerController !== 'undefined' && typeof PlayerController.handleVisibilityChange === 'function') {
-        PlayerController.handleVisibilityChange();
-    }
-});
+window.addEventListener("pagehide", ()=> {console.log("----------page hiiiiide")});
+window.addEventListener("pageshow", ()=> {console.log("----------page showwwww")});
+
 
 function detectTizen() {
     try {

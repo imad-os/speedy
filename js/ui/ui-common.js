@@ -349,6 +349,12 @@ function clearSearch() {
     if(input) input.value = '';
     searchState.query = '';
     toggleSearchBar(false);
+    const event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+    });
+
+    input.dispatchEvent(event);
 }
 
 // === Playlist Management UI ===
@@ -832,7 +838,10 @@ async function loadWeather(){
     $("#current-weather img").src = icon_url;
     $("#current-weather span").textContent = `${response?.current?.temp_c} C`;
 }
-
+function setupWeather(){
+    loadWeather();
+    setInterval(loadWeather,30*60*1000); // Refresh every 30 minutes
+}
 function hideSpeedTest() {
     const modal = document.getElementById('modal-speedtest');
     if (modal) {
