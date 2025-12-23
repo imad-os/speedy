@@ -189,6 +189,7 @@ const ViewVOD = (function() {
             renderItems(items, type, context);
 
         } catch (e) {
+            console.log(e);
             $('#content-grid').innerHTML = '<p class="text-red-500 text-center mt-10">Error loading content</p>';
         }
     }

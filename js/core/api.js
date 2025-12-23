@@ -45,13 +45,20 @@ async function fetchFreshXtream(params, onProgress) {
             password: xtreamConfig.password,
             action:"get_user_info"
         });
-        let new_url = await resolvePlaylistUrl(`${apiBaseUrl}?${_urlParams.toString()}`);
-        new_url = new_url ? new_url.split("?")[0] : new_url;
-        if(new_url !== apiBaseUrl){
-            apiBaseUrl = new_url;
-            userSettings.xtreamConfig[userSettings.pl].host = apiBaseUrl;
-            saveUserSettings();
+        try {
+            let new_url = await resolvePlaylistUrl(`${apiBaseUrl}?${_urlParams.toString()}`);
+            new_url = new_url ? new_url.split("?")[0] : new_url;
+            if(new_url !== apiBaseUrl){
+                apiBaseUrl = new_url;
+                userSettings.xtreamConfig[userSettings.pl].host = apiBaseUrl;
+                saveUserSettings();
+            }
+        } catch (error) {
+            console.error("Error resolving playlist URL:", error);
+            showError("Failed to resolve playlist URL: " + error.message);
+            return false;
         }
+
     }
 
     // Extract signal so it doesn't get stringified into URL params
@@ -71,12 +78,15 @@ async function fetchFreshXtream(params, onProgress) {
             // Pass signal to safeFetch
             response = await safeFetch(url, { signal });
         } catch (err) {   
+            console.error("Fetch error:", err);
             // If aborted, rethrow immediately to skip error modals
             if (err.name === 'AbortError' || err === 'ABORTED') {
                 throw err;
             }
 
             let message="Unexpected error occurred";
+            let title = "Network Error";
+            let returnValue = false;
             switch (err) {
                 case "NO_INTERNET":
                     message = "No Internet Connection. Check your Wi-Fi or Ethernet.";
@@ -90,12 +100,17 @@ async function fetchFreshXtream(params, onProgress) {
                 case "FETCH_ERROR":
                     message = "Cannot reach server. Please try again later.";
                     break;
+                case "AUTH_ERROR":
+                    message = "IPTV Playlist Authentication Failed. Check your username and password.";
+                    title = "Playist Error";
+                    returnValue = -1;
+                    break;
                 default:
                     message = "Unexpected error occurred.";
                     break;
             }
-            showErrorModal("Internet Error", message, err)
-            return false;
+            showErrorModal(title, message, err)
+            return returnValue;
         }
 
         // If onProgress is provided and streams are supported, use the reader
@@ -260,7 +275,10 @@ async function getTestModeApi(action, params = {}) {
         }
         const res = await response.json();
         if(action === "get_vod_streams"){
+            CacheManager.MEMORY_CACHE.vod = {};
+            CacheManager.MEMORY_CACHE.vod[12] = res;
             tesMod_vods = res;
+            CacheManager.prepareSearchIndex("vod")
         }else if(action=="get_vod_info"){
             const vod = tesMod_vods.filter(v=>v.stream_id===params.vod_id)[0];
             if(vod && res){

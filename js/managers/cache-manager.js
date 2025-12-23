@@ -222,6 +222,7 @@ const CacheManager = (function() {
             // 6. Save to RAM
             MEMORY_CACHE[type] = categorized;
             
+            prepareSearchIndex(type);            
             console.log(`[CacheManager] loadAll complete. Cached ${Object.keys(categorized).length} categories.`);
             
             if (Loader) Loader.hide(`Loaded ${type}`);
@@ -287,32 +288,27 @@ const CacheManager = (function() {
     function normalize(str) {
         return str
             .toLowerCase()
-            // 1. Remove the language prefix (e.g., "ar - ", "en-")
             .replace(/^[a-z0-9]{2}\s?-/gu, "")
-            // 2. Keep only letters from ANY language (\p{L}) and numbers (\p{N})
-            // We also keep spaces (\s) so words don't mash together
             .replace(/[^\p{L}\p{N}\s]/gu, "")
-            // 3. Clean up extra whitespace
             .trim()
             .replace(/\s+/g, " ");
     }
+    
 
-    // ---------- Fast Levenshtein (Early-Exit) ----------
     function fastLev(a, b, maxDist) {
         const aLen = a.length, bLen = b.length;
-
-        // too different -> skip fast
+    
         if (Math.abs(aLen - bLen) > maxDist) return maxDist + 1;
-
+    
         const prev = new Array(bLen + 1);
         const curr = new Array(bLen + 1);
-
+    
         for (let j = 0; j <= bLen; j++) prev[j] = j;
-
+    
         for (let i = 1; i <= aLen; i++) {
             curr[0] = i;
             let minRow = curr[0];
-
+    
             for (let j = 1; j <= bLen; j++) {
                 const cost = a[i - 1] === b[j - 1] ? 0 : 1;
                 curr[j] = Math.min(
@@ -322,64 +318,126 @@ const CacheManager = (function() {
                 );
                 if (curr[j] < minRow) minRow = curr[j];
             }
-
-            if (minRow > maxDist) return maxDist + 1; // early exit
-
-            // copy
+    
+            if (minRow > maxDist) return maxDist + 1;
+    
             for (let k = 0; k <= bLen; k++) prev[k] = curr[k];
         }
-
+    
         return prev[bLen];
     }
-    function search(type) {
-        const query = searchState.query;
-        if (!MEMORY_CACHE[type]) return [];
-        //return button to full list , arrowDown utton to navigat searched
-        //if (!query || query.trim() === "") return [];
-
-        const q = normalize(query);
-        const qLen = q.length;
-
-        const results = [];
-        const allCategories = MEMORY_CACHE[type];
-
-        // Max allowed typo distance (tight)
-        const MAX_DIST = qLen <= 5 ? 1 : 2;
-
-        // ---------- Main Search ----------
-        for (const cid in allCategories) {
-            const items = allCategories[cid];
-
+    function prepareSearchIndex(type) {
+        const cache = CacheManager.MEMORY_CACHE[type];
+        if (!cache) return;
+    
+        for (const cid in cache) {
+            const items = cache[cid];
             for (let i = 0; i < items.length; i++) {
                 const raw = items[i].name || items[i].stream_display_name || items[i].title || "";
-                const name = normalize(raw);
+                const norm = normalize(raw);
+    
+                // store once, reuse forever
+                items[i]._n = norm;
+                items[i]._t = norm.split(" ");
+            }
+        }
+    }
+    
+    function tokenScore(query, tokens) {
+        const qLen = query.length;
+        const MAX_DIST = qLen <= 5 ? 1 : 2;
+        let score  = 0;
+        const MAX_VAL = 999;
+        for (let i = 0; i < tokens.length; i++) {
+            const t = tokens[i];
+    
+            if (t === query){
+                score += 100;
+                continue;
+            }
+            if (t.includes(query) || query.includes(t)) {
+                score += 50;
+                continue;
+            }
+    
+            const d = fastLev(query, t, MAX_DIST);
+            if (d <= MAX_DIST) {
+                const s = (50 - d * 20);
+                ;
+                score += s;
+            }
+        }
+        return score;
+    }
+    
+    function search(type) {
+        const query = searchState.query;
+        if (!query || query.trim() === "") return [];
+        if (!CacheManager.MEMORY_CACHE[type]) return [];
 
-                // --- 1. Exact normalized match (best result) ---
-                if (name === q) {
-                    results.push({ item: items[i], score: 0 });
+        const q = normalize(query);
+        const results = [];
+        const cache = CacheManager.MEMORY_CACHE[type];
+        
+        const MAX_DIST = q.length <= 5 ? 1 : 2;
+
+        for (const cid in cache) {
+            const items = cache[cid];
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                item._s = 0;
+
+                if (!item || !item._n || !item._t || !item._t.length) continue;
+                // 1️⃣ Exact match (fastest)
+                if (item._n === q) {
+                    item._s = 999;
+                    results.push(item);
                     continue;
                 }
-
-                // --- 2. Simple contains check (supermn → superman) ---
-                if (name.includes(q) || q.includes(name)) {
-                    results.push({ item: items[i], score: 0.5 });
+                if (item._n.includes(query) || query.includes(item._n)) {
+                    item._s = 200;
+                    results.push(item);
                     continue;
                 }
+        
+                const d = fastLev(q, item._n, MAX_DIST);
+                if (d <= MAX_DIST) {
+                    const s = (50 - d * 20);
+                    item._s = score;
+                    results.push(item);
+                    continue;
 
-                // --- 3. Tight typo tolerance (1–2 edits only) ---
-                const dist = fastLev(q, name, MAX_DIST);
-                if (dist <= MAX_DIST) {
-                    results.push({ item: items[i], score: dist });
+                }
+
+                // 2️⃣ Token-based scoring
+                /*
+                const score = tokenScore(q, item._t);
+                if (score > 0) {
+                    item._s = score;
+                    results.push(item);
+                    continue;
+                }
+                */
+            }
+        }
+        if(results.length===0){
+            for (const cid in cache) {
+                const items = cache[cid];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const score = tokenScore(q, item._t);
+                    if (score > 0) {
+                        item._s = score;
+                        results.push(item);
+                        continue;
+                    }
                 }
             }
         }
-
-        // Sort by best tight matches
-        results.sort((a, b) => a.score - b.score);
-
-        // Only return highly accurate matches (no suggestions)
-        return results.map(r => r.item);
+        results.sort((a, b) => b._s - a._s);
+        return results;
     }
+    
 
     return {
         getCategoryList,
@@ -392,6 +450,9 @@ const CacheManager = (function() {
         loadAll,
         cancel, // Expose cancel
         search,
+        tokenScore,
+        fastLev,
+        prepareSearchIndex,
         get MEMORY_CACHE(){
             return MEMORY_CACHE
         }

@@ -213,6 +213,7 @@ async function handleUserLogin() {
                         return
                     }
                 }catch(e){
+                    console.log("ERROR DECODING PLAYLIST:", e);
                      updateBootStatus("Data Error");
                      _showQrModal(null, "Data Error");
                      isLoginRunning = false;
@@ -416,7 +417,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
 
     try {
         const data = await fetchXtream({ action: 'get_user_info' }, false);
-        if (data) {
+        if (data && data!==-1) {
             console.log('API Connected');
             updateBootStatus("Connection Successful!");
 
@@ -440,16 +441,17 @@ async function handleApiConnect(e, isAutoLogin = false) {
             return true;
 
         } else {
-            throw new Error("Auth failed");
+            const msg = data===-1 ? 'PlayList Error (expired or wrong username/password)' : 'Connect failed';
+            throw new Error(msg);
         }
     } catch (error) {
-        console.error('Connect failed:', error);
+        console.error('Connect failed:', error.message);
         
-        updateBootStatus("Connection Failed");
+        updateBootStatus(error.message);
         
         setTimeout(() => {
              // Only show QR if it was an auto-login attempt at startup
-             if(isAutoLogin) _showQrModal(null, "Connection Failed");
+             if(isAutoLogin) _showQrModal(null, error.message);
              else showError(`API Error: ${error.message}`);
         }, 1000);
         
