@@ -1,11 +1,12 @@
 "use strict";
 
 
-var firebaseUrl = "https://us-central1-iptv-8b60c.cloudfunctions.net";
+//var firebaseUrl = "https://us-central1-iptv-8b60c.cloudfunctions.net";
+var firebaseUrl = "https://ff.geekspro.us";
 
 var SubtitleFetcher = {
-    firebaseUrlFetch: `${firebaseUrl}/fetchSubtitles`,
-    firebaseUrlDownload: `${firebaseUrl}/downloadSubtitle`,
+    firebaseUrlFetch: `${firebaseUrl}/fetchSubtitles/`,
+    firebaseUrlDownload: `${firebaseUrl}/downloadSubtitle/`,
     cache: {},
     isAvailable:true,
     /**

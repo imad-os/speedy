@@ -11,9 +11,7 @@ http://speedy.geekspro.us/
 - Minimal and fast design
 
 ## API endpoints (mirrors)
-- https://us-central1-iptv-8b60c.cloudfunctions.net/fetchSubtitles
-- https://fetchsubtitles-259048691910.us-central1.run.app
-- https://fetchsubtitles-yuq4wxoqiq-uc.a.run.app
+- https://ff.geekspro.us/getLocation/
 
 
 
