@@ -115,6 +115,8 @@ const PlayerController = (function() {
         let url = "";
         if(isTestMode){
             url = episode.direct_source;
+        }else if(episode.direct_source){
+            url = episode.direct_source;
         }else{
             url = `${xtreamConfig.host}/series/${xtreamConfig.username}/${xtreamConfig.password}/${streamId}.${ext}`;
         }
@@ -128,6 +130,8 @@ const PlayerController = (function() {
         const streamId = item.stream_id;
         let url = "";
         if(isTestMode){
+            url = item.direct_source;
+        }else if(item.direct_source){
             url = item.direct_source;
         }else{
             url = `${xtreamConfig.host}/live/${xtreamConfig.username}/${xtreamConfig.password}/${streamId}.ts`;

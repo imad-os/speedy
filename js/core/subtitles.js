@@ -2,7 +2,7 @@
 
 
 //var firebaseUrl = "https://us-central1-iptv-8b60c.cloudfunctions.net";
-var firebaseUrl = "https://ff.geekspro.us";
+var firebaseUrl = "https://f.geekspro.us";
 
 var SubtitleFetcher = {
     firebaseUrlFetch: `${firebaseUrl}/fetchSubtitles/`,
