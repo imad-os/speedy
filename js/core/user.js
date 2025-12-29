@@ -283,10 +283,20 @@ function _hideModal(){
 
 }
 
+// Helper: Normalize host for comparison (removes http/https and trailing slash)
+function normalizeHost(host) {
+    if (!host) return '';
+    let h = host.trim();
+    if (h.startsWith('http://')) h = h.slice(7);
+    if (h.startsWith('https://')) h = h.slice(8);
+    if (h.endsWith('/')) h = h.slice(0, -1);
+    return h;
+}
+
 // Helper to compare playlists
 function isSamePlaylist(pl1, pl2) {
     if (!pl1 || !pl2) return false;
-    return pl1.host === pl2.host && 
+    return normalizeHost(pl1.host) === normalizeHost(pl2.host) && 
            pl1.username === pl2.username && 
            pl1.password === pl2.password;
 }
@@ -385,7 +395,9 @@ async function handleApiConnect(e, isAutoLogin = false) {
         userSettings.pl = 0;
     }
 
-    xtreamConfig = userSettings.xtreamConfig[currentIndex];
+    // CLONE the config to prevent mutating global state before success
+    // This prevents "dirtying" the settings if connection fails, which helps avoid infinite loops
+    xtreamConfig = { ...userSettings.xtreamConfig[currentIndex] };
     
     if (!xtreamConfig) {
         if (!isAutoLogin) showError('No playlist config found.');
@@ -394,26 +406,28 @@ async function handleApiConnect(e, isAutoLogin = false) {
 
         return false; // Return false to indicate failure
     }
+    if(!isTestMode){
+        if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
+            if (!isAutoLogin) showError('playlist is not valid.');
+            console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
+            _showQrModal(null, 'playlist is not containing host or username or password.');
 
-    if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
-        if (!isAutoLogin) showError('playlist is not valid.');
-        console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
-        _showQrModal(null, 'playlist is not containing host or username or password.');
+            return false;
+        }
+        
+        if (!xtreamConfig.host.startsWith('http')) xtreamConfig.host = 'http://' + xtreamConfig.host;
+        if (xtreamConfig.host.endsWith('/')) xtreamConfig.host = xtreamConfig.host.slice(0, -1);
 
-        return false;
+        apiBaseUrl = `${xtreamConfig.host}/player_api.php`;
+        // UPDATE STATUS
+        if (xtreamConfig.host.startsWith("https")) {
+            updateBootStatus("Trying HTTPS connection...");
+        } else {
+            updateBootStatus("Trying HTTP connection...");
+        }
     }
     
-    if (!xtreamConfig.host.startsWith('http')) xtreamConfig.host = 'http://' + xtreamConfig.host;
-    if (xtreamConfig.host.endsWith('/')) xtreamConfig.host = xtreamConfig.host.slice(0, -1);
 
-    apiBaseUrl = `${xtreamConfig.host}/player_api.php`;
-    
-    // UPDATE STATUS
-    if (xtreamConfig.host.startsWith("https")) {
-        updateBootStatus("Trying HTTPS connection...");
-    } else {
-        updateBootStatus("Trying HTTP connection...");
-    }
 
     try {
         const data = await fetchXtream({ action: 'get_user_info' }, false);
@@ -421,6 +435,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
             console.log('API Connected');
             updateBootStatus("Connection Successful!");
 
+            // ONLY update global settings on success
             userSettings.xtreamConfig[currentIndex] = xtreamConfig;
             saveUserSettings();
 

@@ -50,8 +50,11 @@ async function fetchFreshXtream(params, onProgress) {
             new_url = new_url ? new_url.split("?")[0] : new_url;
             if(new_url !== apiBaseUrl){
                 apiBaseUrl = new_url;
-                userSettings.xtreamConfig[userSettings.pl].host = apiBaseUrl;
-                saveUserSettings();
+                // Only save if it is a valid setting structure
+                if(userSettings && userSettings.xtreamConfig && userSettings.pl != null) {
+                    userSettings.xtreamConfig[userSettings.pl].host = apiBaseUrl;
+                    saveUserSettings();
+                }
             }
         } catch (error) {
             console.error("Error resolving playlist URL:", error);
@@ -87,7 +90,11 @@ async function fetchFreshXtream(params, onProgress) {
             let message="Unexpected error occurred";
             let title = "Network Error";
             let returnValue = false;
-            switch (err) {
+
+            // FIX: Robust check for err being an object (e.g. {type:"AUTH_ERROR"}) or string
+            const errCode = (err && typeof err === 'object' && err.type) ? err.type : err;
+
+            switch (errCode) {
                 case "NO_INTERNET":
                     message = "No Internet Connection. Check your Wi-Fi or Ethernet.";
                     break;
