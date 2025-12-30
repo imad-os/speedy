@@ -72,12 +72,22 @@ const LanguageManager = (function() {
             "sub_label_bg": "Background",
             "sub_label_font": "Font",
             
-            // NEW PRIVACY KEYS
+            // PRIVACY & TERMS
             "settings_privacy": "Privacy Policy",
             "settings_privacy_policy": "Privacy Policy",
             "privacy_terms_title": "Terms of Service & Privacy Policy",
             "btn_agree": "AGREE",
             "btn_exit": "EXIT",
+            
+            // Privacy Modal Content
+            "privacy_consent_intro": "To function properly, <strong>Speedy IPTV</strong> needs to access specific device identifiers. We collect the following data strictly to save your playlists and settings:",
+            "privacy_consent_point1": "<strong>MAC Address & Tizen ID:</strong> Used to identify your device so we can restore your saved content.",
+            "privacy_consent_point2": "<strong>Model Name:</strong> Used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.",
+            "privacy_consent_outro1": "We do not sell, share, or rent this information to third parties.",
+            "privacy_consent_outro2": "By clicking <strong>'AGREE'</strong>, you consent to this collection.",
+            
+            // Full Privacy Policy Text
+            "privacy_policy_full": "PRIVACY POLICY FOR SPEEDY IPTV\n\nLast Updated: December 6, 2025\n\n1. Data Collection & Purpose\nSpeedy IPTV strictly limits data collection to the minimum necessary for the application to function. We collect the following device identifiers:\n* MAC Address & Tizen ID: Used as unique identifiers for your user profile. This allows the app to save your playlists, favorites, and settings without requiring a login or password.\n* Model Name: Used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.\n\n2. Data Usage\nThis information is used solely for:\n* Authenticating your device.\n* Restoring your user preferences.\n* Technical troubleshooting.\n\n3. Third-Party Sharing\nWe do not sell, trade, or transfer your data (MAC Address, Tizen ID, or Model Name) to outside parties. We do not use this data for advertising or tracking purposes.\n\n4. User Consent\nBy launching Speedy IPTV and clicking 'Agree,' you consent to this collection. You may withdraw consent by uninstalling the application.\n\n5. Contact\nIf you have questions regarding this policy, please contact us at: support@geekspro.us",
 
             // SPEED TEST
             "speedtest_title": "Network Speed Test",
@@ -92,6 +102,7 @@ const LanguageManager = (function() {
             "visit_url": "Visit:",
             "waiting_playlist": "Waiting for playlist...",
             "scan_hint": "Scan to add your playlist",
+            "msg_no_playlists": "No playlists found.",
 
             // PLAYLIST USER INFO
             "user_info_title": "Playlist Info",
@@ -105,7 +116,7 @@ const LanguageManager = (function() {
             "user_unlimited": "Unlimited",
             "user_days_left": "days left",
 
-            // DEVICE / SUBSCRIPTION INFO (NEW)
+            // DEVICE / SUBSCRIPTION INFO
             "sub_device_info": "Device Info",
             "sub_status": "Status",
             "sub_mac": "MAC Address",
@@ -113,6 +124,24 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Playlists",
             "sub_active": "Active",
             "sub_trial": "Trial",
+
+            // BOOT STATUS & ERRORS
+            "boot_init": "Initializing...",
+            "boot_loading_user": "Loading user playlists...",
+            "boot_test_mode": "Entering Test Mode...",
+            "boot_verifying": "Verifying device...",
+            "boot_fetching_info": "Fetching user info...",
+            "boot_registering": "Registering device...",
+            "boot_firebase_failed": "Firebase Init Failed",
+            "boot_https": "Trying HTTPS connection...",
+            "boot_http": "Trying HTTP connection...",
+            "boot_success": "Connection Successful!",
+            "boot_connection_error": "Connection Error",
+            "boot_data_error": "Invalid Playlist Data",
+            "error_incomplete_playlist": "Selected playlist is incomplete. Please update the details.",
+            "error_playlist_auth": "PlayList Error (expired or wrong username/password)",
+            "error_connect_failed": "Connect failed",
+            "error_network": "Network Error",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -206,12 +235,22 @@ const LanguageManager = (function() {
             "sub_label_bg": "Arrière-plan",
             "sub_label_font": "Police",
 
-            // NEW PRIVACY KEYS
+            // PRIVACY & TERMS
             "settings_privacy": "Politique de Confidentialité",
             "settings_privacy_policy": "Politique de Confidentialité",
             "privacy_terms_title": "Conditions d'utilisation & Confidentialité",
             "btn_agree": "ACCEPTER",
             "btn_exit": "QUITTER",
+
+            // Privacy Modal Content
+            "privacy_consent_intro": "Pour fonctionner correctement, <strong>Speedy IPTV</strong> doit accéder à des identifiants d'appareil spécifiques. Nous collectons les données suivantes uniquement pour sauvegarder vos playlists :",
+            "privacy_consent_point1": "<strong>Adresse MAC & Tizen ID:</strong> Utilisés pour identifier votre appareil et restaurer votre contenu sauvegardé.",
+            "privacy_consent_point2": "<strong>Nom du modèle:</strong> Utilisé pour détecter les capacités techniques de votre TV (résolution, codecs) pour une lecture fluide.",
+            "privacy_consent_outro1": "Nous ne vendons, ne partageons et ne louons pas ces informations à des tiers.",
+            "privacy_consent_outro2": "En cliquant sur <strong>'ACCEPTER'</strong>, vous consentez à cette collecte.",
+
+            // Full Privacy Policy Text (French Summary)
+            "privacy_policy_full": "POLITIQUE DE CONFIDENTIALITÉ POUR SPEEDY IPTV\n\nDernière mise à jour : 6 décembre 2025\n\n1. Collecte de données\nSpeedy IPTV limite strictement la collecte de données au minimum nécessaire. Identifiants collectés :\n* Adresse MAC et ID Tizen : Pour identifier votre profil utilisateur sans mot de passe.\n* Nom du modèle : Pour optimiser la lecture vidéo.\n\n2. Utilisation des données\nUtilisées uniquement pour authentifier votre appareil, restaurer vos préférences et le dépannage technique.\n\n3. Partage avec des tiers\nNous ne vendons ni ne transférons vos données à des tiers. Aucune utilisation publicitaire.\n\n4. Consentement\nEn utilisant l'application, vous consentez à cette collecte.\n\n5. Contact\nsupport@geekspro.us",
 
             // SPEED TEST
             "speedtest_title": "Test de Vitesse Réseau",
@@ -226,6 +265,7 @@ const LanguageManager = (function() {
             "visit_url": "Visitez:",
             "waiting_playlist": "En attente de playlist...",
             "scan_hint": "Scannez pour ajouter",
+            "msg_no_playlists": "Aucune playlist trouvée.",
 
             // PLAYLIST USER INFO
             "user_info_title": "Infos Playlist",
@@ -247,6 +287,24 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Playlists",
             "sub_active": "Actif",
             "sub_trial": "Essai",
+
+            // BOOT STATUS & ERRORS
+            "boot_init": "Initialisation...",
+            "boot_loading_user": "Chargement des playlists...",
+            "boot_test_mode": "Passage en mode test...",
+            "boot_verifying": "Vérification de l'appareil...",
+            "boot_fetching_info": "Récupération infos utilisateur...",
+            "boot_registering": "Enregistrement de l'appareil...",
+            "boot_firebase_failed": "Échec Init Firebase",
+            "boot_https": "Tentative connexion HTTPS...",
+            "boot_http": "Tentative connexion HTTP...",
+            "boot_success": "Connexion réussie !",
+            "boot_connection_error": "Erreur de connexion",
+            "boot_data_error": "Données playlist invalides",
+            "error_incomplete_playlist": "La playlist sélectionnée est incomplète. Veuillez mettre à jour les détails.",
+            "error_playlist_auth": "Erreur Playlist (expiré ou mauvais identifiants)",
+            "error_connect_failed": "Échec de connexion",
+            "error_network": "Erreur Réseau",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -340,12 +398,22 @@ const LanguageManager = (function() {
             "sub_label_bg": "Fondo",
             "sub_label_font": "Fuente",
 
-            // NEW PRIVACY KEYS
+            // PRIVACY & TERMS
             "settings_privacy": "Política de Privacidad",
             "settings_privacy_policy": "Política de Privacidad",
             "privacy_terms_title": "Términos y Privacidad",
             "btn_agree": "ACEPTAR",
             "btn_exit": "SALIR",
+
+            // Privacy Modal Content
+            "privacy_consent_intro": "Para funcionar correctamente, <strong>Speedy IPTV</strong> necesita acceder a identificadores específicos del dispositivo. Recopilamos los siguientes datos para guardar sus listas:",
+            "privacy_consent_point1": "<strong>Dirección MAC y Tizen ID:</strong> Usados para identificar su dispositivo y restaurar su contenido guardado.",
+            "privacy_consent_point2": "<strong>Nombre del modelo:</strong> Usado para detectar capacidades técnicas (resolución, códecs) para una reproducción fluida.",
+            "privacy_consent_outro1": "No vendemos, compartimos ni alquilamos esta información a terceros.",
+            "privacy_consent_outro2": "Al hacer clic en <strong>'ACEPTAR'</strong>, usted consiente esta recopilación.",
+
+            // Full Privacy Policy Text (Spanish Summary)
+            "privacy_policy_full": "POLÍTICA DE PRIVACIDAD DE SPEEDY IPTV\n\nÚltima actualización: 6 de diciembre de 2025\n\n1. Recopilación de datos\nSpeedy IPTV limita estrictamente la recopilación de datos. Recopilamos:\n* Dirección MAC y Tizen ID: Para identificar su perfil sin contraseña.\n* Nombre del modelo: Para optimizar la reproducción de video.\n\n2. Uso de datos\nSe utiliza únicamente para autenticar su dispositivo, restaurar preferencias y soporte técnico.\n\n3. Compartir con terceros\nNo vendemos ni transferimos sus datos a terceros. No se usa para publicidad.\n\n4. Consentimiento\nAl usar la aplicación, usted acepta esta recopilación.\n\n5. Contacto\nsupport@geekspro.us",
 
             // SPEED TEST
             "speedtest_title": "Prueba de Velocidad de Red",
@@ -360,6 +428,7 @@ const LanguageManager = (function() {
             "visit_url": "Visitar:",
             "waiting_playlist": "Esperando playlist...",
             "scan_hint": "Escanear para añadir",
+            "msg_no_playlists": "No se encontraron playlists.",
 
             // PLAYLIST USER INFO
             "user_info_title": "Info Playlist",
@@ -381,6 +450,24 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Listas",
             "sub_active": "Activo",
             "sub_trial": "Prueba",
+
+            // BOOT STATUS & ERRORS
+            "boot_init": "Iniciando...",
+            "boot_loading_user": "Cargando playlists...",
+            "boot_test_mode": "Entrando en Modo Prueba...",
+            "boot_verifying": "Verificando dispositivo...",
+            "boot_fetching_info": "Obteniendo info usuario...",
+            "boot_registering": "Registrando dispositivo...",
+            "boot_firebase_failed": "Fallo Init Firebase",
+            "boot_https": "Intentando conexión HTTPS...",
+            "boot_http": "Intentando conexión HTTP...",
+            "boot_success": "¡Conexión Exitosa!",
+            "boot_connection_error": "Error de Conexión",
+            "boot_data_error": "Datos de Playlist Inválidos",
+            "error_incomplete_playlist": "La playlist seleccionada está incompleta. Por favor actualice los detalles.",
+            "error_playlist_auth": "Error de Playlist (expirada o contraseña incorrecta)",
+            "error_connect_failed": "Conexión fallida",
+            "error_network": "Error de Red",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -474,12 +561,22 @@ const LanguageManager = (function() {
             "sub_label_bg": "الخلفية",
             "sub_label_font": "الخط",
 
-            // NEW PRIVACY KEYS
+            // PRIVACY & TERMS
             "settings_privacy": "سياسة الخصوصية",
             "settings_privacy_policy": "سياسة الخصوصية",
             "privacy_terms_title": "شروط الخدمة والخصوصية",
             "btn_agree": "موافق",
             "btn_exit": "خروج",
+
+            // Privacy Modal Content
+            "privacy_consent_intro": "لكي يعمل التطبيق بشكل صحيح، يحتاج <strong>Speedy IPTV</strong> للوصول إلى معرفات الجهاز. نجمع البيانات التالية حصرياً لحفظ قوائم التشغيل الخاصة بك:",
+            "privacy_consent_point1": "<strong>عنوان MAC و Tizen ID:</strong> تستخدم للتعرف على جهازك واستعادة المحتوى المحفوظ.",
+            "privacy_consent_point2": "<strong>اسم الموديل:</strong> يستخدم للكشف عن القدرات التقنية للتلفاز (الدقة، برامج الترميز) لضمان تشغيل الفيديو بسلاسة.",
+            "privacy_consent_outro1": "نحن لا نبيع أو نشارك أو نؤجر هذه المعلومات لأطراف ثالثة.",
+            "privacy_consent_outro2": "بالضغط على <strong>'موافق'</strong>، أنت توافق على هذا الجمع للبيانات.",
+
+            // Full Privacy Policy Text (Arabic Summary)
+            "privacy_policy_full": "سياسة الخصوصية لـ SPEEDY IPTV\n\nآخر تحديث: 6 ديسمبر 2025\n\n1. جمع البيانات والغرض منها\nيقصر Speedy IPTV جمع البيانات بشكل صارم على الحد الأدنى الضروري لعمل التطبيق. نجمع معرفات الجهاز التالية:\n* عنوان MAC ومعرف Tizen: تستخدم كمعرفات فريدة لملفك الشخصي. يتيح هذا للتطبيق حفظ القوائم والمفضلة والإعدادات دون الحاجة لتسجيل الدخول.\n* اسم الموديل: يستخدم للكشف عن القدرات التقنية للتلفزيون لضمان تشغيل الفيديو بسلاسة.\n\n2. استخدام البيانات\nتستخدم هذه المعلومات فقط لـ:\n* المصادقة على جهازك.\n* استعادة تفضيلات المستخدم.\n* استكشاف الأخطاء التقنية وإصلاحها.\n\n3. المشاركة مع أطراف ثالثة\nنحن لا نبيع أو نتاجر أو ننقل بياناتك لأطراف خارجية. لا نستخدم هذه البيانات للإعلانات.\n\n4. موافقة المستخدم\nمن خلال تشغيل Speedy IPTV والنقر على 'موافق'، فإنك توافق على هذا الجمع.\n\n5. الاتصال\nإذا كانت لديك أسئلة، يرجى الاتصال بنا على: support@geekspro.us",
 
             // SPEED TEST
             "speedtest_title": "اختبار سرعة الشبكة",
@@ -494,6 +591,7 @@ const LanguageManager = (function() {
             "visit_url": "قم بزيارة:",
             "waiting_playlist": "بانتظار القائمة...",
             "scan_hint": "امسح الرمز للإضافة",
+            "msg_no_playlists": "لم يتم العثور على قوائم.",
 
             // PLAYLIST USER INFO
             "user_info_title": "معلومات القائمة",
@@ -515,6 +613,24 @@ const LanguageManager = (function() {
             "sub_playlists_count": "القوائم",
             "sub_active": "نشط",
             "sub_trial": "تجريبي",
+
+            // BOOT STATUS & ERRORS
+            "boot_init": "جاري البدء...",
+            "boot_loading_user": "تحميل القوائم...",
+            "boot_test_mode": "الدخول في وضع التجربة...",
+            "boot_verifying": "التحقق من الجهاز...",
+            "boot_fetching_info": "جلب معلومات المستخدم...",
+            "boot_registering": "تسجيل الجهاز...",
+            "boot_firebase_failed": "فشل تهيئة Firebase",
+            "boot_https": "محاولة اتصال HTTPS...",
+            "boot_http": "محاولة اتصال HTTP...",
+            "boot_success": "تم الاتصال بنجاح!",
+            "boot_connection_error": "خطأ في الاتصال",
+            "boot_data_error": "بيانات القائمة غير صالحة",
+            "error_incomplete_playlist": "القائمة المختارة غير مكتملة. يرجى تحديث التفاصيل.",
+            "error_playlist_auth": "خطأ في القائمة (منتهية الصلاحية أو بيانات خاطئة)",
+            "error_connect_failed": "فشل الاتصال",
+            "error_network": "خطأ في الشبكة",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
@@ -560,21 +676,21 @@ const LanguageManager = (function() {
         console.log(`[LanguageManager] Updating DOM to: ${lang}`);
 
         // 1. Handle RTL for Arabic
-        /*
         if (lang === 'ar') {
-            document.body.setAttribute('dir', 'rtl');
+            document.body.dir = "rtl";
             document.body.classList.add('rtl-layout');
         } else {
-            document.body.setAttribute('dir', 'ltr');
+            document.body.dir = "ltr";
             document.body.classList.remove('rtl-layout');
-        }*/
+        }
 
-        // 2. Update Text Content
+        // 2. Update Text Content (Using innerHTML to support <b>, <strong> tags in translations)
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (key) {
-                el.textContent = t(key);
+                // Use innerHTML to allow simple formatting tags in translation strings
+                el.innerHTML = t(key);
             }
         });
 

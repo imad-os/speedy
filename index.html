@@ -379,7 +379,7 @@
                     <!-- NEW: Boot Status Label & Spinner -->
                     <div id="main-boot-status" class="flex flex-col items-center transition-all duration-500">
                         <div class="boot-spinner mb-4"></div>
-                        <p id="boot-status-label" class="text-xl font-bold text-primary animate-pulse">Initializing...</p>
+                        <p id="boot-status-label" class="text-xl font-bold text-primary animate-pulse" data-i18n="boot_init">Initializing...</p>
                     </div>
                 </div>
 
@@ -678,12 +678,12 @@
                 </div>
                 
                 <div>
-                    <h3 class=" font-semibold mb-2 text-main" data-i18n="settings_cprivacy_policy">Privacy Policy:</h3>
+                    <h3 class=" font-semibold mb-2 text-main" data-i18n="settings_privacy_policy">Privacy Policy:</h3>
                     <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
                         <!-- NEW PRIVACY BUTTON -->
                         <button id="settings-privacy-button" onclick="showPrivacySettings()" class="nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors flex items-center gap-2">
                             <svg class="icon"><use href="#icon-lock"></use></svg>
-                            <span>Privacy Policy</span>
+                            <span data-i18n="settings_privacy">Privacy Policy</span>
                         </button>
                     </div>
                 </div>
@@ -862,7 +862,7 @@
                     <img src="assets/icon_256.png" class="w-24 h-24 rounded-2xl bg-white/10" alt="Logo">
                     <div>
                         <h2 class="text-2xl font-bold text-main" data-i18n="app_name">Speedy IPTV</h2>
-                        <p class="text-alt mt-1">Version 1.0.0 (Tizen)</p>
+                        <p class="text-alt mt-1"><span data-i18n="about_version">Version</span> 1.0.0 (Tizen)</p>
                     </div>
                     <div class="text-left text-lg text-gray-400 w-full bg-black/30 p-4 rounded mt-2">
                         <p class="mb-2"><strong data-i18n="about_dev">Developer:</strong> Geekspro</p>
@@ -920,22 +920,22 @@
             </div>
         </div>
 
-        <!-- PRIVACY POLICY CONSENT MODAL (FIRST RUN) -->
+        <!-- PRIVACY POLICY CONSENT MODAL (FIRST RUN) - UPDATED -->
         <div id="modal-privacy-consent" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9999;">
             <div class="bg-slate-900 w-full max-w-7xl p-8 rounded-lg shadow-2xl border border-gray-700 flex flex-col max-h-[90vh]">
-                <h1 class="text-4xl font-bold text-white mb-4">Terms of Service & Privacy Policy</h1>
+                <h1 class="text-4xl font-bold text-white mb-4" data-i18n="privacy_terms_title">Terms of Service & Privacy Policy</h1>
                 <div class="flex-1 overflow-y-auto mb-6 p-4 bg-black/30 rounded text-gray-300 text-lg leading-relaxed" id="privacy-consent-text">
-                    <p class="mb-2">To function properly, <strong>Speedy IPTV</strong> needs to access specific device identifiers. We collect the following data strictly to save your playlists and settings:</p>
+                    <p class="mb-2" data-i18n="privacy_consent_intro">To function properly, <strong>Speedy IPTV</strong> needs to access specific device identifiers. We collect the following data strictly to save your playlists and settings:</p>
                     <ul class="list-disc pl-5 mb-2 space-y-1">
-                        <li><strong>MAC Address & Tizen ID:</strong> Used to identify your device so we can restore your saved content.</li>
-                        <li><strong>Model Name:</strong> Used to optimize video playback for your specific TV.</li>
+                        <li data-i18n="privacy_consent_point1"><strong>MAC Address & Tizen ID:</strong> Used to identify your device so we can restore your saved content.</li>
+                        <li data-i18n="privacy_consent_point2"><strong>Model Name:</strong> Used to optimize your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.</li>
                     </ul>
-                    <p class="mb-4">We do not sell, share, or rent this information to third parties.</p>
-                    <p>By clicking <strong>"AGREE"</strong>, you consent to this collection.</p>
+                    <p class="mb-4" data-i18n="privacy_consent_outro1">We do not sell, share, or rent this information to third parties.</p>
+                    <p data-i18n="privacy_consent_outro2">By clicking <strong>"AGREE"</strong>, you consent to this collection.</p>
                 </div>
                 <div class="flex justify-center gap-6">
-                     <button id="btn-privacy-agree" class="nav-item px-8 py-3 bg-primary text-white font-bold rounded hover:bg-primary-hover shadow-lg">AGREE</button>
-                     <button id="btn-privacy-exit" class="nav-item px-8 py-3 bg-gray-600 text-white font-bold rounded hover:bg-gray-500">EXIT</button>
+                     <button id="btn-privacy-agree" class="nav-item px-8 py-3 bg-primary text-white font-bold rounded hover:bg-primary-hover shadow-lg" data-i18n="btn_agree">AGREE</button>
+                     <button id="btn-privacy-exit" class="nav-item px-8 py-3 bg-gray-600 text-white font-bold rounded hover:bg-gray-500" data-i18n="btn_exit">EXIT</button>
                 </div>
             </div>
         </div>
@@ -944,12 +944,12 @@
         <div id="modal-privacy-view" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9990;">
             <div class="bg-slate-900 w-full max-w-4xl p-8 rounded-lg shadow-2xl border border-gray-700 flex flex-col h-[80vh]">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h2 class="text-2xl font-bold text-white">Privacy Policy</h2>
+                    <h2 class="text-2xl font-bold text-white" data-i18n="settings_privacy_policy">Privacy Policy</h2>
                     <span class="text-sm text-gray-500">Scroll with Up/Down</span>
                 </div>
                 <div class="flex-1 overflow-y-auto p-6 bg-black/20 rounded text-gray-300 text-base leading-relaxed whitespace-pre-wrap" id="privacy-full-text">Loading...</div>
                 <div class="mt-4 text-center">
-                    <button id="btn-privacy-close" class="nav-item px-8 py-2 bg-gray-600 text-white font-bold rounded hover:bg-gray-500">Close</button>
+                    <button id="btn-privacy-close" class="nav-item px-8 py-2 bg-gray-600 text-white font-bold rounded hover:bg-gray-500" data-i18n="btn_close">Close</button>
                 </div>
             </div>
         </div>
@@ -967,8 +967,8 @@
                     </div>
         
                     <div>
-                        <h2 id="modal-error-title" class="text-2xl font-bold text-red-200">Connection Failed</h2>
-                        <p id="modal-error-message" class=" mt-2 text-lg text-red-400">Unable to reach the server.</p>
+                        <h2 id="modal-error-title" class="text-2xl font-bold text-red-200" data-i18n="boot_connection_error">Connection Failed</h2>
+                        <p id="modal-error-message" class=" mt-2 text-lg text-red-400" data-i18n="error_connect_failed">Unable to reach the server.</p>
                         <p id="modal-error-code" class="text-gray-500 text-sm font-mono mt-1"></p>
                     </div>
         
@@ -1006,7 +1006,7 @@
             <div class="orbit orbit-outer" id="outer"></div>
             <div class="orbit orbit-inner" id="inner"></div>
         </div>
-        <div class="loader-text" id="text-label"></div>
+        <div class="loader-text" id="text-label" data-i18n="loading">Loading...</div>
     </div>
 
 
@@ -1017,7 +1017,7 @@
     <div id="category-manager-modal" class="hidden fixed inset-0 flex items-center justify-center p-4">
         <div class="bg-card w-full max-w-4xl h-[80vh] rounded-lg shadow-xl overflow-hidden flex flex-col">
             <div class="p-4 bg-alt border-b border-gray-700 flex justify-between items-center">
-                <h2 id="category-manager-title" class="font-bold text-main">Manage Categories</h2>
+                <h2 id="category-manager-title" class="font-bold text-main" data-i18n="settings_manage_cats">Manage Categories</h2>
                 <p class="text-alt" data-i18n="manager_hint">Toggle Hide / Pin</p>
             </div>
             <div id="category-manager-list" class="flex-1 overflow-y-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-2"></div>
