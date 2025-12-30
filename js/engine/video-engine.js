@@ -11,6 +11,7 @@ const VideoEngine = (function() {
     // Store current URL internally to allow restarting without passing it back in
     let currentUrl = ""; 
     let currentRect = null;
+    let connection_error = false;
 
     let playerTracks = { 
             video:{}, 
@@ -39,7 +40,20 @@ const VideoEngine = (function() {
             _startWeb(url, startTime, isLive, rect);
         }
     }
+    function avplay_error(e){
+        console.error("AVPlay Error:", e);
+        Loader.hide(`err;${e}`);
+        if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
+            showError("Video format not supported!");
+        }else if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
+            showError(t("boot_connection_error"));
+            connection_error = true;
+            stop();
+        }else{
+            showError("Streaming Video failed!");
+        }
 
+    }
     // UPDATED: Added keepDom parameter
     function stop(keepDom = false) {
         console.log("[videoEngine]  stop")
@@ -337,14 +351,8 @@ const VideoEngine = (function() {
                 }
             },
             onerror: (e) => {
-                if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
-                    showError("Video format not supported!");
-                }else if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
-                    showError("Video Connection failed!");
-                }else{
-                    showError("Streaming Video failed!");
-                }
-                if(_callbacks.onError) _callbacks.onError(e); 
+                avplay_error(e);
+                //if(_callbacks.onError) _callbacks.onError(e); 
             },
             onevent: (eventid, data) => {},
             onsubtitlechange: (duration, text, data3, data4) => {
@@ -381,7 +389,11 @@ const VideoEngine = (function() {
             if (!reuseDom){
                 setRect(rect);
             }
-            parseTracks();
+
+            playerTracks.video = {};
+            playerTracks.audios = [];
+            playerTracks.subtitles = [];
+
             updateResolution();
             webapis.avplay.prepareAsync(() => {
                 setRect(rect); // Ensure rect is correct

@@ -27,31 +27,8 @@ const PlayerController = (function() {
 
         // Keep visibility handler ready (if used elsewhere)
         document.addEventListener("tizenvisibilitychange", handleVisibilityChange);
-    
-        // === SIMPLE NETWORK RESILIENCE ===
-        window.addEventListener('online', _handleNetworkRecovery);
-        window.addEventListener('offline', _handlenetworkLoss);
     }
-    function _handlenetworkLoss() {
-        console.warn("[PlayerController] Network lost. Waiting for recovery...");
-        if (currentState.isPlaying) {
-            showErrorModal("Network connection lost","Network connection lost. Please check your connection.");
-        }
-    }
-    function _handleNetworkRecovery() {
-        console.log("[PlayerController] Network Online detected");
-        
-        // If we have an active item and position, resume playback
-        if (currentState.item && currentState.currentPosition > 0) {
-            console.log("[PlayerController] Resuming playback after network recovery...");
-            // Short delay to ensure network stack is fully up
-            setTimeout(() => {
-                hideErrorModal();
-                //make sure this is best option, maybe we just need to resume instead of reload
-                VideoEngine.reload();
-            }, 1000);
-        }
-    }
+
     function isPlaying(isplaying=null){
         if(isplaying===null){
             return currentState.isPlaying ;
@@ -365,9 +342,12 @@ const PlayerController = (function() {
     
     function _handleEnded() {
         if (currentState.type !== 'live') _saveProgress(true);
+        
         stop();
         FocusManager.restorePreviousLayer();
         if(typeof goBack === 'function') goBack();
+        
+        showAlert("Playback ended");
     }
     
     function _startSaveInterval() {
