@@ -10,7 +10,11 @@ function setGlobalFontScale(scale) {
 function showError(message) {
     const toast = $('#error-toast');
     if(!toast) return;
-    toast.textContent = message || 'An error occurred.';
+    
+    // Use translation for default error message
+    const defaultMsg = typeof t !== 'undefined' ? t('error_unknown') : 'An error occurred.';
+    
+    toast.textContent = message || defaultMsg;
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';

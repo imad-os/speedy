@@ -153,15 +153,15 @@ async function handleUserLogin() {
 
     // 1. Show page-main immediately with boot status
     showPage('page-main');
-    $("#add-playlist-status").textContent = "No playlist found";
+    $("#add-playlist-status").textContent = typeof t !== 'undefined' ? t('msg_no_playlists') : "No playlist found";
 
     // 2. Initial Status
-    updateBootStatus("Loading user playlists...");
+    updateBootStatus(typeof t !== 'undefined' ? t('boot_loading_user') : "Loading user playlists...");
 
     loadUserSettings(); 
     
     if(isTestMode){
-        updateBootStatus("Entering Test Mode...");
+        updateBootStatus(typeof t !== 'undefined' ? t('boot_test_mode') : "Entering Test Mode...");
         // Short delay for visual effect
         setTimeout(() => {
             handleApiConnect(null, true);
@@ -177,12 +177,12 @@ async function handleUserLogin() {
 
     try {
         if (firebaseDb) {
-            updateBootStatus("Verifying device...");
+            updateBootStatus(typeof t !== 'undefined' ? t('boot_verifying') : "Verifying device...");
             const docRef = firebaseDb.collection("devices").doc(deviceId);
             const doc = await docRef.get();
 
             if (doc.exists) {
-                updateBootStatus("Fetching user info...");
+                updateBootStatus(typeof t !== 'undefined' ? t('boot_fetching_info') : "Fetching user info...");
                 const data = doc.data();
                 console.log("Playlist found via Firebase!", data);
                 
@@ -207,43 +207,43 @@ async function handleUserLogin() {
                         return;
                     }else{
                         console.log("ERRORR NOT VALID PLAYLIST");
-                        updateBootStatus("Invalid Playlist Data");
-                        _showQrModal(null, "Data Invalid Playlist Data")
+                        updateBootStatus(typeof t !== 'undefined' ? t('boot_data_error') : "Invalid Playlist Data");
+                        _showQrModal(null, typeof t !== 'undefined' ? t('boot_data_error') : "Data Invalid Playlist Data")
                         isLoginRunning = false;
                         return
                     }
                 }catch(e){
                     console.log("ERROR DECODING PLAYLIST:", e);
-                     updateBootStatus("Data Error");
-                     _showQrModal(null, "Data Error");
+                     updateBootStatus(typeof t !== 'undefined' ? t('boot_data_error') : "Data Error");
+                     _showQrModal(null, typeof t !== 'undefined' ? t('boot_data_error') : "Data Error");
                      isLoginRunning = false;
                      return;
                 }
 
             }else{
                 console.log("No playlist found in Firebase for this device.");
-                updateBootStatus("Registering device...");
+                updateBootStatus(typeof t !== 'undefined' ? t('boot_registering') : "Registering device...");
                 // Await this so we don't race ahead if it takes time (though we continue anyway)
                 await signupDevice(docRef); 
             }
             if(!doc.exists || !doc.data()?.playlists) {
                 console.log(" ---------- No playlist found. Showing QR Code.");
-                $("#add-playlist-status").textContent = "No playlist found";
+                $("#add-playlist-status").textContent = typeof t !== 'undefined' ? t('msg_no_playlists') : "No playlist found";
                 // Show QR directly, status remains visible behind it
-                _showQrModal(docRef, "No playlist found");
+                _showQrModal(docRef, typeof t !== 'undefined' ? t('msg_no_playlists') : "No playlist found");
                 Loader.hide()
                 isLoginRunning = false;
                 return; // Stop here, wait for QR scan
             }
         } else {
             console.warn("Firebase not initialized.");
-            updateBootStatus("Firebase Init Failed");
+            updateBootStatus(typeof t !== 'undefined' ? t('boot_firebase_failed') : "Firebase Init Failed");
             isLoginRunning = false;
             return
         }
     } catch (e) {
         console.error("Firebase Error:", e);
-        updateBootStatus("Connection Error");
+        updateBootStatus(typeof t !== 'undefined' ? t('boot_connection_error') : "Connection Error");
         isLoginRunning = false;
     }
 
@@ -312,7 +312,9 @@ function _showQrModal(docRef, error=null) {
     const btnRefresh = $('#btn-playlist-refresh');
     const Status = $('#add-playlist-status');
     if(error){
-        Status.textContent=`Error: ${error}`;
+        // Only show error if it's not the generic "No playlists found" message
+        // which is expected on first load
+        Status.textContent= error;
         Status.classList.add("text-red-400");
     }else{
         Status.textContent=``;
@@ -400,17 +402,17 @@ async function handleApiConnect(e, isAutoLogin = false) {
     xtreamConfig = { ...userSettings.xtreamConfig[currentIndex] };
     
     if (!xtreamConfig) {
-        if (!isAutoLogin) showError('No playlist config found.');
+        if (!isAutoLogin) showError(typeof t !== 'undefined' ? t('msg_no_playlists') : 'No playlist config found.');
         console.log("--------- no playlist")
-        _showQrModal(null, 'No playlist config found.');
+        _showQrModal(null, typeof t !== 'undefined' ? t('msg_no_playlists') : 'No playlist config found.');
 
         return false; // Return false to indicate failure
     }
     if(!isTestMode){
         if (!xtreamConfig.host || !xtreamConfig.username || !xtreamConfig.password) {
-            if (!isAutoLogin) showError('playlist is not valid.');
+            if (!isAutoLogin) showError(typeof t !== 'undefined' ? t('boot_data_error') : 'playlist is not valid.');
             console.log(`xtreamConfig.host:${xtreamConfig.host} || xtreamConfig.username : ${xtreamConfig.username} || xtreamConfig.password : ${xtreamConfig.password}`)
-            _showQrModal(null, 'playlist is not containing host or username or password.');
+            _showQrModal(null, typeof t !== 'undefined' ? t('boot_data_error') : 'playlist is not containing host or username or password.');
 
             return false;
         }
@@ -421,9 +423,9 @@ async function handleApiConnect(e, isAutoLogin = false) {
         apiBaseUrl = `${xtreamConfig.host}/player_api.php`;
         // UPDATE STATUS
         if (xtreamConfig.host.startsWith("https")) {
-            updateBootStatus("Trying HTTPS connection...");
+            updateBootStatus(typeof t !== 'undefined' ? t('boot_https') : "Trying HTTPS connection...");
         } else {
-            updateBootStatus("Trying HTTP connection...");
+            updateBootStatus(typeof t !== 'undefined' ? t('boot_http') : "Trying HTTP connection...");
         }
     }
     
@@ -433,7 +435,7 @@ async function handleApiConnect(e, isAutoLogin = false) {
         const data = await fetchXtream({ action: 'get_user_info' }, false);
         if (data && data!==-1) {
             console.log('API Connected');
-            updateBootStatus("Connection Successful!");
+            updateBootStatus(typeof t !== 'undefined' ? t('boot_success') : "Connection Successful!");
 
             // ONLY update global settings on success
             userSettings.xtreamConfig[currentIndex] = xtreamConfig;
@@ -456,14 +458,15 @@ async function handleApiConnect(e, isAutoLogin = false) {
             return true;
 
         } else {
-            const msg = data===-1 ? 'PlayList Error (expired or wrong username/password)' : 'Connect failed';
+            const msg = data===-1 ? (typeof t !== 'undefined' ? t('error_playlist_auth') : 'PlayList Error (expired or wrong username/password)') : (typeof t !== 'undefined' ? t('error_connect_failed') : 'Connect failed');
             throw new Error(msg);
         }
     } catch (error) {
         console.error('Connect failed:', error.message);
         
+        // Don't show "Code" if the error is just a message
         updateBootStatus(error.message);
-        
+        isTestMode=false;
         setTimeout(() => {
              // Only show QR if it was an auto-login attempt at startup
              if(isAutoLogin) _showQrModal(null, error.message);

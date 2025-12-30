@@ -24,6 +24,56 @@ function isCategoryItemsAction(action) {
     return action === "get_live_streams" || action === "get_vod_streams" || action === "get_series";
 }
 
+function errorHandler(err) {
+    console.error("Fetch error:", err);
+    // If aborted, rethrow immediately to skip error modals
+    if (err.name === 'AbortError' || err === 'ABORTED') {
+        throw err;
+    }
+
+    let message = "Unexpected error occurred";
+    let title = "Network Error";
+    let returnValue = false;
+
+    // FIX: Robust check for err being an object (e.g. {type:"AUTH_ERROR"}) or string
+    const errCode = (err && typeof err === 'object' && err.type) ? err.type : err;
+
+    // Use Translation Engine for Messages
+    switch (errCode) {
+        case "NO_INTERNET":
+            message = typeof t !== 'undefined' ? t('error_network') : "No Internet Connection.";
+            break;
+        case "BAD_RESPONSE":
+            message = typeof t !== 'undefined' ? t('error_connect_failed') : "Server returned an error.";
+            break;
+        case "TIMEOUT":
+            message = typeof t !== 'undefined' ? t('boot_connection_error') : "Connection timed out.";
+            break;
+        case "FETCH_ERROR":
+            message = typeof t !== 'undefined' ? t('error_connect_failed') : "Cannot reach server.";
+            break;
+        case "AUTH_ERROR":
+            message = typeof t !== 'undefined' ? t('error_playlist_auth') : "Authentication Failed.";
+            title = "Playlist Error";
+            returnValue = -1;
+            break;
+        default:
+            message = typeof t !== 'undefined' ? t('error_unknown') : "Unexpected error occurred.";
+            break;
+    }
+    
+    // Ensure showErrorModal is available before calling
+    if (typeof showErrorModal === 'function') {
+        showErrorModal(title, message, typeof errCode === 'string' ? errCode : 'ERR');
+    } else {
+        console.error("showErrorModal not defined!", message);
+        // Fallback if UI common isn't loaded
+        if(typeof showError === 'function') showError(message);
+    }
+    
+    return returnValue;
+
+}
 
 /**
  * Fetch with Download Progress Support
@@ -35,7 +85,7 @@ async function fetchFreshXtream(params, onProgress) {
 
     if (!xtreamConfig || !xtreamConfig.host) {
         if(typeof Loader !== 'undefined') Loader.hide("");
-        showError("Invalid playlist configuration.");
+        showError(typeof t !== 'undefined' ? t('error_incomplete_playlist') : "Invalid playlist configuration.");
         throw new Error("Invalid playlist configuration");
     }
 
@@ -80,44 +130,8 @@ async function fetchFreshXtream(params, onProgress) {
         try {
             // Pass signal to safeFetch
             response = await safeFetch(url, { signal });
-        } catch (err) {   
-            console.error("Fetch error:", err);
-            // If aborted, rethrow immediately to skip error modals
-            if (err.name === 'AbortError' || err === 'ABORTED') {
-                throw err;
-            }
-
-            let message="Unexpected error occurred";
-            let title = "Network Error";
-            let returnValue = false;
-
-            // FIX: Robust check for err being an object (e.g. {type:"AUTH_ERROR"}) or string
-            const errCode = (err && typeof err === 'object' && err.type) ? err.type : err;
-
-            switch (errCode) {
-                case "NO_INTERNET":
-                    message = "No Internet Connection. Check your Wi-Fi or Ethernet.";
-                    break;
-                case "BAD_RESPONSE":
-                    message = "Server returned an error. Please try again later.";
-                    break;
-                case "TIMEOUT":
-                    message = "Connection timed out. The server took too long to respond.";
-                    break;
-                case "FETCH_ERROR":
-                    message = "Cannot reach server. Please try again later.";
-                    break;
-                case "AUTH_ERROR":
-                    message = "IPTV Playlist Authentication Failed. Check your username and password.";
-                    title = "Playist Error";
-                    returnValue = -1;
-                    break;
-                default:
-                    message = "Unexpected error occurred.";
-                    break;
-            }
-            showErrorModal(title, message, err)
-            return returnValue;
+        } catch (err) {
+            return errorHandler(err);
         }
 
         // If onProgress is provided and streams are supported, use the reader
@@ -187,7 +201,7 @@ async function fetchFreshXtream(params, onProgress) {
         }
 
         console.error('Fetch error:', error);
-        if(typeof showError === 'function') showError("Network Error: " + error.message);
+        if(typeof showError === 'function') showError((typeof t !== 'undefined' ? t('boot_connection_error') : "Network Error") + ": " + error.message);
         throw error;
     }
 }
@@ -277,8 +291,7 @@ async function getTestModeApi(action, params = {}) {
         try {
             response = await safeFetch(fullUrl);
         } catch (err) {   
-             // ... error handling ...
-            return false;
+             return errorHandler(err);
         }
         const res = await response.json();
         if(action === "get_vod_streams"){

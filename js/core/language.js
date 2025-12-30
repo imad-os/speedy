@@ -1,5 +1,103 @@
 const LanguageManager = (function() {
     
+    // --- FULL PRIVACY POLICY TEXTS ---
+    const POLICY_EN = `PRIVACY POLICY FOR SPEEDY IPTV
+
+Last Updated: December 6, 2025
+
+1. Data Collection & Purpose
+Speedy IPTV strictly limits data collection to the minimum necessary for the application to function. We collect the following device identifiers:
+* MAC Address & Tizen ID: Used as unique identifiers for your user profile. This allows the app to save your playlists, favorites, and settings without requiring a login or password.
+* Model Name: Used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.
+
+2. Data Usage
+This information is used solely for:
+* Authenticating your device.
+* Restoring your user preferences.
+* Technical troubleshooting.
+
+3. Third-Party Sharing
+We do not sell, trade, or transfer your data (MAC Address, Tizen ID, or Model Name) to outside parties. We do not use this data for advertising or tracking purposes.
+
+4. User Consent
+By launching Speedy IPTV and clicking "Agree," you consent to this collection. You may withdraw consent by uninstalling the application.
+
+5. Contact
+If you have questions regarding this policy, please contact us at: support@geekspro.us`;
+
+    const POLICY_FR = `POLITIQUE DE CONFIDENTIALITÉ POUR SPEEDY IPTV
+
+Dernière mise à jour : 6 décembre 2025
+
+1. Collecte de données et objectif
+Speedy IPTV limite strictement la collecte de données au minimum nécessaire au fonctionnement de l'application. Nous collectons les identifiants d'appareil suivants :
+* Adresse MAC et identifiant Tizen : utilisés comme identifiants uniques pour votre profil utilisateur. Cela permet à l'application d'enregistrer vos listes de lecture, favoris et paramètres sans nécessiter de connexion ni de mot de passe.
+* Nom du modèle : utilisé pour détecter les capacités techniques de votre téléviseur (résolution, codecs pris en charge) afin d'assurer une lecture vidéo fluide.
+
+2. Utilisation des données
+Ces informations sont utilisées uniquement pour :
+* Authentifier votre appareil.
+* Restaurer vos préférences utilisateur.
+* Le dépannage technique.
+
+3. Partage avec des tiers
+Nous ne vendons, n'échangeons ni ne transférons vos données (adresse MAC, identifiant Tizen ou nom du modèle) à des tiers. Nous n'utilisons pas ces données à des fins publicitaires ou de suivi.
+
+4. Consentement de l'utilisateur
+En lançant Speedy IPTV et en cliquant sur « Accepter », vous consentez à cette collecte. Vous pouvez retirer votre consentement en désinstallant l'application.
+
+5. Contact
+Si vous avez des questions concernant cette politique, veuillez nous contacter à : support@geekspro.us`;
+
+    const POLICY_ES = `POLÍTICA DE PRIVACIDAD DE SPEEDY IPTV
+
+Última actualización: 6 de diciembre de 2025
+
+1. Recopilación de datos y finalidad
+Speedy IPTV limita estrictamente la recopilación de datos al mínimo necesario para que la aplicación funcione. Recopilamos los siguientes identificadores de dispositivo:
+* Dirección MAC e ID de Tizen: se utilizan como identificadores únicos para su perfil de usuario. Esto permite que la aplicación guarde sus listas de reproducción, favoritos y configuraciones sin requerir un inicio de sesión o contraseña.
+* Nombre del modelo: se utiliza para detectar las capacidades técnicas de su televisor (resolución, códecs compatibles) para garantizar una reproducción de video fluida.
+
+2. Uso de datos
+Esta información se utiliza únicamente para:
+* Autenticar su dispositivo.
+* Restaurar sus preferencias de usuario.
+* Solución de problemas técnicos.
+
+3. Intercambio con terceros
+No vendemos, comercializamos ni transferimos sus datos (dirección MAC, ID de Tizen o nombre del modelo) a terceros. No utilizamos estos datos con fines publicitarios o de seguimiento.
+
+4. Consentimiento del usuario
+Al iniciar Speedy IPTV y hacer clic en "Aceptar", usted da su consentimiento a esta recopilación. Puede retirar su consentimiento desinstalando la aplicación.
+
+5. Contacto
+Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
+
+    const POLICY_AR = `سياسة الخصوصية لـ SPEEDY IPTV
+
+آخر تحديث: 6 ديسمبر 2025
+
+1. جمع البيانات والغرض منها
+يقصر Speedy IPTV جمع البيانات بشكل صارم على الحد الأدنى الضروري لعمل التطبيق. نجمع معرفات الجهاز التالية:
+* عنوان MAC ومعرف Tizen: تستخدم كمعرفات فريدة لملفك الشخصي. يتيح هذا للتطبيق حفظ قوائم التشغيل والمفضلة والإعدادات دون الحاجة لتسجيل الدخول أو كلمة مرور.
+* اسم الموديل: يستخدم للكشف عن القدرات التقنية للتلفزيون (الدقة، برامج الترميز المدعومة) لضمان تشغيل الفيديو بسلاسة.
+
+2. استخدام البيانات
+تستخدم هذه المعلومات فقط لـ:
+* المصادقة على جهازك.
+* استعادة تفضيلات المستخدم.
+* استكشاف الأخطاء التقنية وإصلاحها.
+
+3. المشاركة مع أطراف ثالثة
+نحن لا نبيع أو نتاجر أو ننقل بياناتك (عنوان MAC أو معرف Tizen أو اسم الموديل) لأطراف خارجية. لا نستخدم هذه البيانات للإعلانات أو التتبع.
+
+4. موافقة المستخدم
+من خلال تشغيل Speedy IPTV والنقر على "موافق"، فإنك توافق على هذا الجمع. يمكنك سحب الموافقة عن طريق إلغاء تثبيت التطبيق.
+
+5. الاتصال
+إذا كانت لديك أسئلة بخصوص هذه السياسة، يرجى الاتصال بنا على: support@geekspro.us`;
+
+
     const dictionary = {
         en: {
             // AUTH & API
@@ -86,8 +184,8 @@ const LanguageManager = (function() {
             "privacy_consent_outro1": "We do not sell, share, or rent this information to third parties.",
             "privacy_consent_outro2": "By clicking <strong>'AGREE'</strong>, you consent to this collection.",
             
-            // Full Privacy Policy Text
-            "privacy_policy_full": "PRIVACY POLICY FOR SPEEDY IPTV\n\nLast Updated: December 6, 2025\n\n1. Data Collection & Purpose\nSpeedy IPTV strictly limits data collection to the minimum necessary for the application to function. We collect the following device identifiers:\n* MAC Address & Tizen ID: Used as unique identifiers for your user profile. This allows the app to save your playlists, favorites, and settings without requiring a login or password.\n* Model Name: Used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.\n\n2. Data Usage\nThis information is used solely for:\n* Authenticating your device.\n* Restoring your user preferences.\n* Technical troubleshooting.\n\n3. Third-Party Sharing\nWe do not sell, trade, or transfer your data (MAC Address, Tizen ID, or Model Name) to outside parties. We do not use this data for advertising or tracking purposes.\n\n4. User Consent\nBy launching Speedy IPTV and clicking 'Agree,' you consent to this collection. You may withdraw consent by uninstalling the application.\n\n5. Contact\nIf you have questions regarding this policy, please contact us at: support@geekspro.us",
+            // Full Privacy Policy Text (Injected from constants)
+            "privacy_policy_full": POLICY_EN,
 
             // SPEED TEST
             "speedtest_title": "Network Speed Test",
@@ -124,6 +222,7 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Playlists",
             "sub_active": "Active",
             "sub_trial": "Trial",
+            "sub_waiting": "Waiting",
 
             // BOOT STATUS & ERRORS
             "boot_init": "Initializing...",
@@ -142,9 +241,12 @@ const LanguageManager = (function() {
             "error_playlist_auth": "PlayList Error (expired or wrong username/password)",
             "error_connect_failed": "Connect failed",
             "error_network": "Network Error",
-
+            "error_unknown": "An unknown error occurred.",
+            "error_code": "Code",
+            
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
+            "about_version": "Version",
             "about_dev": "Developer:",
             "about_contact": "Contact:",
             "about_desc": "Description:",
@@ -244,13 +346,13 @@ const LanguageManager = (function() {
 
             // Privacy Modal Content
             "privacy_consent_intro": "Pour fonctionner correctement, <strong>Speedy IPTV</strong> doit accéder à des identifiants d'appareil spécifiques. Nous collectons les données suivantes uniquement pour sauvegarder vos playlists :",
-            "privacy_consent_point1": "<strong>Adresse MAC & Tizen ID:</strong> Utilisés pour identifier votre appareil et restaurer votre contenu sauvegardé.",
-            "privacy_consent_point2": "<strong>Nom du modèle:</strong> Utilisé pour détecter les capacités techniques de votre TV (résolution, codecs) pour une lecture fluide.",
+            "privacy_consent_point1": "<strong>Adresse MAC et identifiant Tizen :</strong> Utilisés pour identifier votre appareil et restaurer votre contenu sauvegardé.",
+            "privacy_consent_point2": "<strong>Nom du modèle :</strong> Utilisé pour détecter les capacités techniques de votre TV (résolution, codecs) pour une lecture fluide.",
             "privacy_consent_outro1": "Nous ne vendons, ne partageons et ne louons pas ces informations à des tiers.",
             "privacy_consent_outro2": "En cliquant sur <strong>'ACCEPTER'</strong>, vous consentez à cette collecte.",
 
-            // Full Privacy Policy Text (French Summary)
-            "privacy_policy_full": "POLITIQUE DE CONFIDENTIALITÉ POUR SPEEDY IPTV\n\nDernière mise à jour : 6 décembre 2025\n\n1. Collecte de données\nSpeedy IPTV limite strictement la collecte de données au minimum nécessaire. Identifiants collectés :\n* Adresse MAC et ID Tizen : Pour identifier votre profil utilisateur sans mot de passe.\n* Nom du modèle : Pour optimiser la lecture vidéo.\n\n2. Utilisation des données\nUtilisées uniquement pour authentifier votre appareil, restaurer vos préférences et le dépannage technique.\n\n3. Partage avec des tiers\nNous ne vendons ni ne transférons vos données à des tiers. Aucune utilisation publicitaire.\n\n4. Consentement\nEn utilisant l'application, vous consentez à cette collecte.\n\n5. Contact\nsupport@geekspro.us",
+            // Full Privacy Policy Text
+            "privacy_policy_full": POLICY_FR,
 
             // SPEED TEST
             "speedtest_title": "Test de Vitesse Réseau",
@@ -262,7 +364,7 @@ const LanguageManager = (function() {
             "playlists_title": "Mes Playlists",
             "playlist_add_new": "Ajouter Playlist",
             "playlist_setup_title": "Configurer Playlist",
-            "visit_url": "Visitez:",
+            "visit_url": "Visitez :",
             "waiting_playlist": "En attente de playlist...",
             "scan_hint": "Scannez pour ajouter",
             "msg_no_playlists": "Aucune playlist trouvée.",
@@ -287,6 +389,7 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Playlists",
             "sub_active": "Actif",
             "sub_trial": "Essai",
+            "sub_waiting": "En attente",
 
             // BOOT STATUS & ERRORS
             "boot_init": "Initialisation...",
@@ -305,12 +408,15 @@ const LanguageManager = (function() {
             "error_playlist_auth": "Erreur Playlist (expiré ou mauvais identifiants)",
             "error_connect_failed": "Échec de connexion",
             "error_network": "Erreur Réseau",
+            "error_unknown": "Une erreur inconnue est survenue.",
+            "error_code": "Code",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
-            "about_dev": "Développeur:",
-            "about_contact": "Contact:",
-            "about_desc": "Description:",
+            "about_version": "Version",
+            "about_dev": "Développeur :",
+            "about_contact": "Contact :",
+            "about_desc": "Description :",
             "loading": "Chargement...",
             "search_placeholder": "Rechercher...",
             "title_searching": "Résultats de recherche",
@@ -412,8 +518,8 @@ const LanguageManager = (function() {
             "privacy_consent_outro1": "No vendemos, compartimos ni alquilamos esta información a terceros.",
             "privacy_consent_outro2": "Al hacer clic en <strong>'ACEPTAR'</strong>, usted consiente esta recopilación.",
 
-            // Full Privacy Policy Text (Spanish Summary)
-            "privacy_policy_full": "POLÍTICA DE PRIVACIDAD DE SPEEDY IPTV\n\nÚltima actualización: 6 de diciembre de 2025\n\n1. Recopilación de datos\nSpeedy IPTV limita estrictamente la recopilación de datos. Recopilamos:\n* Dirección MAC y Tizen ID: Para identificar su perfil sin contraseña.\n* Nombre del modelo: Para optimizar la reproducción de video.\n\n2. Uso de datos\nSe utiliza únicamente para autenticar su dispositivo, restaurar preferencias y soporte técnico.\n\n3. Compartir con terceros\nNo vendemos ni transferimos sus datos a terceros. No se usa para publicidad.\n\n4. Consentimiento\nAl usar la aplicación, usted acepta esta recopilación.\n\n5. Contacto\nsupport@geekspro.us",
+            // Full Privacy Policy Text
+            "privacy_policy_full": POLICY_ES,
 
             // SPEED TEST
             "speedtest_title": "Prueba de Velocidad de Red",
@@ -450,6 +556,7 @@ const LanguageManager = (function() {
             "sub_playlists_count": "Listas",
             "sub_active": "Activo",
             "sub_trial": "Prueba",
+            "sub_waiting": "Esperando",
 
             // BOOT STATUS & ERRORS
             "boot_init": "Iniciando...",
@@ -468,9 +575,12 @@ const LanguageManager = (function() {
             "error_playlist_auth": "Error de Playlist (expirada o contraseña incorrecta)",
             "error_connect_failed": "Conexión fallida",
             "error_network": "Error de Red",
+            "error_unknown": "Ocurrió un error desconocido.",
+            "error_code": "Código",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
+            "about_version": "Versión",
             "about_dev": "Desarrollador:",
             "about_contact": "Contacto:",
             "about_desc": "Descripción:",
@@ -575,8 +685,8 @@ const LanguageManager = (function() {
             "privacy_consent_outro1": "نحن لا نبيع أو نشارك أو نؤجر هذه المعلومات لأطراف ثالثة.",
             "privacy_consent_outro2": "بالضغط على <strong>'موافق'</strong>، أنت توافق على هذا الجمع للبيانات.",
 
-            // Full Privacy Policy Text (Arabic Summary)
-            "privacy_policy_full": "سياسة الخصوصية لـ SPEEDY IPTV\n\nآخر تحديث: 6 ديسمبر 2025\n\n1. جمع البيانات والغرض منها\nيقصر Speedy IPTV جمع البيانات بشكل صارم على الحد الأدنى الضروري لعمل التطبيق. نجمع معرفات الجهاز التالية:\n* عنوان MAC ومعرف Tizen: تستخدم كمعرفات فريدة لملفك الشخصي. يتيح هذا للتطبيق حفظ القوائم والمفضلة والإعدادات دون الحاجة لتسجيل الدخول.\n* اسم الموديل: يستخدم للكشف عن القدرات التقنية للتلفزيون لضمان تشغيل الفيديو بسلاسة.\n\n2. استخدام البيانات\nتستخدم هذه المعلومات فقط لـ:\n* المصادقة على جهازك.\n* استعادة تفضيلات المستخدم.\n* استكشاف الأخطاء التقنية وإصلاحها.\n\n3. المشاركة مع أطراف ثالثة\nنحن لا نبيع أو نتاجر أو ننقل بياناتك لأطراف خارجية. لا نستخدم هذه البيانات للإعلانات.\n\n4. موافقة المستخدم\nمن خلال تشغيل Speedy IPTV والنقر على 'موافق'، فإنك توافق على هذا الجمع.\n\n5. الاتصال\nإذا كانت لديك أسئلة، يرجى الاتصال بنا على: support@geekspro.us",
+            // Full Privacy Policy Text
+            "privacy_policy_full": POLICY_AR,
 
             // SPEED TEST
             "speedtest_title": "اختبار سرعة الشبكة",
@@ -613,6 +723,7 @@ const LanguageManager = (function() {
             "sub_playlists_count": "القوائم",
             "sub_active": "نشط",
             "sub_trial": "تجريبي",
+            "sub_waiting": "انتظار",
 
             // BOOT STATUS & ERRORS
             "boot_init": "جاري البدء...",
@@ -631,9 +742,12 @@ const LanguageManager = (function() {
             "error_playlist_auth": "خطأ في القائمة (منتهية الصلاحية أو بيانات خاطئة)",
             "error_connect_failed": "فشل الاتصال",
             "error_network": "خطأ في الشبكة",
+            "error_unknown": "حدث خطأ غير معروف.",
+            "error_code": "الرمز",
 
             // ABOUT & SYSTEM
             "app_name": "Speedy IPTV",
+            "about_version": "الإصدار",
             "about_dev": "المطور:",
             "about_contact": "تواصل:",
             "about_desc": "الوصف:",
@@ -674,15 +788,7 @@ const LanguageManager = (function() {
     function updateDOM() {
         const lang = (userSettings && userSettings.language) ? userSettings.language : 'en';
         console.log(`[LanguageManager] Updating DOM to: ${lang}`);
-
-        // 1. Handle RTL for Arabic
-        if (lang === 'ar') {
-            document.body.dir = "rtl";
-            document.body.classList.add('rtl-layout');
-        } else {
-            document.body.dir = "ltr";
-            document.body.classList.remove('rtl-layout');
-        }
+        //i do no need to change RTL at all, this will add complexity to navigation, so i will just keep it LTR
 
         // 2. Update Text Content (Using innerHTML to support <b>, <strong> tags in translations)
         const elements = document.querySelectorAll('[data-i18n]');

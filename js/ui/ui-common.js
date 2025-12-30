@@ -3,31 +3,8 @@
 
 let lastErrorRetryCallback = null;
 
-// --- PRIVACY POLICY TEXT (EMBEDDED FOR SPEED) ---
-const PRIVACY_POLICY_TEXT = `PRIVACY POLICY FOR SPEEDY IPTV
-
-Last Updated: December 6, 2025
-
-1. Data Collection & Purpose
-Speedy IPTV strictly limits data collection to the minimum necessary for the application to function. We collect the following device identifiers:
-* MAC Address & Tizen ID: Used as unique identifiers for your user profile. This allows the app to save your playlists, favorites, and settings without requiring a login or password.
-* Model Name: Used to detect your TV's technical capabilities (resolution, supported codecs) to ensure smooth video playback.
-
-2. Data Usage
-This information is used solely for:
-* Authenticating your device.
-* Restoring your user preferences.
-* Technical troubleshooting.
-
-3. Third-Party Sharing
-We do not sell, trade, or transfer your data (MAC Address, Tizen ID, or Model Name) to outside parties. We do not use this data for advertising or tracking purposes.
-
-4. User Consent
-By launching Speedy IPTV and clicking "Agree," you consent to this collection. You may withdraw consent by uninstalling the application.
-
-5. Contact
-If you have questions regarding this policy, please contact us at: support@geekspro.us`;
-
+// --- PRIVACY POLICY TEXT REMOVED ---
+// (Now handled dynamically via LanguageManager using key 'privacy_policy_full')
 
 function setupClock() {
     const updateTime = () => {
@@ -77,7 +54,8 @@ function updateBootStatus(text) {
 
     if (label) {
         // Translate message if possible, otherwise use raw text
-        label.textContent = (typeof t !== 'undefined' && text.startsWith('msg_')) ? t(text) : text;
+        // Note: Calls to updateBootStatus in user.js should ideally pass keys like 'boot_loading_user'
+        label.textContent = (typeof t !== 'undefined' && text.startsWith('boot_')) ? t(text) : text;
     }
 }
 
@@ -179,8 +157,10 @@ function showPrivacySettings() {
     const modal = document.getElementById('modal-privacy-view');
     const textContainer = document.getElementById('privacy-full-text');
     
-    // Populate text
-    if(textContainer) textContainer.textContent = PRIVACY_POLICY_TEXT;
+    // Populate text using Translation Engine
+    if(textContainer) {
+        textContainer.textContent = typeof t !== 'undefined' ? t('privacy_policy_full') : "Loading...";
+    }
 
     if (modal) {
         modal.classList.remove('hidden');
@@ -374,7 +354,7 @@ function renderPlaylists() {
     list.innerHTML = '';
     
     if (!userSettings.xtreamConfig || userSettings.xtreamConfig.length === 0) {
-        list.innerHTML = `<p class="text-alt text-center">${typeof t !== 'undefined' ? t('No playlists found.') : 'No playlists found.'}</p>`;
+        list.innerHTML = `<p class="text-alt text-center">${typeof t !== 'undefined' ? t('msg_no_playlists') : 'No playlists found.'}</p>`;
         return;
     }
 
@@ -414,7 +394,7 @@ async function selectPlaylist(index) {
 
         handleApiConnect(null, true); 
     } else {
-        showError('Selected playlist is incomplete. Please update the details.');
+        showError(typeof t !== 'undefined' ? t('error_incomplete_playlist') : 'Selected playlist is incomplete. Please update the details.');
     }
 }
 
@@ -593,7 +573,7 @@ function changeAppTheme(themeName) {
     document.body.className = themeName;
     userSettings.theme = themeName;
     saveUserSettings();
-    showAlert("App Theme Updated");
+    showAlert(typeof t !== 'undefined' ? t('msg_theme_updated') : "App Theme Updated");
 }
 
 function changePlayerSkin(skinName) {
@@ -605,7 +585,7 @@ function changePlayerSkin(skinName) {
     if (window.playerOverlay && typeof window.playerOverlay.init === 'function') {
         window.playerOverlay.init();
     }
-    showAlert("Player Skin Updated");
+    showAlert(typeof t !== 'undefined' ? t('msg_skin_updated') : "Player Skin Updated");
 }
 
 function showAbout(){
@@ -627,9 +607,13 @@ function hideAbout(){
 
 function showErrorModal(title, message, errorCode = "", retryCallback = null) {
     const modal = $('#modal-error');
-    $('#modal-error-title').innerText = title || "Error";
+    
+    // Auto-translate generic error titles if passed as "Error"
+    const displayTitle = (title === "Error" && typeof t !== 'undefined') ? t('boot_connection_error') : title;
+    
+    $('#modal-error-title').innerText = displayTitle || "Error";
     $('#modal-error-message').innerText = message || "An unknown error occurred.";
-    $('#modal-error-code').innerText = errorCode ? `Code: ${errorCode}` : "";
+    $('#modal-error-code').innerText = errorCode ? `${typeof t !== 'undefined' ? t('error_code') : 'Code'}: ${errorCode}` : "";
     const closeBtn = $('#btn-error-close');
 
     const retryBtn = $('#btn-error-retry');
@@ -731,7 +715,7 @@ function renderUserInfo(data) {
             const daysLeftText = typeof t !== 'undefined' ? t('user_days_left') : 'days left';
             const expiredText = typeof t !== 'undefined' ? t('user_expired') : 'Expired';
             if (diffDays > 0) {
-                daysLeftTextFull += ` (${diffDays} d)`;
+                daysLeftTextFull += ` (${diffDays} ${daysLeftText})`; // Fixed: use translated 'days left'
             } else {
                 daysLeftTextFull += ` (${expiredText})`;
             }
@@ -769,8 +753,10 @@ function renderSubscriptionInfo(data) {
     // 1. Status
     const rawStatus = data?.activation?.toLowerCase() || "waiting";
     let localizedStatus = rawStatus;
+    
     if (rawStatus === "active") localizedStatus = typeof t !== 'undefined' ? t('sub_active') : "Active";
     else if (rawStatus === "trial") localizedStatus = typeof t !== 'undefined' ? t('sub_trial') : "Trial";
+    else if (rawStatus === "waiting") localizedStatus = typeof t !== 'undefined' ? t('sub_waiting') : "Waiting";
     
     statusVal.textContent = localizedStatus.toUpperCase();
     switch (rawStatus) {
@@ -986,7 +972,7 @@ function runSpeedTest() {
         
         // Handle AbortError gracefully (user closed modal)
         if (err.name !== 'AbortError') {
-             showError("Network Error");
+             showError(typeof t !== 'undefined' ? t('error_network') : "Network Error");
         }
     });
 }
