@@ -13,6 +13,13 @@ const InputManager = (function() {
         "Escape": "Back",
         "10009": "Back",
 
+        // Trick Play Keys
+        "XF86Rewind": "MediaRewind",
+        "XF86Forward": "MediaFastForward",
+        "XF86Play": "MediaPlay",
+        "XF86Pause": "MediaPause",
+        "XF86Stop": "MediaStop",
+
         "XF86Red": "ColorF0Red",
         "XF86Green": "ColorF1Green",
         "XF86Yellow": "ColorF2Yellow",

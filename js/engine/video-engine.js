@@ -91,7 +91,7 @@ const VideoEngine = (function() {
     }
 
     // NEW: Soft Restart Function
-    function reloadForSubtitle(targetSubtitleIndex) {
+    function reload(targetSubtitleIndex=null) {
         if (!_isTizen) return;
 
         console.log("[VideoEngine] Soft restarting for subtitle switch...");
@@ -106,7 +106,14 @@ const VideoEngine = (function() {
         if(playerTracks.currentAudio && playerTracks.currentAudio.index !== undefined){
             currentAudioIndex = playerTracks.currentAudio.index;
         }
-
+        if(targetSubtitleIndex === null){
+            // If no target provided, just use current subtitle index
+            if(playerTracks.currentSubtitle && playerTracks.currentSubtitle.index !== undefined){
+                targetSubtitleIndex = playerTracks.currentSubtitle.index;
+            }else{
+                targetSubtitleIndex = -1; // No subtitle
+            }
+        }
         // 2. Clear the external subtitle flag so the new session is clean
         playerTracks.currentOnlineSubtitle = null;
 
@@ -443,7 +450,7 @@ const VideoEngine = (function() {
         init,
         start,
         stop,
-        reloadForSubtitle, // Exported new function
+        reload, // Exported new function
         togglePlay,
         getTimeInfo,
         switchToFullscreen,

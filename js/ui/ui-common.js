@@ -611,29 +611,33 @@ function showErrorModal(title, message, errorCode = "", retryCallback = null) {
     // Auto-translate generic error titles if passed as "Error"
     const displayTitle = (title === "Error" && typeof t !== 'undefined') ? t('boot_connection_error') : title;
     
-    $('#modal-error-title').innerText = displayTitle || "Error";
-    $('#modal-error-message').innerText = message || "An unknown error occurred.";
-    $('#modal-error-code').innerText = errorCode ? `${typeof t !== 'undefined' ? t('error_code') : 'Code'}: ${errorCode}` : "";
-    const closeBtn = $('#btn-error-close');
+    // SAFE DOM UPDATE: use getElementById and textContent
+    const titleEl = document.getElementById('modal-error-title');
+    const msgEl = document.getElementById('modal-error-message');
+    const codeEl = document.getElementById('modal-error-code');
+    
+    if(titleEl) titleEl.textContent = displayTitle || "Error";
+    if(msgEl) msgEl.textContent = message || "An unknown error occurred.";
+    if(codeEl) codeEl.textContent = errorCode ? `${typeof t !== 'undefined' ? t('error_code') : 'Code'}: ${errorCode}` : "";
+    
+    const closeBtn = document.getElementById('btn-error-close');
+    const retryBtn = document.getElementById('btn-error-retry');
 
-    const retryBtn = $('#btn-error-retry');
     if (retryCallback && typeof retryCallback === 'function') {
         lastErrorRetryCallback = retryCallback;
-        retryBtn.style.display = 'flex';
-
-        requestAnimationFrame(() => {
-            if(retryBtn)retryBtn.focus();
-        });
+        if(retryBtn) {
+            retryBtn.style.display = 'flex';
+            requestAnimationFrame(() => retryBtn.focus());
+        }
     } else {
         lastErrorRetryCallback = null;
-        retryBtn.style.display = 'none';
-
-        requestAnimationFrame(() => {
-            if(closeBtn)closeBtn.focus();
-        });
+        if(retryBtn) retryBtn.style.display = 'none';
+        if(closeBtn) {
+            requestAnimationFrame(() => closeBtn.focus());
+        }
     }
 
-    modal.classList.remove('hidden');    
+    if(modal) modal.classList.remove('hidden');    
     if (typeof FocusManager !== 'undefined') {
         FocusManager.setLayer(FocusManager.LAYERS.MODAL);
     }
@@ -642,7 +646,25 @@ function showErrorModal(title, message, errorCode = "", retryCallback = null) {
 
 function hideErrorModal() {
     $('#modal-error').classList.add('hidden');
-    FocusManager.restorePreviousLayer(); 
+    if (typeof FocusManager !== 'undefined') {
+        FocusManager.restorePreviousLayer(); 
+    }
+    
+    // === NEW LOGIC: Go to Home Page on Close ===
+    // This ensures the user isn't stuck on a blank screen if the data load failed
+    if (typeof showPage === 'function') {
+        showPage('page-main');
+        pushToNavStack('page-main');
+        
+        // Ensure main menu is visible/reset
+        if(typeof revealMainMenu === 'function') revealMainMenu();
+        
+        // Reset focus
+        setTimeout(() => {
+             const firstBtn = document.querySelector('#main-menu-grid button');
+             if(firstBtn) firstBtn.focus();
+        }, 150);
+    }
 }
 
 function retryLastAction() {

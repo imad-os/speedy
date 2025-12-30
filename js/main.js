@@ -11,6 +11,10 @@ function registerTizenKeys() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("App initializing...");
 
+    // FIX: Disable TTS (Voice Guide) by hiding body from accessibility tree
+    // This resolves the Samsung defect where TTS works but is not declared in features.
+    document.body.setAttribute('aria-hidden', 'true');
+
     // Initialize Firebase
     try {
         if (firebaseConfig.apiKey !== "YOUR_API_KEY") {

@@ -43,3 +43,19 @@ clear overlay values on start preview or full
 
 
 hide subtitle and settings button in overly for live
+
+
+
+
+DONE : [TR][Basic Fuction][VPN/Out network][ATSC] The language change does not apply in all the UI
+Open | B | 2025-12-29 | Resolve
+TOTEST : [TR][Playback][VPN/Out network][ATSC] Content does not resume after connect the network
+Open | B | 2025-12-29 | Resolve
+TOTEST : [TR][Playback][VPN/Out network][ATSC] There is no network pop up
+Open | B | 2025-12-29 | Resolve
+TOIMPLEMENT :[TR][Trick Play][VPN/Out network][ATSC] Trick play do not work
+Open | B | 2025-12-29 | Resolve
+DONE :[TR][Basic Fuction][VPN/Out network][ATSC] TTS works in the app
+Open | B | 2025-12-29 | Resolve
+25TV_PREMIUM4 (Tizen 9.0)
+

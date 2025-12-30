@@ -130,7 +130,9 @@
         else if(propotion >=5) propotion = 1.2;
         else propotion =1;
         //key === 'ArrowLeft' || key === 'ArrowRight'
-        seekAccumulator +=(direction === 'ArrowRight') ? SEEK_STEP_MS*propotion : SEEK_STEP_MS*propotion * -1;
+        // FIX: direction can now be MediaRewind/MediaFastForward too
+        const isForward = (direction === 'ArrowRight' || direction === 'MediaFastForward');
+        seekAccumulator += isForward ? SEEK_STEP_MS*propotion : SEEK_STEP_MS*propotion * -1;
 
         if(seekTimeout) clearTimeout(seekTimeout);
         seekTimeout = setTimeout(applySeek, 500); 
@@ -384,7 +386,7 @@
     const isExternalActive = (VideoEngine.playerTracks.currentOnlineSubtitle !== null);
     VideoEngine.playerTracks.currentOnlineSubtitle = null;
     if (isExternalActive) {
-        VideoEngine.reloadForSubtitle(index);
+        VideoEngine.reload(index);
         return;
     }
     webapis.avplay.setSilentSubtitle(false);
@@ -501,8 +503,9 @@
           return true; 
       }
 
-      if (key === 'ArrowLeft' || key === 'ArrowRight') {
-          if (current === progressBar) {
+      if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'MediaRewind' || key === 'MediaFastForward') {
+          if (current === progressBar || key === 'MediaRewind' || key === 'MediaFastForward') {
+              // Map dedicated keys or arrows to seek direction
               requestSeek(key);
               return true;
           }
@@ -542,6 +545,11 @@
           case 'MediaPause':
                const p2 = getActivePlayer();
                if(p2 && (!p2.obj.paused || (p2.type==='tizen' && status==='playing'))) togglePlayPause();
+               return true;
+          case 'MediaRewind':
+          case 'MediaFastForward':
+               showOverlay();
+               requestSeek(key);
                return true;
           case 'Enter':
               if (document.activeElement && document.activeElement !== document.body && cache.overlay.contains(document.activeElement)) {
