@@ -1,5 +1,6 @@
 const LanguageManager = (function() {
-    
+    var docDir = document.body.getAttribute("dir") || 'rtl';
+    var isLtr = true;
     // --- FULL PRIVACY POLICY TEXTS ---
     const POLICY_EN = `PRIVACY POLICY FOR SPEEDY IPTV
 
@@ -264,7 +265,11 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "msg_lang_updated": "Language Updated",
 
             "exit_title": "Exit App",
-            "exit_msg": "Do you want to exit the application?"
+            "exit_msg": "Do you want to exit the application?",
+
+            'connection_lost': 'Connection Lost', 
+            'waiting_for_network': 'Waiting for network to recover...',
+
         },
         fr: {
             // AUTH & API
@@ -431,7 +436,11 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "msg_lang_updated": "Langue mise à jour",
 
             "exit_title": "Quitter l'application",
-            "exit_msg": "Voulez-vous vraiment quitter ?"
+            "exit_msg": "Voulez-vous vraiment quitter ?",
+
+            'connection_lost': 'Connexion Perdue',
+            'waiting_for_network': 'En attente de récupération du réseau...',
+
         },
         es: {
             // AUTH & API
@@ -598,7 +607,11 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "msg_lang_updated": "Idioma actualizado",
 
             "exit_title": "Salir de la aplicación",
-            "exit_msg": "¿Quieres salir de la aplicación?"
+            "exit_msg": "¿Quieres salir de la aplicación?",
+
+            "connection_lost": "Conexión Perdida",
+            "waiting_for_network": "Esperando recuperación de red...",
+
         },
         ar: {
             // AUTH & API
@@ -765,7 +778,11 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "msg_lang_updated": "تم تحديث اللغة",
 
             "exit_title": "الخروج من التطبيق",
-            "exit_msg": "هل تريد الخروج من التطبيق؟"
+            "exit_msg": "هل تريد الخروج من التطبيق؟",
+
+            "connection_lost": "فقدان الاتصال",
+            "waiting_for_network": "في انتظار استعادة الشبكة...",
+
         }
     };
 
@@ -774,7 +791,11 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
      * @param {string} key - The dictionary key
      */
     function t(key) {
+
         const lang = (userSettings && userSettings.language) ? userSettings.language : 'en';
+        if(key === "waiting_for_network"){
+            console.log(key, "1023", dictionary[lang][key])
+        }
         if (dictionary[lang] && dictionary[lang][key]) {
             return dictionary[lang][key];
         }
@@ -789,7 +810,19 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
         const lang = (userSettings && userSettings.language) ? userSettings.language : 'en';
         console.log(`[LanguageManager] Updating DOM to: ${lang}`);
         //i do no need to change RTL at all, this will add complexity to navigation, so i will just keep it LTR
-
+        
+        if (lang === 'ar') {
+            docDir="rtl";
+            document.body.setAttribute('dir', docDir);
+            document.body.classList.add('rtl-layout');
+            isLtr=false;
+        } else {
+            docDir="ltr";
+            document.body.setAttribute('dir', docDir);
+            document.body.classList.remove('rtl-layout');
+            isLtr=true;
+        }
+        
         // 2. Update Text Content (Using innerHTML to support <b>, <strong> tags in translations)
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(el => {
@@ -813,7 +846,10 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
     return {
         t,
         updateDOM,
-        dictionary
+        dictionary,
+        get isLtr(){
+            return isLtr;
+        }
     };
 
 })();

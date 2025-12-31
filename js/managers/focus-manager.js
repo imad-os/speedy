@@ -66,13 +66,13 @@ const FocusManager = (function() {
                 return true;
             }
 
-            if (key === "ArrowRight") {
+            if ( (LanguageManager.isLtr && key === 'ArrowRight') || (!LanguageManager.isLtr && key === 'ArrowLeft')) {
                 const nextIndex = (index + 1) % buttons.length;
                 buttons[nextIndex].focus();
                 return true;
             }
 
-            if (key === "ArrowLeft") {
+            if ( (LanguageManager.isLtr && key === 'ArrowLeft') || (!LanguageManager.isLtr && key === 'ArrowRight')) {
                 const prevIndex = (index - 1 + buttons.length) % buttons.length;
                 buttons[prevIndex].focus();
                 return true;

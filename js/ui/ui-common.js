@@ -307,6 +307,9 @@ function exitApp() {
 
 // === Search UI ===
 function toggleSearchBar(show=null) {
+    if( isVisible( $("#main-menu-grid") ) ){
+        return;
+    }
     const container = $('#search-bar-container');
     const input = $('#search-input');
     if(show===null){

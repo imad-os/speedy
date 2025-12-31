@@ -483,6 +483,6 @@ body.video-active #app-container {
 #modal-reconnecting h1{
     font-size: 35px;
 }
-#modal-reconnecting p,#modal-reconnecting button{
+#modal-reconnecting div,#modal-reconnecting button{
     font-size: 25px;
 }
