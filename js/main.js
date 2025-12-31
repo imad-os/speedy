@@ -174,4 +174,17 @@ function setupEventListeners() {
         if (type === 'live') ViewLiveTV.init();
         else ViewVOD.loadCategories(type);
     };
+
+    window.addEventListener('offline', function() {
+        //Array.from( $$(".app_logo") ).map(l=> l.classList.add("grayscale"));
+        $(".header-logo .app_logo").classList.add("hidden");
+        $(".header-logo .header-nointernet").classList.remove("hidden");
+        $("#tizen-player-overlay .header-nointernet").classList.remove("hidden");
+    });
+    window.addEventListener('online', function() {
+        //Array.from( $$(".app_logo") ).map(l=> l.classList.remove("grayscale"));
+        $(".header-logo .app_logo").classList.remove("hidden");
+        $(".header-logo .header-nointernet").classList.add("hidden");
+        $("#tizen-player-overlay .header-nointernet").classList.add("hidden");
+    });
 }

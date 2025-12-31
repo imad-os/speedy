@@ -77,8 +77,9 @@ const VideoEngine = (function() {
         console.log("[VideoEngine] Recovery Cancelled by User");
         isRecovering = false;
         hideRecoveryModal()
-
-        PlayerController._handleEnded();
+        if(PlayerController.isActive){
+            PlayerController._handleEnded();
+        }
     }
 
     function start(url, startTime, callbacks = {}, isLive = false, rect = null) {

@@ -468,3 +468,21 @@ body.video-active #app-container {
 #modal-speedtest > div{
     background-color: var(--color-card);
 }
+.grayscale{
+    filter: grayscale(100%);
+}
+.header-nointernet, .modal-nointernet{
+    width: 50px;
+    height: 100%;
+    color: #ff2828;
+    animation: pulse 1s cubic-bezier(0.8, 0, 0.0, 1) infinite;
+}
+#tizen-player-overlay .header-nointernet{
+    max-height: 60px;
+}
+#modal-reconnecting h1{
+    font-size: 35px;
+}
+#modal-reconnecting p,#modal-reconnecting button{
+    font-size: 25px;
+}

@@ -231,6 +231,12 @@ const FocusManager = (function() {
                 if (InputManager.isBack(key) || key === 'Enter') {
                     VideoEngine.cancelRecovery();
                     return true;
+                }else if ( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes( key ) ){
+                    const _button = reconnectingModal.querySelector("button");
+                    if(_button){
+                        _button.focus();
+                        return true;
+                    }
                 }
             }
             // Trapped Vertical Navigation for Modal Lists
