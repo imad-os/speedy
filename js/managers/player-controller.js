@@ -435,6 +435,7 @@ const PlayerController = (function() {
         isPlaying,
         _channelUpDown,
         _goBack,
+        _handleEnded,
         get currentItem() {
             return currentState?.item;
         },

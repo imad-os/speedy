@@ -224,7 +224,15 @@ const FocusManager = (function() {
                     hideAbout();
                     return true;
                 }
-            }            
+            }
+
+            const reconnectingModal = document.getElementById('modal-reconnecting');
+            if (reconnectingModal && !reconnectingModal.classList.contains('hidden')) {
+                if (InputManager.isBack(key) || key === 'Enter') {
+                    VideoEngine.cancelRecovery();
+                    return true;
+                }
+            }
             // Trapped Vertical Navigation for Modal Lists
             if (['ArrowUp', 'ArrowDown'].includes(key)) {
                 const modal = document.getElementById('tizen-track-modal');

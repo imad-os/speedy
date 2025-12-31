@@ -87,13 +87,8 @@ const VideoEngine = (function() {
         isRecovering = false;
         const modal = document.getElementById('modal-reconnecting');
         if(modal) modal.classList.add('hidden');
-        
-        stop(); // Full stop
-        
-        // Navigate back
-        if(typeof Router !== 'undefined' && Router.goBack) {
-            Router.goBack();
-        }
+
+        PlayerController._handleEnded();
     }
 
     function start(url, startTime, callbacks = {}, isLive = false, rect = null) {
@@ -185,7 +180,7 @@ const VideoEngine = (function() {
 
     // NEW: Soft Restart Function
     function reload(targetSubtitleIndex=null) {
-        if (!_isTizen) return;
+        if (!_isTizen || !PlayerController.isActive) return;
 
         console.log("[VideoEngine] Soft restarting for subtitle switch...");
         
