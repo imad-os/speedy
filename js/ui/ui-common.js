@@ -998,3 +998,21 @@ function runSpeedTest() {
         }
     });
 }
+
+function showReconenctingModal() {
+    const modal = document.getElementById('modal-reconnecting');
+    if(modal) {
+        modal.classList.remove('hidden');
+        const p = modal.querySelector('p');
+        if(p) p.textContent = "Waiting for network to recover...";
+        
+        const btn = modal.querySelector('button');
+        FocusManager.setLayer(FocusManager.LAYERS.MODAL);
+        if(btn) btn.focus();
+    }
+}
+function hideRecoveryModal() {
+    const modal = document.getElementById('modal-reconnecting');
+    if(modal) modal.classList.add('hidden');
+    FocusManager.restorePreviousLayer();
+} 

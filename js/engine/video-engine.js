@@ -49,17 +49,8 @@ const VideoEngine = (function() {
         console.log("[VideoEngine] Network Lost. Suspending...");
         isRecovering = true;
         // 2. UI Updates
-        Loader.hide("Network Lost"); // Hide generic loader
-        const modal = document.getElementById('modal-reconnecting');
-        if(modal) {
-            modal.classList.remove('hidden');
-            const p = modal.querySelector('p');
-            if(p) p.textContent = "Waiting for network to recover...";
-            
-            const btn = modal.querySelector('button');
-            if(btn) btn.focus();
-        }
-
+        Loader.hide("Network Lost");
+        showReconenctingModal();
         // 3. Suspend Player
         try { webapis.avplay.suspend(); } catch(e) {}
     }
@@ -74,19 +65,18 @@ const VideoEngine = (function() {
             const p = modal.querySelector('p');
             if(p) p.textContent = "Network found! Resuming video...";
         }
-        reload(); // Soft restart
-        if(modal) modal.classList.add('hidden');
+         // Soft restart
+        hideRecoveryModal()
         setTimeout(() => {
             isRecovering = false;
-            
-        }, 2500);
+            reload();
+        }, 1500);
     }
 
     function cancelRecovery() {
         console.log("[VideoEngine] Recovery Cancelled by User");
         isRecovering = false;
-        const modal = document.getElementById('modal-reconnecting');
-        if(modal) modal.classList.add('hidden');
+        hideRecoveryModal()
 
         PlayerController._handleEnded();
     }
