@@ -33,5 +33,5 @@
     <tizen:privilege name="http://tizen.org/privilege/mediacontroller"/>
     <tizen:privilege name="http://tizen.org/privilege/mediacontroller.server"/>
 
-
+    <tizen:privilege name="http://tizen.org/privilege/network.public"/>
 </widget>

@@ -13,6 +13,11 @@ const VideoEngine = (function() {
     let currentRect = null;
     let connection_error = false;
 
+    // RECOVERY STATE
+    let isRecovering = false;
+    let lastPlaybackTime = 0;
+    let wasLive = false;
+
     let playerTracks = { 
             video:{}, 
             currentSubtitle: {},
@@ -26,6 +31,69 @@ const VideoEngine = (function() {
     function init() {
         _isTizen = (typeof webapis !== 'undefined' && webapis.avplay);
         webPlayer = document.getElementById('web-video-player');
+
+        console.log("[VideoEngine] Using HTML5 Network Listeners (Fallback).");
+        window.addEventListener('offline', function() {
+            console.log("[Network-HTML5] Offline");
+            _handleNetworkLoss();
+        });
+        window.addEventListener('online', function() {
+            console.log("[Network-HTML5] Online");
+            _performRecovery();
+        });
+    }
+
+    // === NETWORK LOSS HANDLING ===
+    function _handleNetworkLoss() {
+        if (!PlayerController.isActive) return;
+        console.log("[VideoEngine] Network Lost. Suspending...");
+        isRecovering = true;
+        // 2. UI Updates
+        Loader.hide("Network Lost"); // Hide generic loader
+        const modal = document.getElementById('modal-reconnecting');
+        if(modal) {
+            modal.classList.remove('hidden');
+            const p = modal.querySelector('p');
+            if(p) p.textContent = "Waiting for network to recover...";
+            
+            const btn = modal.querySelector('button');
+            if(btn) btn.focus();
+        }
+
+        // 3. Suspend Player
+        try { webapis.avplay.suspend(); } catch(e) {}
+    }
+
+    // === NETWORK RECOVERY ===
+    function _performRecovery() {
+        console.log("[VideoEngine] Network Recovered. Resuming...");
+
+        // 1. Update UI
+        const modal = document.getElementById('modal-reconnecting');
+        if(modal) {
+            const p = modal.querySelector('p');
+            if(p) p.textContent = "Network found! Resuming video...";
+        }
+        reload(); // Soft restart
+        if(modal) modal.classList.add('hidden');
+        setTimeout(() => {
+            isRecovering = false;
+            
+        }, 2500);
+    }
+
+    function cancelRecovery() {
+        console.log("[VideoEngine] Recovery Cancelled by User");
+        isRecovering = false;
+        const modal = document.getElementById('modal-reconnecting');
+        if(modal) modal.classList.add('hidden');
+        
+        stop(); // Full stop
+        
+        // Navigate back
+        if(typeof Router !== 'undefined' && Router.goBack) {
+            Router.goBack();
+        }
     }
 
     function start(url, startTime, callbacks = {}, isLive = false, rect = null) {
@@ -33,6 +101,10 @@ const VideoEngine = (function() {
         _callbacks = callbacks;
         currentUrl = url; // Save for restart
         currentRect = rect;
+        
+        // Reset recovery state for new stream
+        wasLive = isLive;
+        isRecovering = false;
 
         if (_isTizen) {
             _startTizen(url, startTime, isLive, rect);
@@ -40,26 +112,27 @@ const VideoEngine = (function() {
             _startWeb(url, startTime, isLive, rect);
         }
     }
+
     function avplay_error(e){
         console.error("AVPlay Error:", e);
         Loader.hide(`err;${e}`);
-        if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
+
+        if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
+             console.log("[VideoEngine] Connection failure detected. Invoking network loss handler.");
+             _handleNetworkLoss();
+             return; 
+        }else if(e.includes("PLAYER_ERROR_NOT_SUPPORTED_FORMAT")|| e.includes("PLAYER_ERROR_NOT_SUPPORTED_FILE") ){
             showError("Video format not supported!");
-        }else if(e.includes("PLAYER_ERROR_CONNECTION_FAILED")){
-            showError(t("boot_connection_error"));
-            connection_error = true;
-            stop();
-        }else{
+        } else {
             showError("Streaming Video failed!");
         }
-
     }
+
     // UPDATED: Added keepDom parameter
     function stop(keepDom = false) {
-        console.log("[videoEngine]  stop")
+        console.log("[videoEngine] stop")
         if (_isTizen && tizenPlayer) {
             try {
-                console.log("[videoEngine]  stop 1")
                 // 1. Stop playback
                 webapis.avplay.stop();
                 
@@ -74,12 +147,11 @@ const VideoEngine = (function() {
                 // 3. Now we can safely close the session (resets tracks)
                 webapis.avplay.close(); 
                 PlayerController.isActive = false;
-                console.log("[videoEngine]  stop 2")
+
                 // 4. Cleanup DOM elements
                 if(!keepDom) {
                     const container = document.getElementById('tizen-player-container');
                     if(container) {
-                        console.log("[videoEngine]  stop 3")
                         container.innerHTML = '';
                         container.style.display = 'none';
                     }
@@ -90,7 +162,7 @@ const VideoEngine = (function() {
                 
                 // Emergency cleanup if main block fails
                 if(!keepDom) {
-                    ocument.getElementById('tizen-player-container');
+                    const container = document.getElementById('tizen-player-container');
                     if(container) container.style.display = 'none';
                 }
             }
@@ -101,7 +173,14 @@ const VideoEngine = (function() {
             webPlayer.src = '';
             webPlayer.style.display = 'none';
         }
-        playerOverlay.isBuffering= false;
+        if(typeof playerOverlay !== 'undefined') playerOverlay.isBuffering = false;
+        
+        // Reset recovery state if fully stopped (not keeping DOM)
+        if (!keepDom) {
+            isRecovering = false;
+            const modal = document.getElementById('modal-reconnecting');
+            if(modal) modal.classList.add('hidden');
+        }
     }
 
     // NEW: Soft Restart Function
@@ -284,7 +363,7 @@ const VideoEngine = (function() {
         const v = playerTracks.video || {};
         if(typeof ViewDetails !== 'undefined'){
              const {qualityClass,qualityTag, resolution} = ViewDetails.resToTag(v.Width, v.Height);
-             window.playerOverlay.updateStreamInfo({ resolution, quality:qualityTag })
+             if(window.playerOverlay) window.playerOverlay.updateStreamInfo({ resolution, quality:qualityTag })
         }
     }
 
@@ -325,7 +404,7 @@ const VideoEngine = (function() {
         const listeners = {
             onbufferingstart: () => { 
                 Loader.show("BUFFERING");
-                playerOverlay.isBuffering = true;
+                if(typeof playerOverlay !== 'undefined') playerOverlay.isBuffering = true;
                 if(_callbacks.onStateChange) _callbacks.onStateChange('buffering'); 
             },
             onbufferingprogress: function (percent) {
@@ -334,7 +413,7 @@ const VideoEngine = (function() {
             },
             onbufferingcomplete: () => { 
                 Loader.hide("bf complted");
-                playerOverlay.isBuffering = false;
+                if(typeof playerOverlay !== 'undefined') playerOverlay.isBuffering = false;
                 if (window.playerOverlay) window.playerOverlay.updateStreamInfo({ buffer_progress: 0,status:"PLAYING" });
                 if(_callbacks.onStateChange) _callbacks.onStateChange('playing'); 
             },
@@ -352,7 +431,6 @@ const VideoEngine = (function() {
             },
             onerror: (e) => {
                 avplay_error(e);
-                //if(_callbacks.onError) _callbacks.onError(e); 
             },
             onevent: (eventid, data) => {},
             onsubtitlechange: (duration, text, data3, data4) => {
@@ -397,9 +475,10 @@ const VideoEngine = (function() {
             updateResolution();
             webapis.avplay.prepareAsync(() => {
                 setRect(rect); // Ensure rect is correct
-                playerOverlay.setProgressBar();
+                if(window.playerOverlay) playerOverlay.setProgressBar();
                 
                 // 1. Restore/Set Start Time
+                // Note: startTime input is in seconds, seekTo expects ms
                 if (startTime > 0) {
                     webapis.avplay.seekTo(startTime * 1000, 
                         () => webapis.avplay.play(),
@@ -462,7 +541,8 @@ const VideoEngine = (function() {
         init,
         start,
         stop,
-        reload, // Exported new function
+        reload, 
+        cancelRecovery, // NEW: Exported for the Cancel button
         togglePlay,
         getTimeInfo,
         switchToFullscreen,
