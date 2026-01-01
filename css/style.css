@@ -59,7 +59,7 @@ body.video-active #app-container {
 .text-main { color: var(--color-text); }
 .text-alt { color: var(--color-text-alt); }
 .bg-primary { background-color: var(--color-primary); color: var(--color-bg); }
-.bg-primary:focus,.nav-item.active-category:focus { border-color: #F97316 !important;border-width: 2px; }
+.bg-primary:focus,.nav-item.active-category:focus { border-color: #F97316 !important; }
 
 .hover\:bg-primary-hover:hover { background-color: var(--color-primary-hover); }
 .border-primary { border-color: var(--color-primary); }

@@ -236,15 +236,18 @@ const NavigationRouter = (function() {
         time: 0,
         rects: new WeakMap()
     };
-
+    
     function _defaultSpatialNav(key, activePageId) {
         let parentSelector = null;
         if (isVisible($('#category-manager-modal'))) parentSelector = '#category-manager-modal';
         else if (activePageId === 'page-categories') parentSelector = '#category-grid';
         else if (activePageId === 'page-playlists') parentSelector = '#playlists-list';
-        else if (activePageId === 'page-movie-details') parentSelector = '#page-movie-details'; 
+        else if (activePageId === 'page-movie-details') parentSelector = '#page-movie-details';
     
-        const root = parentSelector ? document.querySelector(parentSelector) : document.getElementById(activePageId);
+        const root = parentSelector
+            ? document.querySelector(parentSelector)
+            : document.getElementById(activePageId);
+    
         if (!root) return;
     
         const current = document.activeElement;
@@ -253,8 +256,14 @@ const NavigationRouter = (function() {
             return;
         }
     
+        /* ---- Geometry cache (layout-safe) ---- */
         const now = performance.now();
         const cacheValid = (now - __spatialCache.time) < 150;
+    
+        if (!cacheValid) {
+            __spatialCache.rects = new WeakMap();
+            __spatialCache.time = now;
+        }
     
         function getRect(el) {
             if (cacheValid && __spatialCache.rects.has(el)) {
@@ -265,14 +274,10 @@ const NavigationRouter = (function() {
             return r;
         }
     
-        if (!cacheValid) {
-            __spatialCache.rects = new WeakMap();
-            __spatialCache.time = now;
-        }
-    
+        /* ---- Collect focusables ---- */
         let focusables = Array.from(
             root.querySelectorAll('.nav-item, .nav-item-sm, button')
-        ).filter(el => isVisible(el));
+        ).filter(isVisible);
     
         if (!parentSelector && activePageId !== 'page-movie-details') {
             const header = document.getElementById('global-header');
@@ -296,7 +301,7 @@ const NavigationRouter = (function() {
     
             const r = getRect(item);
     
-            // Directional gating
+            /* ---- Directional gating ---- */
             if (
                 (key === 'ArrowRight' && r.left < currentRect.right) ||
                 (key === 'ArrowLeft'  && r.right > currentRect.left) ||
@@ -310,19 +315,24 @@ const NavigationRouter = (function() {
             const dx = Math.abs(cx - ix);
             const dy = Math.abs(cy - iy);
     
-            // Corridor filter
-            if (
-                (key === 'ArrowLeft' || key === 'ArrowRight') && dy > currentRect.height * 2
-            ) continue;
+            let score;
+            if (key === 'ArrowDown' || key === 'ArrowUp') {
+                const verticalGap = key === 'ArrowDown'
+                    ? r.top - currentRect.bottom
+                    : currentRect.top - r.bottom;
     
-            if (
-                (key === 'ArrowUp' || key === 'ArrowDown') && dx > currentRect.width * 2
-            ) continue;
+                if (verticalGap < 0) continue;
     
-            const score =
-                (key === 'ArrowLeft' || key === 'ArrowRight')
-                    ? dx + dy * 12
-                    : dy + dx * 12;
+                // HARD row lock: do not skip rows
+                if (verticalGap > currentRect.height * 1.5) continue;
+    
+                // Vertical distance dominates, horizontal only resolves same-row choice
+                score = verticalGap * 1000 + dx;
+            }
+    
+            else {
+                score = dx + dy * 12;
+            }
     
             if (score < minScore) {
                 minScore = score;
@@ -332,7 +342,10 @@ const NavigationRouter = (function() {
     
         if (next) {
             next.focus({ preventScroll: true });
-            next.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            next.scrollIntoView({
+                block: 'nearest',
+                inline: 'nearest'
+            });
         }
     }
     
