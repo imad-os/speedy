@@ -300,7 +300,7 @@ async function getTestModeApi(action, params = {}) {
             tesMod_vods = res;
             CacheManager.prepareSearchIndex("vod")
         }else if(action=="get_vod_info"){
-            const vod = tesMod_vods.filter(v=>v.stream_id===params.vod_id)[0];
+            const vod = tesMod_vods && tesMod_vods.filter ? tesMod_vods.filter(v=>v.stream_id===params.vod_id)[0] : {};
             if(vod && res){
                 res.movie_data.stream_id = vod.stream_id;
                 res.movie_data.name = vod.name;

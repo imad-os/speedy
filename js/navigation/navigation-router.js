@@ -232,79 +232,110 @@ const NavigationRouter = (function() {
         return true;
     }
 
+    let __spatialCache = {
+        time: 0,
+        rects: new WeakMap()
+    };
+
     function _defaultSpatialNav(key, activePageId) {
         let parentSelector = null;
         if (isVisible($('#category-manager-modal'))) parentSelector = '#category-manager-modal';
         else if (activePageId === 'page-categories') parentSelector = '#category-grid';
         else if (activePageId === 'page-playlists') parentSelector = '#playlists-list';
         else if (activePageId === 'page-movie-details') parentSelector = '#page-movie-details'; 
-        
+    
         const root = parentSelector ? document.querySelector(parentSelector) : document.getElementById(activePageId);
         if (!root) return;
-
-        // Get all focusables and filter visible ones
-        let focusables = Array.from(root.querySelectorAll('.nav-item, .nav-item-sm, button')).filter(el => isVisible(el));
-        
+    
+        const current = document.activeElement;
+        if (!current || current === document.body) {
+            _recoverFocus(activePageId);
+            return;
+        }
+    
+        const now = performance.now();
+        const cacheValid = (now - __spatialCache.time) < 150;
+    
+        function getRect(el) {
+            if (cacheValid && __spatialCache.rects.has(el)) {
+                return __spatialCache.rects.get(el);
+            }
+            const r = el.getBoundingClientRect();
+            __spatialCache.rects.set(el, r);
+            return r;
+        }
+    
+        if (!cacheValid) {
+            __spatialCache.rects = new WeakMap();
+            __spatialCache.time = now;
+        }
+    
+        let focusables = Array.from(
+            root.querySelectorAll('.nav-item, .nav-item-sm, button')
+        ).filter(el => isVisible(el));
+    
         if (!parentSelector && activePageId !== 'page-movie-details') {
             const header = document.getElementById('global-header');
             if (header && isVisible(header)) {
-                focusables.unshift(...Array.from(header.querySelectorAll('button')).filter(el => isVisible(el)));
+                focusables.push(
+                    ...Array.from(header.querySelectorAll('button')).filter(isVisible)
+                );
             }
         }
-
-        const current = document.activeElement;
-        const currentRect = current.getBoundingClientRect();
-        const currentCenter = {
-            x: currentRect.left + (currentRect.width / 2),
-            y: currentRect.top + (currentRect.height / 2)
-        };
-
+    
+        const currentRect = getRect(current);
+        const cx = currentRect.left + currentRect.width / 2;
+        const cy = currentRect.top + currentRect.height / 2;
+    
         let next = null;
         let minScore = Infinity;
-
-        focusables.forEach(item => {
-            if (item === current) return;
-            const r = item.getBoundingClientRect();
-            const itemCenter = {
-                x: r.left + (r.width / 2),
-                y: r.top + (r.height / 2)
-            };
-
-            let isCandidate = false;
-            
-            // STRICT DIRECTIONAL BOUNDARIES
-            // This prevents "Movies" -> "Live" when pressing Right
-            if (key === 'ArrowRight' && r.left >= currentRect.right - 5) isCandidate = true;
-            if (key === 'ArrowLeft'  && r.right <= currentRect.left + 5) isCandidate = true;
-            if (key === 'ArrowDown'  && r.top >= currentRect.bottom - 5) isCandidate = true;
-            if (key === 'ArrowUp'    && r.bottom <= currentRect.top + 5) isCandidate = true;
-
-            if (isCandidate) {
-                const dx = Math.abs(currentCenter.x - itemCenter.x);
-                const dy = Math.abs(currentCenter.y - itemCenter.y);
-                
-                let score;
-                if (key === 'ArrowLeft' || key === 'ArrowRight') {
-                    // Horizontal priority: heavily penalize vertical offset
-                    score = dx + (dy * 15); 
-                } else {
-                    // Vertical priority: heavily penalize horizontal offset
-                    score = dy + (dx * 15);
-                }
-
-                if (score < minScore) {
-                    minScore = score;
-                    next = item;
-                }
+    
+        for (let i = 0; i < focusables.length; i++) {
+            const item = focusables[i];
+            if (item === current) continue;
+    
+            const r = getRect(item);
+    
+            // Directional gating
+            if (
+                (key === 'ArrowRight' && r.left < currentRect.right) ||
+                (key === 'ArrowLeft'  && r.right > currentRect.left) ||
+                (key === 'ArrowDown'  && r.top < currentRect.bottom) ||
+                (key === 'ArrowUp'    && r.bottom > currentRect.top)
+            ) continue;
+    
+            const ix = r.left + r.width / 2;
+            const iy = r.top + r.height / 2;
+    
+            const dx = Math.abs(cx - ix);
+            const dy = Math.abs(cy - iy);
+    
+            // Corridor filter
+            if (
+                (key === 'ArrowLeft' || key === 'ArrowRight') && dy > currentRect.height * 2
+            ) continue;
+    
+            if (
+                (key === 'ArrowUp' || key === 'ArrowDown') && dx > currentRect.width * 2
+            ) continue;
+    
+            const score =
+                (key === 'ArrowLeft' || key === 'ArrowRight')
+                    ? dx + dy * 12
+                    : dy + dx * 12;
+    
+            if (score < minScore) {
+                minScore = score;
+                next = item;
             }
-        });
-
+        }
+    
         if (next) {
-            next.focus();
-            // Using 'nearest' to prevent jumping the whole page
-            next.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+            next.focus({ preventScroll: true });
+            next.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         }
     }
+    
     return {
         handleKey
     };

@@ -35,7 +35,10 @@
       el.textContent = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   }
   function startClock() { updateClock(); setInterval(updateClock, 10*1000); }
-  
+  function getState(){
+    const state = typeof webapis !== "undefined" ? webapis.avplay.getState().toLocaleLowerCase() : "playing";
+    return state
+  }
   function updateStreamInfo(info) {
       streamInfo = Object.assign(streamInfo, info || {});
       streamInfo.status = streamInfo.isBuffering || streamInfo.buffer_progress > 0 ? 'Buffering' : streamInfo.status;
@@ -52,7 +55,7 @@
 
       
       if (cache.iconPlayPause) {
-            const state = webapis.avplay.getState().toLocaleLowerCase();
+            const state = getState();
 
           const useTag = cache.iconPlayPause.querySelector('use');
           if (useTag) {
@@ -279,11 +282,9 @@
         }
     }
 
-    overlay.style.opacity = '0';
-    overlay.classList.add('opacity-0');
-    setTimeout(() => {
-        if(overlay.classList.contains('opacity-0')) overlay.classList.add('hidden');
-    }, 300);
+    //overlay.style.opacity = '0';
+    //overlay.classList.add('opacity-0');
+    overlay.classList.add('hidden')
 
     overlayVisible = false;
     stopProgressUpdates();
@@ -491,6 +492,8 @@
       if (key === 'ArrowUp') {
           if (controls.includes(current)) {
               if(progressBar) { progressBar.focus(); return true; }
+          }else if (current===progressBar){
+                hideOverlay();
           }
           return true; 
       }
@@ -535,7 +538,7 @@
         return true; 
     }
 
-      const status = webapis.avplay.getState().toLocaleLowerCase();
+      const status = getState();
       switch (key) {
           case 'MediaPlayPause': togglePlayPause(); return true;
           case 'MediaPlay':
