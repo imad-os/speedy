@@ -321,7 +321,7 @@ function _showQrModal(docRef, error=null) {
         Status.classList.remove("text-red-400");
     }
     if (modal && qrContainer) {
-        macDisplay.textContent = _MacAddr;
+        macDisplay.textContent = MacAddr;
         qrContainer.innerHTML = '';
         new QRCode(qrContainer, {
             text: `https://speedy.geekspro.us/#id=${MacAddr}`,

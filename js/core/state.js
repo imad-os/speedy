@@ -2,9 +2,7 @@
 
 // Environment Detection
 const isTizen = typeof webapis !== 'undefined' && webapis.avplay;
-var _MacAddr =  typeof webapis !== 'undefined' ? webapis.network.getEthernetMac() : "web";
-_MacAddr = _MacAddr.toLowerCase();
-const MacAddr = "v3_"+_MacAddr;
+const MacAddr =  typeof webapis !== 'undefined' ? webapis.network.getEthernetMac() : "web";
 
 let isTestMode = false;
 // 1. ADD: Configuration Constants

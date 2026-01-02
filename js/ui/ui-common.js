@@ -797,7 +797,7 @@ function renderSubscriptionInfo(data) {
             break;
     }
     // 2. MAC Address (Use displayed one if available, otherwise global)
-    macVal.textContent = data.macAddress || (typeof _MacAddr !== 'undefined' ? _MacAddr : "Unknown");
+    macVal.textContent = data.macAddress || (typeof MacAddr !== 'undefined' ? MacAddr : "Unknown");
 
     // 3. Created At
     if (data.createdAt) {
