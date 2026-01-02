@@ -20,6 +20,11 @@ const InputManager = (function() {
         "XF86Pause": "MediaPause",
         "XF86Stop": "MediaStop",
 
+        "XF86AudioRewind": "MediaRewind",
+        "XF86AudioNext": "MediaFastForward",
+        "XF86AudioPlay": "MediaPlay",
+        "XF86AudioPause": "MediaPause",
+
         "XF86Red": "ColorF0Red",
         "XF86Green": "ColorF1Green",
         "XF86Yellow": "ColorF2Yellow",

@@ -21,7 +21,7 @@ const PlayerController = (function() {
 
     function init() {
         console.log("[PlayerController] Initialized");
-        FocusManager.register(FocusManager.LAYERS.PLAYER, { handleKey });
+        FocusManager.register(FocusManager.LAYERS.PLAYER, { handleKey:playerOverlay.handleKey });
 
         MC.init();
 
@@ -173,8 +173,8 @@ const PlayerController = (function() {
         try { MC.reportMC("STOPPED", 0, 0); } catch (e) { /* ignore */ }
     }
 
-    function togglePlay() {
-        VideoEngine.togglePlay();
+    function togglePlay(forcePlayPause=null) {
+        VideoEngine.togglePlay(forcePlayPause);
 
         playerOverlay.showOverlay();
 
@@ -376,7 +376,7 @@ const PlayerController = (function() {
     }
     function handleKey(key, event) {
         // Channel Zapping (Live Only)
-        console.log("PC handleKey : ", key)
+        console.log("[PlayerController] PC handleKey : ", key)
         if (key === 'ChannelUp' || key === 'ChannelDown' || key === 'PageUp' || key === 'PageDown') {
             if (_channelUpDown(key)) return true;
         }
@@ -401,9 +401,15 @@ const PlayerController = (function() {
                 if(typeof goBack === 'function') goBack(); 
                 return true;
 
-            case 'MediaPlayPause':
             case 'MediaPlay':
+                togglePlay(true);
+                return true;
+
             case 'MediaPause':
+                togglePlay(false);
+                return true;
+
+            case 'MediaPlayPause':
             case 'Enter': 
                 togglePlay();
                 return true;

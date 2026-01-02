@@ -93,7 +93,7 @@
     }
   }
 
-  function togglePlayPause() {
+  function togglePlayPause(forcePlayPause=null) {
     const p = getActivePlayer();
     if (!p) return;
     setTimeoutOverlay();
@@ -105,10 +105,12 @@
     } else {
       try {
         const state = webapis.avplay.getState && webapis.avplay.getState() .toLocaleLowerCase();
-        if (state === 'playing') { 
+        const isPlaying = state==="playing";
+        const isPaused =  state === 'paused' || state === 'ready' || state === 'stopped';
+        if ( isPlaying && [null, false].includes(forcePlayPause) ) { 
             webapis.avplay.pause(); 
             updateStreamInfo({ status: 'paused' }); 
-        }else if(state === 'paused' || state === 'ready' || state === 'stopped' ) { 
+        }else if( isPaused && [null, true].includes(forcePlayPause) ) { 
             webapis.avplay.play(); 
             updateStreamInfo({ status: 'playing' }); 
         }
@@ -123,7 +125,9 @@
     function requestSeek(direction) {
         const state = webapis.avplay.getState();
         if ( !["playing",'paused'].includes( state.toLocaleLowerCase() )  ) return;
-
+        if(isSeeking===false && cache.progressWrapper) { 
+            setTimeout(function(){cache.progressWrapper.focus(); },200);
+         }
         isSeeking = true;
 
         let  propotion = Math.abs(seekAccumulator) / SEEK_STEP_MS;
@@ -145,6 +149,7 @@
         const newTime = Math.max(0, Math.min(duration, (currenttime || 0) + Math.round(seekAccumulator)));
 
         updateProgressUI(newTime / 1000, duration / 1000);
+        
     }
 
     function applySeek() {
@@ -265,7 +270,7 @@
         isSeeking
     ) return;
     
-    if(document.getElementById('subtitle-settings-modal') && !document.getElementById('subtitle-settings-modal').classList.contains('hidden')) return;
+    if(cache.modalSubtitlesSettings && !cache.modalSubtitlesSettings.classList.contains('hidden')) return;
     if(document.getElementById('tizen-track-modal') && !document.getElementById('tizen-track-modal').classList.contains('hidden')) return;
 
 
@@ -479,7 +484,6 @@
       const overlay = $('#tizen-player-overlay');
       if (!overlay) return false;
       
-      const progressBar = overlay.querySelector('#tizen-progress-bar');
       const controls = Array.from(overlay.querySelectorAll('.controls-row button, .controls-row .nav-item'));
       const current = document.activeElement;
       
@@ -490,15 +494,15 @@
       setTimeoutOverlay(true);
       if (key === 'ArrowUp') {
           if (controls.includes(current)) {
-              if(progressBar) { progressBar.focus(); return true; }
-          }else if (current===progressBar){
+              if(cache.progressWrapper) { cache.progressWrapper.focus(); return true; }
+          }else if (current===cache.progressWrapper){
                 hideOverlay();
           }
           return true; 
       }
       
       if (key === 'ArrowDown') {
-          if (current === progressBar) {
+          if (current === cache.progressWrapper) {
               if(cache.btnPlay) { cache.btnPlay.focus(); return true; }
               else if (controls.length > 0) { controls[0].focus(); return true; }
           }
@@ -506,7 +510,7 @@
       }
 
       if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'MediaRewind' || key === 'MediaFastForward') {
-          if (current === progressBar || key === 'MediaRewind' || key === 'MediaFastForward') {
+          if (current === cache.progressWrapper || key === 'MediaRewind' || key === 'MediaFastForward') {
               // Map dedicated keys or arrows to seek direction
               requestSeek(key);
               return true;
@@ -527,35 +531,39 @@
   }
 
   function handleKey(key, event) {
-    const settingsModal = document.getElementById('subtitle-settings-modal');
-    console.log("PC handleKey : ", key)
+    const keys2return = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight", "Caption"];
+    if(!InputManager.isBack(key) && cache.overlay && cache.overlay.classList.contains("hidden")){
+        showOverlay();
+        if(keys2return.includes(key)){
+            return true;
+        }
+    }
+    
     if (key === 'ChannelUp' || key === 'ChannelDown' || key === 'PageUp' || key === 'PageDown') {
         if (PlayerController._channelUpDown(key)) return true;
     }
-    if (settingsModal && !settingsModal.classList.contains('hidden')) {
+    if (cache.modalSubtitlesSettings && !cache.modalSubtitlesSettings.classList.contains('hidden')) {
         _handleSettingsModalNav(key);
         return true; 
     }
-
-      const status = getState();
+        console.log("[OverLay] PC handleKey : ", key)
       switch (key) {
           case 'MediaPlayPause': togglePlayPause(); return true;
           case 'MediaPlay':
-               const p = getActivePlayer();
-               if(p && (p.obj.paused || (p.type==='tizen' && status!=='playing'))) togglePlayPause();
+               togglePlayPause(true);
                return true;
           case 'MediaPause':
-               const p2 = getActivePlayer();
-               if(p2 && (!p2.obj.paused || (p2.type==='tizen' && status==='playing'))) togglePlayPause();
+               togglePlayPause(false);
                return true;
           case 'MediaRewind':
           case 'MediaFastForward':
-               showOverlay();
+            console.log("seeking : ",key)
+               
                requestSeek(key);
                return true;
           case 'Enter':
               if (document.activeElement && document.activeElement !== document.body && cache.overlay.contains(document.activeElement)) {
-                  document.activeElement.click(); 
+                  document.activeElement.onclick(); 
               } else {
                   togglePlayPause(); 
               }
@@ -566,16 +574,41 @@
           case 'ArrowDown': 
               if (_overlaySpatialNav(key)) return true;
               return false; 
-          case 'Back':             
-          case 'Escape':
-            //seems like i missed something, so this to hide overlay on back key
-            
-            if(overlayVisible && !playerOverlay.isBuffering
-                //(streamInfo.status.toLocaleLowerCase() !== 'buffering' ||!PlayerController.isPlaying() )
-            ) {
-                hideOverlay()
+
+            case 'Back':
+            case 'Escape':
+            case 'MediaStop':
+                if(overlayVisible && !playerOverlay.isBuffering
+                    //(streamInfo.status.toLocaleLowerCase() !== 'buffering' ||!PlayerController.isPlaying() )
+                ) {
+                    hideOverlay()
+                    return true;
+                }else if ( 
+                    FocusManager.getCurrentLayer() === FocusManager.LAYERS.MODAL || 
+                    FocusManager.getCurrentLayer() === FocusManager.LAYERS.OVERLAY
+                ) {
+                    console.log("[PlayerOverlay] Force closing layer via Back");
+                    if( playerOverlay.isBuffering && PlayerController._goBack() ){
+                        return true;
+                    }
+                }
+                if (PlayerController.currentState.type === 'live' && PlayerController.currentState.isFullscreen) {
+                    PlayerController.goPreviewLive();
+                    return true;
+                }
+                PlayerController.stop();
+                FocusManager.restorePreviousLayer(); 
+                if(typeof goBack === 'function') goBack(); 
                 return true;
+         case "f":
+         case "Guide":
+            if (PlayerController.currentState.item) {
+                const added = toggleFavorite(
+                    PlayerController.currentState.item.stream_id, 
+                    PlayerController.currentState.type, 
+                    PlayerController.currentState.item);
             }
+            return true;
       }
       return false;
   }
@@ -613,15 +646,14 @@
 }
 
 function openSubtitleSettings() {
-    const modal = document.getElementById('subtitle-settings-modal');
-    if (!modal) return;
+    if (!cache.modalSubtitlesSettings) return;
 
     _renderSettingsList('sub-set-size-list', subtitleConfig.sizes, 'size');
     _renderSettingsList('sub-set-color-list', subtitleConfig.colors, 'color');
     _renderSettingsList('sub-set-bg-list', subtitleConfig.backgrounds, 'background');
     _renderSettingsList('sub-set-font-list', subtitleConfig.fonts, 'font', true); 
 
-    modal.classList.remove('hidden');
+    cache.modalSubtitlesSettings.classList.remove('hidden');
     
       setTimeout(() => {
           const firstList = document.getElementById('sub-set-size-list');
@@ -635,8 +667,7 @@ function openSubtitleSettings() {
 }
 
 function closeSubtitleSettings() {
-    const modal = document.getElementById('subtitle-settings-modal');
-    if (modal) modal.classList.add('hidden');
+    if (cache.modalSubtitlesSettings) cache.modalSubtitlesSettings.classList.add('hidden');
     
     if (cache.btnSubSettings) cache.btnSubSettings.focus();
     showOverlay();
@@ -803,6 +834,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
 
     cache.bufferPercentage = document.getElementById('player-buffer-percentage');
     
+    cache.modalSubtitlesSettings = document.getElementById('subtitle-settings-modal');
 
     startClock();
 
@@ -835,6 +867,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     _setAudio,
     _setSubtitle,
     setTimeoutOverlay,
-    streamInfo 
+    get streamInfo(){return streamInfo} ,
+    handleKey
 };
 })();

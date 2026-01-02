@@ -34,6 +34,13 @@ const ViewLiveTV = (function() {
             if (categories && Array.isArray(categories)) {
                 let visibleCategories = categories.filter(cat => !userSettings.hiddenCategories.includes(String(cat.category_id)));
                 
+                visibleCategories.sort((a, b) => {
+                    const isPinnedA = userSettings.pinnedCategories.includes(String(a.category_id));
+                    const isPinnedB = userSettings.pinnedCategories.includes(String(b.category_id));
+                    if (isPinnedA && !isPinnedB) return -1;
+                    if (!isPinnedA && isPinnedB) return 1;
+                    return 0;
+                });
                 if (userSettings.favorites.length > 0) {
                      // Translate 'Favorites'
                      const favLabel = typeof t !== 'undefined' ? t('btn_favorite') : 'Favorites';
@@ -55,14 +62,15 @@ const ViewLiveTV = (function() {
     function _createCategoryItem(name, id) {
         const btn = document.createElement('button');
         btn.className = 'nav-item w-full text-left p-3 pl-13 rounded bg-card text-main hover:bg-opacity-80 mb-1 text-sm font-semibold truncate';
-        
+        const iconHtml="";
+        if(userSettings.pinnedCategories.includes(String(id))) iconHtml = '📌 ';
         // UPDATE: Use Sprite for Favorites
         if (id === 'favorites') {
             const favIcon = ViewVOD._iconHeart.cloneNode(true);
             favIcon.firstChild.classList.remove("hidden")
             btn.innerHTML = `${favIcon.innerHTML} ${name}`;
         } else {
-            btn.textContent = name;
+            btn.textContent = `${iconHtml}${name}`;
         }
         
         btn.dataset.id = id;
