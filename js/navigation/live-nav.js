@@ -30,7 +30,7 @@ const LiveNav = (function() {
         }
 
         // Left/Right: Pane Switching
-        if ( (LanguageManager.isLtr && key === 'ArrowRight') || (!LanguageManager.isLtr && key === 'ArrowLeft')) {
+        if ( InputManager.isLtrRight(key) ) {
             if (inCategoryList) {
                 const firstChannel = $('#live-channels-list .nav-item');
                 if (firstChannel) firstChannel.focus();
@@ -39,7 +39,7 @@ const LiveNav = (function() {
             return true; // Stop here
         } 
         
-        if ( (LanguageManager.isLtr && key === 'ArrowLeft') || (!LanguageManager.isLtr && key === 'ArrowRight')) {
+        if ( InputManager.isLtrLeft(key) ) {
             if (inChannelList) {
                 const currentCat = $('#live-categories-list .nav-item.bg-primary') || $('#live-categories-list .nav-item');
                 if (currentCat) currentCat.focus();

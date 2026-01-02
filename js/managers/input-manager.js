@@ -65,6 +65,13 @@ const InputManager = (function() {
     function isSettings(key){
         return SETTINGS_BUTTONS.includes(key);
     }
+
+    function isLtrRight(key){
+        return (LanguageManager.isLtr && key === 'ArrowRight') || (!LanguageManager.isLtr && key === 'ArrowLeft');
+    }
+    function isLtrLeft(key){
+        return (LanguageManager.isLtr && key === 'ArrowLeft') || (!LanguageManager.isLtr && key === 'ArrowRight');
+    }
     function _onKeyDown(e) {
         // --- FIX START ---
         // If this is the Tizen Back Key (10009), IGNORE it in this listener.
@@ -97,5 +104,7 @@ const InputManager = (function() {
         isPlayList,
         isBack,
         isSettings,
+        isLtrRight,
+        isLtrLeft,
     };
 })();

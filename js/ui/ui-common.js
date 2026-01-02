@@ -852,7 +852,7 @@ async function loadWeather(){
     let icon_url = response?.current?.condition?.icon;
     icon_url = icon_url && icon_url.slice(0,2)=="//"? `https:${icon_url}` : icon_url;
     $("#current-weather img").src = icon_url;
-    $("#current-weather span").textContent = `${response?.current?.temp_c} C`;
+    $("#current-weather span").textContent = `${response?.current?.temp_c}C`;
 }
 function setupWeather(){
     loadWeather();

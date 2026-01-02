@@ -72,7 +72,6 @@
     box-shadow:
         0 0 12px rgba(255,60,60,0.55),
         inset 0 0 8px rgba(255,60,60,0.25);
-    transform: scale(1.12);
 }
 
 /* ---------- Play / Pause ---------- */
@@ -80,7 +79,7 @@
     width: 78px;
     height: 78px;
     border-radius: 50%;
-    border: 2px solid #ff3b3b;
+    border: 2px solid #ff3b3b3f;
     background: rgba(0,0,0,0.7);
 }
 
@@ -91,7 +90,10 @@
 .skin-carbon #btn-playpause:focus svg {
     fill: #ffffff;
 }
-
+.skin-carbon #btn-playpause:focus{
+    color: #ffffff;
+    border: 2px solid #ff3b3b;
+}
 /* ---------- Stream Tags ---------- */
 .skin-carbon .tag_SD { color: #bbb; }
 .skin-carbon .tag_HD { color: #5aa9ff; box-shadow: 0 0 6px rgba(90,169,255,0.4); }
@@ -329,21 +331,4 @@
             transparent
         );
     box-shadow: none;
-}
-
-/* ============================================================
-   RTL SUPPORT
-   ============================================================ */
-
-.rtl-layout.skin-sonic .controls-row {
-    flex-direction: row-reverse;
-}
-
-.rtl-layout.skin-sonic .nav-item {
-    clip-path: polygon(
-        0 0,
-        90% 0,
-        100% 100%,
-        10% 100%
-    );
 }

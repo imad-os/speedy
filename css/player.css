@@ -244,7 +244,10 @@
 .skin-neon-bolt #tizen-track-modal .nav-item svg{
     float: left;
 }
-
+.skin-neon-bolt #stream-status,.skin-notfound #stream-status{
+    position: absolute;
+    right: 320px;
+}
 
 
 .skin-lite .overlay-bottom {
@@ -261,18 +264,7 @@
 .skin-lite #tizen-player-overlay {
     background-color: #0000001a !important;
 }
-.skin-lite #tizen-player-overlay.hidden {
-    transform-origin: center;
-    transform: scaleY(1.3);
-    opacity: 0 !important;
-    transition: transform 0.3s ease, opacity 0.4s ease;
-}
-.skin-lite #tizen-player-overlay:not(.hidden) {
-    transform-origin: center;
-    transform: scaleY(1);
-    opacity: 1 !important;
-    transition: transform 0.3s ease, opacity 0.4s ease;
-}
+
 
 /* Progress Bar: Positioned at top of the bottom block */
 .skin-lite .flex.items-center.gap-4.w-full.mb-4 {
@@ -359,3 +351,19 @@
 }
 
 
+
+
+
+
+#tizen-player-overlay.hidden {
+    transform-origin: center;
+    transform: scaleY(1.3);
+    opacity: 0 !important;
+    transition: transform 0.3s ease, opacity 0.4s ease;
+}
+#tizen-player-overlay:not(.hidden) {
+    transform-origin: center;
+    transform: scaleY(1);
+    opacity: 1 !important;
+    transition: transform 0.3s ease, opacity 0.4s ease;
+}

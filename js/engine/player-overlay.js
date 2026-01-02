@@ -228,11 +228,9 @@
             FocusManager.setLayer(FocusManager.LAYERS.OVERLAY);
         }
     }
-    cache.overlay.classList.remove('hidden');
+    
     requestAnimationFrame(() => {
-        cache.overlay.classList.remove('opacity-0');
-        cache.overlay.style.opacity = '1';
-        
+        cache.overlay.classList.remove('hidden');
         if (cache.btnPlay && FocusManager.getCurrentLayer() === FocusManager.LAYERS.OVERLAY) {
             cache.btnPlay.focus();
         }
@@ -284,6 +282,7 @@
 
     //overlay.style.opacity = '0';
     //overlay.classList.add('opacity-0');
+    if(cache && cache.btnPlay)cache.btnPlay.focus();
     overlay.classList.add('hidden')
 
     overlayVisible = false;
@@ -816,7 +815,6 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
 
     if (cache.overlay) {
         cache.overlay.classList.add('hidden');
-        cache.overlay.classList.add('opacity-0');
     }
     applySubtitleSettings();
 

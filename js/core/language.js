@@ -810,7 +810,7 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
         const lang = (userSettings && userSettings.language) ? userSettings.language : 'en';
         console.log(`[LanguageManager] Updating DOM to: ${lang}`);
         //i do no need to change RTL at all, this will add complexity to navigation, so i will just keep it LTR
-        
+        /*
         if (lang === 'ar') {
             docDir="rtl";
             document.body.setAttribute('dir', docDir);
@@ -822,6 +822,7 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             document.body.classList.remove('rtl-layout');
             isLtr=true;
         }
+        */
         
         // 2. Update Text Content (Using innerHTML to support <b>, <strong> tags in translations)
         const elements = document.querySelectorAll('[data-i18n]');

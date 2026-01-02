@@ -643,7 +643,6 @@
                         <button onclick="changePlayerSkin('skin-notfound')" class="nav-item w-12 h-12 focus:border-white transform transition-transform focus:scale-130" style="background-color: #a5a5a5;" title="simple"></button>
 
                         <button onclick="changePlayerSkin('skin-carbon')" class="nav-item w-12 h-12 focus:border-white transform transition-transform focus:scale-130" style="background-color: #161616;" title="carbon"></button>
-                        <button onclick="changePlayerSkin('skin-sonic')" class="nav-item w-12 h-12 focus:border-white transform transition-transform focus:scale-130" style="background-color: #051f64;" title="sonic"></button>
                     </div>
                     
                 </div>
@@ -708,7 +707,7 @@
             <div id="subtitle-container" class="absolute bottom-32 left-0 right-0 px-8 text-center text-white font-semibold pointer-events-none"></div>
             
             <!-- STATIC OVERLAY (OPTIMIZED) -->
-            <div id="tizen-player-overlay" class="hidden opacity-0 transition-opacity duration-300">
+            <div id="tizen-player-overlay" class="hidden" dir="ltr">
 
                 <!-- TOP BAR (UPDATED PER REQUEST) -->
                 <div class="overlay-top w-full flex justify-between items-center p-8 bg-gradient-to-b from-black/80 to-transparent">
@@ -760,7 +759,7 @@
             </div>
 
             <!-- Tizen Player Track Modals (Z-Index 300) -->
-            <div id="tizen-track-modal" class="hidden fixed inset-0 flex items-center justify-center p-4 z-20">
+            <div id="tizen-track-modal" dir="ltr" class="hidden fixed inset-0 flex items-center justify-center p-4 z-20">
                 <div class="bg-card w-full max-w-md rounded-lg shadow-xl overflow-hidden">
                     <h2 id="tizen-track-modal-title" class="font-bold text-main p-4 bg-alt">Select Track</h2>
                     <div id="tizen-track-modal-list" class="flex flex-col gap-1 p-2 max-h-[60vh] overflow-y-auto"></div>
@@ -768,7 +767,7 @@
                 </div>
             </div>
 
-            <div id="subtitle-settings-modal" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/80">
+            <div id="subtitle-settings-modal" dir="ltr" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/80">
                 <div class="bg-card w-full max-w-4xl rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 bg-alt border-b border-gray-700 flex justify-between items-center">
                         <h2 class="font-bold text-main text-xl" data-i18n="sub_settings_title">Subtitle Appearance</h2>
