@@ -158,7 +158,7 @@ const ViewLiveTV = (function() {
             
             epgEl.innerHTML = `
                 <p class="text-lg text-alt mb-2">${epgTitle}</p>
-                <div class="text-sm text-gray-500 mt-4">
+                <div class="text-lg text-gray-300 mt-4">
                     <p>Stream ID: ${stream.stream_id}</p>
                     <p>${hintPlay}</p>
                     <p>${hintFull}</p>

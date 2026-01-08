@@ -245,6 +245,14 @@
     startProgressUpdates();
 
   }
+  function updateFavIcon(){
+    if(cache.isFav){
+        const stream_id = PlayerController.currentItem.stream_id || PlayerController.currentItem.series_id;
+        const isFav = isFavorite( stream_id );
+        const iconHref = isFav ? '#icon-heart-full' : '#icon-heart-empty';
+        cache.isFav.innerHTML = `<svg class="icon icon-lg"><use href="${iconHref}"></use></svg>`;
+    }
+  }
     function setTimeoutOverlay(autoHide = true) {
         // 1. Always kill the existing timer first
         if (autoHideTimer) {
@@ -300,6 +308,7 @@
     if (!currentItem) return;
     
     if (cache.title) cache.title.textContent = currentItem.name || currentItem.title || 'Unknown Title.';
+    updateFavIcon();
     if (cache.rating) {
         const rating = currentItem.rating || currentItem.rating_5based || 0;
       if (currentItem.rating) { 
@@ -824,6 +833,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     
     cache.clock = document.getElementById('overlay-current-clock');
     cache.title = document.getElementById('overlay-movie-name');
+    cache.isFav = document.getElementById('overlay-movie-fav');
     cache.icon = document.getElementById('overlay-movie-icon');
     cache.rating = document.getElementById('overlay-movie-rating');
     cache.rating = document.getElementById('overlay-movie-rating');
@@ -868,6 +878,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     _setSubtitle,
     setTimeoutOverlay,
     get streamInfo(){return streamInfo} ,
-    handleKey
+    handleKey,
+    updateFavIcon
 };
 })();

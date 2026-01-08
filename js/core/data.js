@@ -45,6 +45,8 @@ function toggleFavorite(stream_id, type, item) {
         
     showAlert(msg);
     refreshItemProps(item);
+    ViewDetails.updateFavButton();
+    playerOverlay.updateFavIcon();
     return added;
 }
 

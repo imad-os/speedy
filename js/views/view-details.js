@@ -69,7 +69,8 @@ const ViewDetails = (function(){
 
         if (UI.favText) {
             UI.favText.textContent = label;
-        } else {
+        } 
+        if(UI.favBtn) {
              UI.favBtn.innerHTML = `<svg class="icon mr-2"><use href="${iconHref}"></use></svg> ${label}`;
         }
     }
@@ -244,6 +245,7 @@ const ViewDetails = (function(){
     return {
         show,
         fetchFullDetails: (item) => show(item) ,
-        resToTag
+        resToTag,
+        updateFavButton
     };
 })();

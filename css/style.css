@@ -208,6 +208,7 @@ body.video-active #app-container {
 .overlay-top {
     width: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
     padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start;
+    padding-top: 1rem;
 }
 .overlay-bottom {
     width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
@@ -245,7 +246,12 @@ body.video-active #app-container {
 #current-time { margin: auto; font-size: calc(1.525em * var(--font-scale)); line-height: 1.75rem; }
 #modal-movie-plot { overflow: auto; max-height: 200px; }
 .tizen-track-modal { z-index: 300 !important; }
-#error-toast, #alert-toast { z-index: 400 !important; font-size: calc(1.25em * var(--font-scale)); }
+#error-toast, #alert-toast { 
+    z-index: 400 !important; font-size: calc(1.25em * var(--font-scale));
+ }
+ #alert-toast{
+    background-color: #5c5c5cb2;
+ }
 #category-manager-modal { z-index: 300 !important; }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -494,4 +500,7 @@ body.video-active #app-container {
 }
 #modal-reconnecting div,#modal-reconnecting button{
     font-size: 25px;
+}
+#overlay-movie-fav{
+    color:var(--color-primary)
 }

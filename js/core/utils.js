@@ -28,7 +28,7 @@ function showAlert(message) {
     toast.style.display = 'block';
     setTimeout(() => {
         toast.style.display = 'none';
-    }, 5000);
+    }, 2000);
 }
 
 // === Icon Utilities ===
