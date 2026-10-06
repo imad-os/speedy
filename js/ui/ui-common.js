@@ -622,6 +622,11 @@ function showAbout(){
         const v = tizen.application.getAppInfo().version;
         if (v) document.getElementById('about-version-val').textContent = v;
     } catch (e) {}
+    // Which copy is running: bundled package or hosted update
+    if (window.AppBoot && AppBoot.build) {
+        const el = document.getElementById('about-version-val');
+        el.textContent += ` (build ${AppBoot.build}${AppBoot.source === 'remote' ? ', online update' : ''})`;
+    }
     modal.classList.remove('hidden');
     FocusManager.setLayer(FocusManager.LAYERS.MODAL);
     const closeBtn = modal.querySelector('button');

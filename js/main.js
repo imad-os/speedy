@@ -8,7 +8,9 @@ function registerTizenKeys() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// js/boot/loader.js injects this file after the page has loaded, so start
+// immediately in that case (DOMContentLoaded has already fired).
+function startApp() {
     console.log("App initializing...");
 
     // Voice Guide (TTS) support: never hide the body from the accessibility tree.
@@ -59,7 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Logic stops here. The Modal's "Agree" button will trigger grantPrivacyConsent() -> handleUserLogin()
         console.log("Waiting for Privacy Consent...");
     }
-});
+
+    // Tell the boot loader the app started correctly (hides splash, keeps a hosted build).
+    if (window.AppBoot) window.AppBoot.ready();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startApp);
+else startApp();
 
 window.addEventListener("pagehide", ()=> {console.log("----------page hiiiiide")});
 window.addEventListener("pageshow", ()=> {console.log("----------page showwwww")});

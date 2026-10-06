@@ -24,6 +24,24 @@ http://speedy.geekspro.us/
   `data-i18n-aria-label`, decorative icons are hidden by `js/core/a11y.js`.
 - Firebase and QRCode libraries are bundled in `js/libs/` (no CDN needed at startup).
 
+## Online updates (hosted files)
+The .wgt submitted to Samsung contains the full app. At launch `js/boot/loader.js` checks the
+hosted copy on GitHub Pages (`https://imad-os.github.io/speedy/`) and runs it only if it is
+**newer and compatible**, otherwise the bundled copy runs (no network, server down, bad deploy).
+
+- `index.html` is only the shell (webapis.js + splash + loader). App markup is `app.html`,
+  CSS/JS order is `app-manifest.json`.
+- **Publish an update:** change the code, increase `build` in `app-manifest.json`, push to the
+  branch GitHub Pages serves. TVs pick it up on next launch.
+- **`shell`** in `app-manifest.json` must equal `SHELL` in `js/boot/loader.js`. Bump both, and
+  submit a new .wgt to Samsung, whenever `config.xml`, privileges, `index.html` or the loader change.
+  A hosted build cannot add privileges or Tizen features; those always need a Samsung submission.
+- A hosted build that fails to load, throws at start-up or never calls `AppBoot.ready()`
+  is blacklisted on that TV and the bundled copy is used.
+- When submitting a new .wgt, its `build` must be >= the hosted one.
+- Keep hosted changes to fixes/content. New features or a different behaviour should go
+  through a normal Seller Office update, since Samsung certifies the submitted version.
+
 ## TODO
 - Add sorting by rating and by year
 

@@ -33,6 +33,8 @@ files:
   - assets/icon_256.png
   - assets/icon_400.jpg
   - assets/icon_full.jpg
+  - app-manifest.json
+  - app.html
   - assets/placeholder.jpg
   - config.xml
   - css/NotoKufiArabic.woff2
@@ -44,6 +46,7 @@ files:
   - css/style.css
   - css/tailwind.css
   - index.html
+  - js/boot/loader.js
   - js/core/a11y.js
   - js/core/api.js
   - js/core/data.js
@@ -102,6 +105,8 @@ excludes:
   - webUnitTest/*
   - README.md
   - tools/*
+  - docs/*
+  - .nojekyll
   - privacy_policy.txt
 
 # project dependencies
