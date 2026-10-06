@@ -255,6 +255,20 @@ function updateLanguageSelectionUI() {
         activeP.classList.add('!border-b-white');
     }
 
+    // Color swatches have no text: give them a spoken name and selected state.
+    const tr = (k, f) => (typeof t !== 'undefined' ? t(k) : f);
+    document.querySelectorAll('#app-theme-options button').forEach(btn => {
+        btn.setAttribute('aria-label', `${tr('aria_app_theme', 'App theme')} ${btn.title}`);
+        btn.setAttribute('aria-pressed', btn === activeT ? 'true' : 'false');
+    });
+    document.querySelectorAll('#player-theme-options button').forEach(btn => {
+        btn.setAttribute('aria-label', `${tr('aria_player_theme', 'Player theme')} ${btn.title}`);
+        btn.setAttribute('aria-pressed', btn === activeP ? 'true' : 'false');
+    });
+    document.querySelectorAll('.btn-lang').forEach(btn => {
+        btn.setAttribute('aria-pressed', btn === active ? 'true' : 'false');
+    });
+
 }
 
 // === EXIT MODAL LOGIC ===
@@ -482,24 +496,32 @@ function _renderCategoryManagerList(categories, type) {
         item.className = 'flex items-center justify-between p-3 bg-card rounded-lg';
         
         item.innerHTML = `
-            <span class="font-semibold text-main flex-1 truncate mr-2">${cat.category_name}</span>
+            <span class="cat-name font-semibold text-main flex-1 truncate mr-2"></span>
             <div class="flex gap-2">
-                <button class="btn-pin nav-item p-2 rounded border-2 ${isPinned(id) ? 'bg-primary border-primary text-white' : 'bg-alt border-transparent text-alt'}" title="Pin">📌</button>
-                <button class="btn-hide nav-item p-2 rounded border-2 ${isHidden(id) ? 'bg-red-600 border-red-600 text-white' : 'bg-alt border-transparent text-alt'}" title="Hide">👁️</button>
+                <button class="btn-pin nav-item p-2 rounded border-2 ${isPinned(id) ? 'bg-primary border-primary text-white' : 'bg-alt border-transparent text-alt'}"><span aria-hidden="true">📌</span></button>
+                <button class="btn-hide nav-item p-2 rounded border-2 ${isHidden(id) ? 'bg-red-600 border-red-600 text-white' : 'bg-alt border-transparent text-alt'}"><span aria-hidden="true">👁️</span></button>
             </div>
         `;
+        item.querySelector('.cat-name').textContent = cat.category_name;
 
         const btnPin = item.querySelector('.btn-pin');
         const btnHide = item.querySelector('.btn-hide');
+        const tr = (k, f) => (typeof t !== 'undefined' ? t(k) : f);
+        btnPin.setAttribute('aria-label', `${tr('aria_pin', 'Pin category')}: ${cat.category_name}`);
+        btnHide.setAttribute('aria-label', `${tr('aria_hide', 'Hide category')}: ${cat.category_name}`);
+        btnPin.setAttribute('aria-pressed', isPinned(id) ? 'true' : 'false');
+        btnHide.setAttribute('aria-pressed', isHidden(id) ? 'true' : 'false');
 
         btnPin.onclick = () => {
             togglePinned(id);
             btnPin.className = `btn-pin nav-item p-2 rounded border-2 ${isPinned(id) ? 'bg-primary border-primary text-white' : 'bg-alt border-transparent text-alt'}`;
+            btnPin.setAttribute('aria-pressed', isPinned(id) ? 'true' : 'false');
         };
 
         btnHide.onclick = () => {
             toggleHidden(id);
             btnHide.className = `btn-hide nav-item p-2 rounded border-2 ${isHidden(id) ? 'bg-red-600 border-red-600 text-white' : 'bg-alt border-transparent text-alt'}`;
+            btnHide.setAttribute('aria-pressed', isHidden(id) ? 'true' : 'false');
         };
 
         list.appendChild(item);
@@ -576,6 +598,7 @@ function changeAppTheme(themeName) {
     document.body.className = themeName;
     userSettings.theme = themeName;
     saveUserSettings();
+    updateLanguageSelectionUI();
     showAlert(typeof t !== 'undefined' ? t('msg_theme_updated') : "App Theme Updated");
 }
 
@@ -584,6 +607,7 @@ function changePlayerSkin(skinName) {
     
     userSettings.player_skin = skinName;
     saveUserSettings();
+    updateLanguageSelectionUI();
     
     if (window.playerOverlay && typeof window.playerOverlay.init === 'function') {
         window.playerOverlay.init();
@@ -593,6 +617,11 @@ function changePlayerSkin(skinName) {
 
 function showAbout(){
     const modal = document.getElementById('modal-about');
+    // Show the real package version (config.xml) instead of a hard-coded one
+    try {
+        const v = tizen.application.getAppInfo().version;
+        if (v) document.getElementById('about-version-val').textContent = v;
+    } catch (e) {}
     modal.classList.remove('hidden');
     FocusManager.setLayer(FocusManager.LAYERS.MODAL);
     const closeBtn = modal.querySelector('button');

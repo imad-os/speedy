@@ -25,12 +25,43 @@ const InputManager = (function() {
         "XF86AudioPlay": "MediaPlay",
         "XF86AudioPause": "MediaPause",
 
+        "XF86AudioStop": "MediaStop",
+
         "XF86Red": "ColorF0Red",
         "XF86Green": "ColorF1Green",
         "XF86Yellow": "ColorF2Yellow",
         "XF86Blue": "ColorF3Blue"
     };
-    const FAVORITE_BUTTONS = ["ColorF0Red","MediaPlayPause", "Red", "f"];
+    // Samsung remote key codes. `e.key` is not reliable for remote/media keys
+    // on every Tizen version (often "Unidentified"), the keyCode always is.
+    const TIZEN_KEYCODE_MAP = {
+        413: "MediaStop",
+        415: "MediaPlay",
+        19: "MediaPause",
+        10252: "MediaPlayPause",
+        412: "MediaRewind",
+        417: "MediaFastForward",
+        403: "ColorF0Red",
+        404: "ColorF1Green",
+        405: "ColorF2Yellow",
+        406: "ColorF3Blue",
+        427: "ChannelUp",
+        428: "ChannelDown",
+        457: "Info",
+        10221: "Caption",
+        458: "Guide"
+    };
+    // Keys the app needs to receive (registered through tizen.tvinputdevice).
+    const KEYS_TO_REGISTER = [
+        "MediaPlay", "MediaPause", "MediaPlayPause", "MediaStop",
+        "MediaRewind", "MediaFastForward",
+        "ChannelUp", "ChannelDown",
+        "ColorF0Red", "ColorF1Green", "ColorF2Yellow", "ColorF3Blue",
+        "Info", "Caption", "Guide"
+    ];
+    // NOTE: media (trick play) keys must only control playback, so they are
+    // intentionally not mapped to app actions such as favorites.
+    const FAVORITE_BUTTONS = ["ColorF0Red", "Red", "f"];
     const SEARCH_BUTTONS = ["ColorF1Green","Guide", "Green","s"];
     const PLAYLIST_BUTTONS = ["ColorF2Yellow","Yellow","p"];
     const SETTINGS_BUTTONS = ["ColorF3Blue","Blue","c"];
@@ -91,7 +122,9 @@ const InputManager = (function() {
         const keyCode = e.keyCode;
 
         // Map Tizen specific keys to standard names
-        if (TIZEN_KEY_MAP[keyName]) {
+        if (TIZEN_KEYCODE_MAP[keyCode]) {
+            keyName = TIZEN_KEYCODE_MAP[keyCode];
+        } else if (TIZEN_KEY_MAP[keyName]) {
             keyName = TIZEN_KEY_MAP[keyName];
         } else if (TIZEN_KEY_MAP[keyCode]) {
              keyName = TIZEN_KEY_MAP[keyCode];
@@ -104,6 +137,7 @@ const InputManager = (function() {
     return {
         init,
         TIZEN_KEY_MAP,
+        KEYS_TO_REGISTER,
         isFavorite,
         isSearch,
         isPlayList,

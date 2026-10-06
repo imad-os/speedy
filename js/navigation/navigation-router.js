@@ -63,6 +63,13 @@ const NavigationRouter = (function() {
             }
         }
 
+        // Play key on the movie details page starts playback
+        if (activePageId === 'page-movie-details' && (key === 'MediaPlay' || key === 'MediaPlayPause')) {
+            const playBtn = document.getElementById('detail-play-btn');
+            if (playBtn) playBtn.click();
+            return true;
+        }
+
         // 2. Delegate to Specific Modules (PRIORITY)
         if (document.getElementById("details-view-panel")?.classList.contains("activeView")) {
             DetailsNav.handleKey(key);

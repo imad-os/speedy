@@ -7,28 +7,33 @@ function setGlobalFontScale(scale) {
     localStorage.setItem('user_font_scale', scale);
 }
 
+// Toasts are ARIA live regions: they must be visible *before* their text changes,
+// otherwise the TV Voice Guide does not announce them.
+const _toastTimers = {};
+function _showToast(toast, text, durationMs) {
+    toast.style.display = 'block';
+    toast.textContent = '';
+    clearTimeout(_toastTimers[toast.id]);
+    setTimeout(() => { toast.textContent = text; }, 30);
+    _toastTimers[toast.id] = setTimeout(() => {
+        toast.style.display = 'none';
+        toast.textContent = '';
+    }, durationMs);
+}
+
 function showError(message) {
     const toast = $('#error-toast');
     if(!toast) return;
     
     // Use translation for default error message
     const defaultMsg = typeof t !== 'undefined' ? t('error_unknown') : 'An error occurred.';
-    
-    toast.textContent = message || defaultMsg;
-    toast.style.display = 'block';
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 5000);
+    _showToast(toast, message || defaultMsg, 5000);
 }
 
 function showAlert(message) {
     const toast = $('#alert-toast');
-    if(!toast) return;
-    toast.textContent = message || '-';
-    toast.style.display = 'block';
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 2000);
+    if(!toast || !message) return;
+    _showToast(toast, message, 2000);
 }
 
 // === Icon Utilities ===

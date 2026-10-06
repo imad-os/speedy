@@ -62,15 +62,28 @@ const ViewLiveTV = (function() {
     function _createCategoryItem(name, id) {
         const btn = document.createElement('button');
         btn.className = 'nav-item w-full text-left p-3 pl-13 rounded bg-card text-main hover:bg-opacity-80 mb-1 text-sm font-semibold truncate';
-        const iconHtml="";
-        if(userSettings.pinnedCategories.includes(String(id))) iconHtml = '📌 ';
+        const isPinned = userSettings.pinnedCategories.includes(String(id));
         // UPDATE: Use Sprite for Favorites
         if (id === 'favorites') {
             const favIcon = ViewVOD._iconHeart.cloneNode(true);
             favIcon.firstChild.classList.remove("hidden")
-            btn.innerHTML = `${favIcon.innerHTML} ${name}`;
+            btn.innerHTML = `${favIcon.innerHTML} `;
+            btn.appendChild(document.createTextNode(name));
         } else {
-            btn.textContent = `${iconHtml}${name}`;
+            if (isPinned) {
+                // Emoji is visual only; Voice Guide reads "Pinned" instead.
+                const pin = document.createElement('span');
+                pin.setAttribute('aria-hidden', 'true');
+                pin.textContent = '📌 ';
+                btn.appendChild(pin);
+            }
+            btn.appendChild(document.createTextNode(name));
+            if (isPinned) {
+                const sr = document.createElement('span');
+                sr.className = 'sr-only';
+                sr.textContent = `, ${typeof t !== 'undefined' ? t('aria_pinned') : 'Pinned'}`;
+                btn.appendChild(sr);
+            }
         }
         
         btn.dataset.id = id;
@@ -127,8 +140,17 @@ const ViewLiveTV = (function() {
             const btn = document.createElement('button');
             btn.dataset.id=stream.stream_id;
             btn.className = 'nav-item w-full flex items-center gap-3 p-2 rounded bg-card text-main hover:bg-opacity-80 mb-1 text-sm text-left';
-            const iconSrc = stream.stream_icon || 'img/tv-icon.png'; 
-            btn.innerHTML = `<img src="${iconSrc}" class="w-8 h-8 object-contain bg-black rounded" onerror="this.style.display='none'"><span class="truncate flex-1">${stream.name}</span>`;
+            const img = document.createElement('img');
+            img.alt = '';
+            img.className = 'w-8 h-8 object-contain bg-black rounded';
+            img.onerror = function() { this.style.display = 'none'; };
+            if (stream.stream_icon) img.src = stream.stream_icon;
+            else img.style.display = 'none';
+            const nameEl = document.createElement('span');
+            nameEl.className = 'truncate flex-1';
+            nameEl.textContent = stream.name || '';
+            btn.appendChild(img);
+            btn.appendChild(nameEl);
 
             btn.appendChild(favIcon)
 
@@ -171,7 +193,7 @@ const ViewLiveTV = (function() {
         btnElement.classList.add('active-category');
 
         // 3. Play Logic
-        if (currentPreviewStreamId === stream.stream_id) {
+        if (currentPreviewStreamId === stream.stream_id && PlayerController.isActive) {
             // Already playing -> Fullscreen
             if (typeof goFullscreenLive === 'function') {
                 goFullscreenLive(); 
@@ -185,10 +207,16 @@ const ViewLiveTV = (function() {
         }
     }
 
+    // Called after STOP so pressing OK on the same channel starts it again.
+    function resetPreview() {
+        currentPreviewStreamId = null;
+    }
+
     return {
         init,
         loadChannels,
         renderChannels,
-        currentPreviewStreamId
+        resetPreview,
+        get currentPreviewStreamId() { return currentPreviewStreamId; }
     };
 })();

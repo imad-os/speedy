@@ -151,4 +151,5 @@ function updateSettingsCache(){
         $("#btn-toggle-cache .custom-checkbox").classList.remove("checked")
 
     }
+    $("#btn-toggle-cache").setAttribute('aria-pressed', userSettings.cacheAllCategorieItems ? 'true' : 'false');
 }

@@ -15,6 +15,15 @@ http://speedy.geekspro.us/
 
 
 
+## Samsung TV compatibility notes
+- `css/tailwind.css` is **generated**. The Tailwind v4 output (`tools/tailwind.src.css`) uses CSS
+  nesting, range media queries, `oklch()` and `@layer`, which older Tizen engines drop (screens
+  overflow). After regenerating Tailwind, down-level it:
+  `npm i lightningcss postcss && node tools/compat-css.mjs tools/tailwind.src.css css/tailwind.css`
+- Voice Guide (TTS): never put `aria-hidden` on `<body>`. Icon-only controls use
+  `data-i18n-aria-label`, decorative icons are hidden by `js/core/a11y.js`.
+- Firebase and QRCode libraries are bundled in `js/libs/` (no CDN needed at startup).
+
 ## TODO
 - Add sorting by rating and by year
 

@@ -78,10 +78,9 @@ const FocusManager = (function() {
                 return true;
             }
             
-            // Allow Enter to click
+            // Enter clicks the focused button (native activation is prevented in handleKey)
             if (key === "Enter") {
-                //focused.click();
-                //it actually will use onclick="..." in html
+                focused.click();
                 return true;
             }
 
@@ -183,10 +182,39 @@ const FocusManager = (function() {
 
     }
 
+    function _isPlaybackActive() {
+        if (typeof PlayerController === 'undefined') return false;
+        const top = (typeof navigationStack !== 'undefined' && navigationStack.length)
+            ? navigationStack[navigationStack.length - 1].pageId : null;
+        return PlayerController.isActive || PlayerController.currentState.isFullscreen || top === 'page-player';
+    }
+
     function handleKey(key, event) {
+        const handled = _routeKey(key, event);
+        // When the app already handled OK/Enter (e.g. by calling .click()), stop the
+        // browser's native button activation, otherwise the button is clicked twice.
+        if (handled && key === 'Enter' && event && event.preventDefault) {
+            const tag = document.activeElement ? document.activeElement.tagName : '';
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA') event.preventDefault();
+        }
+        return handled;
+    }
+
+    function _routeKey(key, event) {
         const currentLayer = getCurrentLayer();
         const handler = layerHandlers[currentLayer];
-        
+
+        // STOP (trick play) works from any layer while something is playing:
+        // fullscreen player, overlay, track/subtitle dialogs and live preview.
+        if (key === 'MediaStop') {
+            if (_isPlaybackActive()) {
+                PlayerController.stopAndExit();
+                if (event && event.preventDefault) event.preventDefault();
+                return true;
+            }
+            return false;
+        }
+
         // 1. MODAL LAYER HANDLING
         if(currentLayer === LAYERS.PAGE){
             if (handleKey_addPlaylistModal(key)) {

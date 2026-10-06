@@ -121,9 +121,16 @@ const ViewVOD = (function() {
         let iconHtml = '';
         if(id==='favorites') iconHtml = `<svg class="icon-lg mr-2 inline-block text-red-500 icon_fav"><use href="#icon-heart-full"></use></svg>`;
         else if(id==='watching') iconHtml = `<svg class="icon-lg mr-2 inline-block text-primary icon_fav"><use href="#icon-watching"></use></svg>`;
-        else if(userSettings.pinnedCategories.includes(String(id))) iconHtml = '📌 ';
+        else if(userSettings.pinnedCategories.includes(String(id))) iconHtml = '<span aria-hidden="true">📌 </span>';
 
-        btn.innerHTML = `${iconHtml}${name}`;
+        btn.innerHTML = iconHtml;
+        btn.appendChild(document.createTextNode(name));
+        if (userSettings.pinnedCategories.includes(String(id))) {
+            const sr = document.createElement('span');
+            sr.className = 'sr-only';
+            sr.textContent = `, ${typeof t !== 'undefined' ? t('aria_pinned') : 'Pinned'}`;
+            btn.appendChild(sr);
+        }
 
         btn.onclick = async () => {
             $$('#vod-category-list .nav-item').forEach(b => b.classList.remove('active-category'));
@@ -242,6 +249,7 @@ const ViewVOD = (function() {
         if (dom.__lastStreamId === stream_id) {
              if (index === focusedVirtualIndex) dom.classList.add('focused');
              else dom.classList.remove('focused');
+             dom.setAttribute('aria-label', _cardLabel(item, calcRating(item), stream_id, getwatchingProgress(stream_id)));
 
              // FIX: If we are NOT scrolling, but the current image is a placeholder (or starts with data:),
              // force the real image to load.
@@ -268,6 +276,7 @@ const ViewVOD = (function() {
             dom.classList.add('nav-item');
             dom.classList.add('virtual-card');
             dom.setAttribute('tabindex', '-1');
+            dom.setAttribute('role', 'button');
 
             const inner = document.createElement('div');
             inner.className = 'virtual-card-inner';
@@ -396,11 +405,28 @@ const ViewVOD = (function() {
         }
 
         dom.__v.nameEl.textContent = item.name || '';
+        dom.setAttribute('aria-label', _cardLabel(item, rating, stream_id, progressInfo));
 
         if (index === focusedVirtualIndex) dom.classList.add('focused');
         else dom.classList.remove('focused');
 
         dom.style.display = 'block';
+    }
+
+    // Spoken by Voice Guide when a card gets focus: "Title, Rating 7.5, Favorite, S1 E2"
+    function _cardLabel(item, rating, stream_id, progressInfo) {
+        const tr = (k, f) => (typeof t !== 'undefined' ? t(k) : f);
+        const parts = [item.name || ''];
+        if (rating > 0) parts.push(`${tr('aria_rating', 'Rating')} ${Number(rating).toFixed(1)}`);
+        if (isFavorite(stream_id)) parts.push(tr('btn_favorite', 'Favorite'));
+        if (progressInfo && progressInfo.progress_sec > 0) {
+            if (progressInfo.stream_type === 'series' && progressInfo.episode) {
+                parts.push(`${tr('aria_season', 'Season')} ${progressInfo.episode.season || 0} ${tr('aria_episode', 'Episode')} ${progressInfo.episode.episode_num || 0}`);
+            } else if (progressInfo.duration_sec > 0) {
+                parts.push(`${Math.round(progressInfo.progress_sec / progressInfo.duration_sec * 100)}% ${tr('aria_watched', 'watched')}`);
+            }
+        }
+        return parts.join(', ');
     }
 
     function _onVirtualCardClick(dom) {
@@ -445,7 +471,7 @@ const ViewVOD = (function() {
             seasonNumbers.forEach((seasonNum) => {
                 const tab = document.createElement('button');
                 tab.className = 'nav-item season-tab px-4 py-2 rounded-lg bg-alt text-alt font-semibold';
-                tab.textContent = `Season ${seasonNum}`;
+                tab.textContent = `${typeof t !== 'undefined' ? t('aria_season') : 'Season'} ${seasonNum}`;
                 tab.onclick = () => {
                     $$('.season-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
@@ -477,7 +503,10 @@ const ViewVOD = (function() {
             // UPDATE: Check for specific episode progress
             const progress = getwatchingProgress(seriesItem.series_id, episode.id);
             const pct = (progress && progress.duration_sec > 0) ? (progress.progress_sec / progress.duration_sec) * 100 : 0;
-            epCard.innerHTML = `<div class="flex-1"><span class="text-primary font-bold">E${episode.episode_num}</span>: ${episode.title}${pct>0?`<div class="progress-bar w-full mt-2"><div class="progress-bar-inner" style="width:${pct}%;"></div></div>`:''}</div><span class="text-alt text-lg">${episode.duration||''}</span>`;
+            epCard.innerHTML = `<div class="flex-1"><span class="text-primary font-bold">E${episode.episode_num}</span>: <span class="ep-title"></span>${pct>0?`<div class="progress-bar w-full mt-2" aria-hidden="true"><div class="progress-bar-inner" style="width:${pct}%;"></div></div>`:''}</div><span class="text-alt text-lg">${episode.duration||''}</span>`;
+            epCard.querySelector('.ep-title').textContent = episode.title || '';
+            const epLabel = `${typeof t !== 'undefined' ? t('aria_episode') : 'Episode'} ${episode.episode_num}, ${episode.title || ''}${episode.duration ? ', ' + episode.duration : ''}${pct > 0 ? `, ${Math.round(pct)}% ${typeof t !== 'undefined' ? t('aria_watched') : 'watched'}` : ''}`;
+            epCard.setAttribute('aria-label', epLabel);
             epCard.onclick = () => {
                 if(typeof playEpisode === 'function') playEpisode(episode, seriesItem, progress ? progress.progress_sec : 0);
             };

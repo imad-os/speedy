@@ -34,16 +34,24 @@ files:
   - assets/icon_400.jpg
   - assets/icon_full.jpg
   - assets/placeholder.jpg
+  - config.xml
+  - css/NotoKufiArabic.woff2
+  - css/appThemes.css
+  - css/fonts.css
   - css/loader.css
   - css/player.css
+  - css/player_ext.css
   - css/style.css
+  - css/tailwind.css
   - index.html
+  - js/core/a11y.js
   - js/core/api.js
   - js/core/data.js
   - js/core/language.js
   - js/core/loader.js
   - js/core/router.js
   - js/core/safeFetch.js
+  - js/core/speedTest.js
   - js/core/state.js
   - js/core/subtitles.js
   - js/core/user.js
@@ -52,8 +60,9 @@ files:
   - js/engine/player-overlay.js
   - js/engine/video-engine.js
   - js/engine/virtual-list.js
+  - js/libs/firebase-app-compat.js
+  - js/libs/firebase-firestore-compat.js
   - js/libs/qr.js
-  - js/libs/tailwindcss.js
   - js/main.js
   - js/managers/cache-manager.js
   - js/managers/focus-manager.js
@@ -92,6 +101,8 @@ excludes:
   - Directory.Build.targets
   - webUnitTest/*
   - README.md
+  - tools/*
+  - privacy_policy.txt
 
 # project dependencies
 deps: []

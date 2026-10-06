@@ -18,18 +18,24 @@ window.MC = (function () {
             const requestPlaybackInfoCb = {
                 onplaybackactionrequest(action, clientName) {
                     console.log("[PlayerController] playback action request:", action, "from", clientName);
-                    // Map requested actions -> your player logic
+                    // Map requested actions -> player logic.
+                    // On recent TVs the remote's media keys (Stop, Play...) can be
+                    // delivered here instead of as key events, so each must work.
                     if (action === "TOGGLE_PLAY_PAUSE" || action === "TOGGLE_PLAY") {
-                        togglePlay();
+                        PlayerController.togglePlay();
                     } else if (action === "PLAY") {
-                        if (!PlayerController.isPlaying()) togglePlay();
-                    } else if (action === "PAUSE" || action === "STOP") {
-                        if (PlayerController.isPlaying()) togglePlay();
-                    } else if (action === "NEXT") {
-                        // optional: implement next channel/episode
-                        console.log("[PlayerController] NEXT requested by client:", clientName);
-                    } else if (action === "PREVIOUS") {
-                        console.log("[PlayerController] PREVIOUS requested by client:", clientName);
+                        PlayerController.togglePlay(true);
+                    } else if (action === "PAUSE") {
+                        PlayerController.togglePlay(false);
+                    } else if (action === "STOP") {
+                        PlayerController.stopAndExit();
+                    } else if (action === "FORWARD" || action === "REWIND") {
+                        if (window.playerOverlay && window.playerOverlay.requestSeek) {
+                            window.playerOverlay.showOverlay(false);
+                            window.playerOverlay.requestSeek(action === "FORWARD" ? "MediaFastForward" : "MediaRewind");
+                        }
+                    } else if (action === "NEXT" || action === "PREV" || action === "PREVIOUS") {
+                        PlayerController._channelUpDown(action === "NEXT" ? "ChannelUp" : "ChannelDown");
                     } else {
                         console.log("[PlayerController] Unhandled playback action:", action);
                     }
@@ -39,12 +45,11 @@ window.MC = (function () {
                     console.log("[PlayerController] playback position request:", position, "from", clientName);
                     // position is in seconds (docs/examples use seconds). Seek if possible.
                     try {
-                        if (typeof VideoEngine !== 'undefined' && VideoEngine.seek) {
-                            VideoEngine.seek(position);
+                        const isVod = PlayerController.currentState.type && PlayerController.currentState.type !== 'live';
+                        if (isVod && typeof webapis !== 'undefined' && webapis.avplay) {
+                            webapis.avplay.seekTo(Math.max(0, Number(position) || 0) * 1000);
                             // reflect to MC
                             safeWritePlaybackState(PlayerController.isPlaying() ? "PLAY" : "PAUSE", position);
-                        } else {
-                            console.warn("[PlayerController] VideoEngine.seek() not available");
                         }
                     } catch (e) {
                         console.warn("[PlayerController] Error applying playback position request:", e);
@@ -114,7 +119,7 @@ window.MC = (function () {
     function _buildMCMetadata(item, episode, durationSec) {
         const md = {
             title: (episode && episode.name) || item?.name || "Playback",
-            artist: item?.artist || "Bahra IPTV",
+            artist: item?.artist || "Speedy IPTV",
             album: item?.album || "TV",
             duration: (durationSec && !isNaN(durationSec)) ? String(Math.round(durationSec)) : "0" // seconds as string
         };

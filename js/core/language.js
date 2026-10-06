@@ -270,6 +270,30 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             'connection_lost': 'Connection Lost', 
             'waiting_for_network': 'Waiting for network to recover...',
 
+            // ACCESSIBILITY (Voice Guide / TTS) & PLAYER MESSAGES
+            "aria_search": "Search",
+            "aria_playlists": "Playlists",
+            "aria_settings": "Settings",
+            "aria_play": "Play",
+            "aria_pause": "Pause",
+            "aria_subtitles": "Subtitles",
+            "aria_audio": "Audio track",
+            "aria_sub_settings": "Subtitle settings",
+            "aria_seek": "Playback position",
+            "aria_change_language": "Change language",
+            "aria_app_theme": "App theme",
+            "aria_player_theme": "Player theme",
+            "aria_rating": "Rating",
+            "aria_pinned": "Pinned",
+            "aria_pin": "Pin category",
+            "aria_hide": "Hide category",
+            "aria_season": "Season",
+            "aria_episode": "Episode",
+            "aria_watched": "watched",
+            "msg_playback_stopped": "Playback stopped",
+            "msg_live_no_seek": "Seeking is not available for live channels",
+            "msg_playback_ended": "Playback ended",
+
         },
         fr: {
             // AUTH & API
@@ -440,6 +464,30 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
 
             'connection_lost': 'Connexion Perdue',
             'waiting_for_network': 'En attente de récupération du réseau...',
+
+            // ACCESSIBILITY (Voice Guide / TTS) & PLAYER MESSAGES
+            "aria_search": "Rechercher",
+            "aria_playlists": "Listes de lecture",
+            "aria_settings": "Paramètres",
+            "aria_play": "Lecture",
+            "aria_pause": "Pause",
+            "aria_subtitles": "Sous-titres",
+            "aria_audio": "Piste audio",
+            "aria_sub_settings": "Paramètres des sous-titres",
+            "aria_seek": "Position de lecture",
+            "aria_change_language": "Changer de langue",
+            "aria_app_theme": "Thème de l'application",
+            "aria_player_theme": "Thème du lecteur",
+            "aria_rating": "Note",
+            "aria_pinned": "Épinglé",
+            "aria_pin": "Épingler la catégorie",
+            "aria_hide": "Masquer la catégorie",
+            "aria_season": "Saison",
+            "aria_episode": "Épisode",
+            "aria_watched": "vu",
+            "msg_playback_stopped": "Lecture arrêtée",
+            "msg_live_no_seek": "L'avance et le retour rapides ne sont pas disponibles pour les chaînes en direct",
+            "msg_playback_ended": "Lecture terminée",
 
         },
         es: {
@@ -612,6 +660,30 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "connection_lost": "Conexión Perdida",
             "waiting_for_network": "Esperando recuperación de red...",
 
+            // ACCESSIBILITY (Voice Guide / TTS) & PLAYER MESSAGES
+            "aria_search": "Buscar",
+            "aria_playlists": "Listas de reproducción",
+            "aria_settings": "Ajustes",
+            "aria_play": "Reproducir",
+            "aria_pause": "Pausa",
+            "aria_subtitles": "Subtítulos",
+            "aria_audio": "Pista de audio",
+            "aria_sub_settings": "Ajustes de subtítulos",
+            "aria_seek": "Posición de reproducción",
+            "aria_change_language": "Cambiar idioma",
+            "aria_app_theme": "Tema de la aplicación",
+            "aria_player_theme": "Tema del reproductor",
+            "aria_rating": "Valoración",
+            "aria_pinned": "Fijado",
+            "aria_pin": "Fijar categoría",
+            "aria_hide": "Ocultar categoría",
+            "aria_season": "Temporada",
+            "aria_episode": "Episodio",
+            "aria_watched": "visto",
+            "msg_playback_stopped": "Reproducción detenida",
+            "msg_live_no_seek": "El avance y retroceso no están disponibles en canales en directo",
+            "msg_playback_ended": "Reproducción finalizada",
+
         },
         ar: {
             // AUTH & API
@@ -783,6 +855,30 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
             "connection_lost": "فقدان الاتصال",
             "waiting_for_network": "في انتظار استعادة الشبكة...",
 
+            // ACCESSIBILITY (Voice Guide / TTS) & PLAYER MESSAGES
+            "aria_search": "بحث",
+            "aria_playlists": "قوائم التشغيل",
+            "aria_settings": "الإعدادات",
+            "aria_play": "تشغيل",
+            "aria_pause": "إيقاف مؤقت",
+            "aria_subtitles": "الترجمة",
+            "aria_audio": "المسار الصوتي",
+            "aria_sub_settings": "إعدادات الترجمة",
+            "aria_seek": "موضع التشغيل",
+            "aria_change_language": "تغيير اللغة",
+            "aria_app_theme": "مظهر التطبيق",
+            "aria_player_theme": "مظهر المشغل",
+            "aria_rating": "التقييم",
+            "aria_pinned": "مثبت",
+            "aria_pin": "تثبيت الفئة",
+            "aria_hide": "إخفاء الفئة",
+            "aria_season": "الموسم",
+            "aria_episode": "الحلقة",
+            "aria_watched": "تمت المشاهدة",
+            "msg_playback_stopped": "تم إيقاف التشغيل",
+            "msg_live_no_seek": "التقديم والترجيع غير متاحين للقنوات المباشرة",
+            "msg_playback_ended": "انتهى التشغيل",
+
         }
     };
 
@@ -842,6 +938,16 @@ Si tiene preguntas sobre esta política, contáctenos en: support@geekspro.us`;
                 el.placeholder = t(key);
             }
         });
+
+        // 4. Accessible names for icon-only controls (read by TV Voice Guide)
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-aria-label');
+            if (key) el.setAttribute('aria-label', t(key));
+        });
+
+        // 5. Tell the TTS engine which voice to use. Without this, Arabic/French/Spanish
+        // text is spoken by the English voice and comes out as garbage.
+        document.documentElement.setAttribute('lang', dictionary[lang] ? lang : 'en');
     }
 
     return {

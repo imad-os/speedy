@@ -1,5 +1,5 @@
 // player-controller.js
-// Fully integrated MediaController using app name "Bahra IPTV"
+// Fully integrated MediaController using app name "Speedy IPTV"
 
 window.mcServer = null;
 
@@ -25,8 +25,9 @@ const PlayerController = (function() {
 
         MC.init();
 
-        // Keep visibility handler ready (if used elsewhere)
-        document.addEventListener("tizenvisibilitychange", handleVisibilityChange);
+        // Multitasking: suspend playback when the app goes to background (Home / Source),
+        // restore it when the user comes back.
+        document.addEventListener("visibilitychange", handleVisibilityChange);
     }
 
     function isPlaying(isplaying=null){
@@ -58,14 +59,29 @@ const PlayerController = (function() {
         return true;
 
     }
+    let suspendedByVisibility = false;
     function handleVisibilityChange() {
         if (typeof webapis==="undefined" || !webapis?.avplay) return;
         if (document.hidden) {
+            if (!isActive) return;
             try {
-                webapis.avplay.pause();
-                MC.reportMC("PAUSED");
-            } catch (e) {}
-        } 
+                webapis.avplay.suspend();
+                suspendedByVisibility = true;
+            } catch (e) {
+                try { webapis.avplay.pause(); } catch (e2) {}
+            }
+            try { MC.reportMC("PAUSED"); } catch (e) {}
+        } else if (suspendedByVisibility) {
+            suspendedByVisibility = false;
+            if (!isActive) return;
+            try {
+                webapis.avplay.restore();
+            } catch (e) {
+                try { webapis.avplay.play(); } catch (e2) {}
+            }
+            try { MC.reportMC("PLAYING"); } catch (e) {}
+            if (window.playerOverlay) window.playerOverlay.showOverlay();
+        }
     }
 
 
@@ -173,6 +189,38 @@ const PlayerController = (function() {
         try { MC.reportMC("STOPPED", 0, 0); } catch (e) { /* ignore */ }
     }
 
+    /**
+     * STOP key (remote, MediaController, ...): fully stop playback and leave the
+     * player, back to the screen the content was started from.
+     * Unlike Back, Stop never just hides the overlay or keeps a live preview running.
+     */
+    function stopAndExit() {
+        const wasPlayerPage = navigationStack.length > 0 &&
+            navigationStack[navigationStack.length - 1].pageId === 'page-player';
+        const wasActive = isActive || wasPlayerPage;
+
+        // Save VOD/series position before the session is closed
+        if (currentState.type && currentState.type !== 'live') _saveProgress();
+
+        if (window.playerOverlay && window.playerOverlay.forceHide) window.playerOverlay.forceHide();
+        stop();
+        if (window.playerOverlay && window.playerOverlay.forceHide) window.playerOverlay.forceHide();
+
+        // Drop every player related focus layer (PLAYER / OVERLAY / MODAL)
+        while (FocusManager.getCurrentLayer() !== FocusManager.LAYERS.PAGE) {
+            FocusManager.restorePreviousLayer();
+        }
+
+        if (typeof ViewLiveTV !== 'undefined' && ViewLiveTV.resetPreview) ViewLiveTV.resetPreview();
+
+        if (wasPlayerPage && typeof goBack === 'function') goBack();
+
+        if (wasActive && typeof A11y !== 'undefined') {
+            A11y.announce(typeof t !== 'undefined' ? t('msg_playback_stopped') : 'Playback stopped');
+        }
+        return true;
+    }
+
     function togglePlay(forcePlayPause=null) {
         VideoEngine.togglePlay(forcePlayPause);
 
@@ -249,10 +297,11 @@ const PlayerController = (function() {
 
         const channelsItem = $$('#live-channels-list .nav-item');
         const nextItem = channelsItem[nextIndex];
+        const nextStream = searchState.originalItems[nextIndex];
 
 
         if (nextItem ) {
-            showAlert(`Zapping to: ${nextItem.name}`);
+            showAlert(nextStream && nextStream.name ? nextStream.name : '');
             nextItem.click();
             playerOverlay.showOverlay(false);
             //playLive(nextItem, false);
@@ -347,7 +396,7 @@ const PlayerController = (function() {
         FocusManager.restorePreviousLayer();
         if(typeof goBack === 'function') goBack();
         
-        showAlert("Playback ended");
+        showAlert(typeof t !== 'undefined' ? t('msg_playback_ended') : "Playback ended");
     }
     
     function _startSaveInterval() {
@@ -389,9 +438,11 @@ const PlayerController = (function() {
         }
 
         switch (key) {
+            case 'MediaStop':
+                return stopAndExit();
+
             case 'Back':
             case 'Escape':
-            case 'MediaStop':
                 if (currentState.type === 'live' && currentState.isFullscreen) {
                     goPreviewLive();
                     return true;
@@ -434,6 +485,7 @@ const PlayerController = (function() {
         goFullscreenLive,
         goPreviewLive,
         stop,
+        stopAndExit,
         togglePlay,
         handleKey,
         handleMovieClick,

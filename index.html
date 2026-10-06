@@ -12,11 +12,11 @@
     <script src="$WEBAPIS/webapis/webapis.js"></script>
 
     <!-- 3. Firebase SDK (Compat version for wider compatibility) -->
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-compat.js"></script>
+    <script src="js/libs/firebase-app-compat.js"></script>
+    <script src="js/libs/firebase-firestore-compat.js"></script>
 
     <!-- 4. QRCode Lib -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="js/libs/qr.js"></script>
 
     <!-- 5. Custom App Stylesheet -->
     <link rel="stylesheet" href="css/fonts.css">
@@ -30,7 +30,7 @@
 <body class="theme-default">
 
     <!-- SVG SPRITES DEFINITION (Hidden) -->
-    <svg style="display: none;">
+    <svg style="display: none;" aria-hidden="true" focusable="false">
         <defs>
             <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 4v6h-6"></path>
@@ -230,7 +230,7 @@
         <div id="global-header" class="fixed top-0 left-0 right-0 h-16 bg-alt flex items-center justify-between px-4 z-20 shadow">
             <!-- logo -->
             <div class="h-full header-logo">
-                <img src="assets/icon_256.png" alt="Logo" class="h-full app_logo">
+                <img src="assets/icon_256.png" alt="" class="h-full app_logo">
                 <svg class="header-nointernet hidden"><use href="#icon-no-internet"></use></svg>
             </div>
 
@@ -243,31 +243,31 @@
                 
                 <div id="current-time" class="font-semibold text-main mr-1" >--:--</div>
 
-                <div id="current-weather" class="text-main mr-1 flex flex-row w-30 h-full items-center" >
-                    <img src="" class="" />
+                <div id="current-weather" class="text-main mr-1 flex flex-row w-30 h-full items-center" aria-hidden="true">
+                    <img src="" alt="" class="" />
                     <span></span>
                 </div>
 
                 <!-- 1. FAVORITE (Red - Guide Only, NOT a button) -->
-                <div class="flex bg-card items-center h-10 gap-2 px-2 mr-1 opacity-90 select-none pointer-events-none top-header-navs">
+                <div class="flex bg-card items-center h-10 gap-2 px-2 mr-1 opacity-90 select-none pointer-events-none top-header-navs" aria-hidden="true">
                     <div class="remote-indicator indicator-red"></div>
                     <svg class="icon text-main"><use href="#icon-heart-full"></use></svg>
                 </div>
 
                 <!-- 2. SEARCH (Green) -->
-                <button id="header-search-button" class="nav-item-sm p-2 bg-card rounded-full hidden top-header-navs" title="Search">
+                <button id="header-search-button" class="nav-item-sm p-2 bg-card rounded-full hidden top-header-navs" aria-label="Search" data-i18n-aria-label="aria_search">
                     <div class="remote-indicator indicator-green"></div>
                     <svg class="icon text-main"><use href="#icon-search"></use></svg>
                 </button>
 
                 <!-- 3. PLAYLISTS (Yellow) -->
-                <button id="header-playlists-button" class="nav-item-sm p-2 bg-card rounded-full top-header-navs" title="Playlists">
+                <button id="header-playlists-button" class="nav-item-sm p-2 bg-card rounded-full top-header-navs" aria-label="Playlists" data-i18n-aria-label="aria_playlists">
                     <div class="remote-indicator indicator-yellow"></div>
                     <svg class="icon text-main"><use href="#icon-list"></use></svg>
                 </button>
 
                 <!-- 4. SETTINGS (Blue) -->
-                <button onclick="showSettingsPage()" class="nav-item-sm p-2 bg-card rounded-full top-header-navs" title="Settings">
+                <button onclick="showSettingsPage()" class="nav-item-sm p-2 bg-card rounded-full top-header-navs" aria-label="Settings" data-i18n-aria-label="aria_settings">
                     <div class="remote-indicator indicator-blue"></div>
                     <svg class="icon text-main"><use href="#icon-settings"></use></svg>
                 </button>
@@ -277,7 +277,7 @@
         <!-- Search Bar -->
         <div id="search-bar-container" class="fixed top-16 left-0 right-0 bg-card shadow-lg z-30 p-4 hidden transform transition-transform">
             <div class="max-w-4xl mx-auto flex gap-2">
-                <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search current list..." class="nav-item flex-1 p-3 rounded bg-alt text-main border border-transparent focus:outline-none focus:ring-2 ring-primary">
+                <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" data-i18n-aria-label="search_placeholder" placeholder="Search current list..." class="nav-item flex-1 p-3 rounded bg-alt text-main border border-transparent focus:outline-none focus:ring-2 ring-primary">
             </div>
         </div>
 
@@ -288,7 +288,7 @@
                 <p class="text-center text-alt" data-i18n="login_desc">Enter your username to load profile</p>
                 <div class="space-y-4">
                     <div>
-                        <input type="text" value="imad" id="username" placeholder="e.g. 'family' or 'john'" class="nav-item w-full p-3 rounded-lg bg-card text-main border border-transparent focus:outline-none focus:ring-2 ring-primary">
+                        <input type="text" value="imad" id="username" aria-label="Username" placeholder="e.g. 'family' or 'john'" class="nav-item w-full p-3 rounded-lg bg-card text-main border border-transparent focus:outline-none focus:ring-2 ring-primary">
                     </div>
                     <button id="user-login-button" class="w-full p-3 font-bold rounded-lg bg-primary text-white hover:bg-primary-hover transition-colors nav-item" data-i18n="login_btn">Login / Create</button>
                 </div>
@@ -385,13 +385,13 @@
                 <!-- Center: Logo -->
                 <div class="flex flex-col items-center justify-center">
                     <div class="h-80 aspect-square flex items-center justify-center flex-shrink-0 mb-4">
-                        <img src="assets/icon_400.jpg" alt="Logo" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
+                        <img src="assets/icon_400.jpg" alt="" class="h-full w-full object-contain rounded-xl shadow-2xl app_logo">
                     </div>
 
                     <!-- NEW: Boot Status Label & Spinner -->
                     <div id="main-boot-status" class="flex flex-col items-center transition-all duration-500">
                         <div class="boot-spinner mb-4"></div>
-                        <p id="boot-status-label" class="text-xl font-bold text-primary animate-pulse" data-i18n="boot_init">Initializing...</p>
+                        <p id="boot-status-label" class="text-xl font-bold text-primary animate-pulse" role="status" aria-live="polite" data-i18n="boot_init">Initializing...</p>
                     </div>
                 </div>
 
@@ -544,7 +544,7 @@
             <div class="flex gap-4 h-full">
                 <!-- Left: Poster -->
                 <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
-                    <img id="detail-poster" src="" class="w-full rounded-lg shadow-2xl object-cover aspect-[2/3] bg-card">
+                    <img id="detail-poster" src="" alt="" class="w-full rounded-lg shadow-2xl object-cover aspect-[2/3] bg-card">
                 </div>
                 
                 <!-- Right: Info -->
@@ -565,7 +565,7 @@
 
                     <!-- Buttons -->
                     <div class="flex gap-4 my-4">
-                        <button id="detail-play-btn" class="nav-item px-8 py-3 bg-primary text-white font-bold rounded-lg flex items-center gap-2 hover:bg-primary-hover">
+                        <button id="detail-play-btn" aria-describedby="detail-title" class="nav-item px-8 py-3 bg-primary text-white font-bold rounded-lg flex items-center gap-2 hover:bg-primary-hover">
                             <!-- UPDATE: Sprite Play -->
                             <svg class="icon"><use href="#icon-play"></use></svg>
                             <span data-i18n="btn_play">Play</span>
@@ -596,11 +596,11 @@
         <div id="page-series-details" class="page page-with-padding p-10 pt-20">
             <div class="flex flex-col md:flex-row gap-8 md:p-8">
                 <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
-                    <img id="series-cover-image" src="" alt="Series Cover" class="w-full rounded-lg shadow object-cover aspect-[2/3]">
+                    <img id="series-cover-image" src="" alt="" class="w-full rounded-lg shadow object-cover aspect-[2/3]">
                     <h1 id="series-title" class=" font-bold text-main mt-4">Series Title</h1>
                     <div class="flex items-center gap-4 mt-2">
                         <p id="series-year" class=" text-alt">Year</p>
-                        <button id="series-fav-button" class="nav-item-sm p-2 rounded-full bg-card text-main"></button>
+                        <button id="series-fav-button" class="nav-item-sm p-2 rounded-full bg-card text-main" aria-label="Favorite" data-i18n-aria-label="btn_favorite"></button>
                     </div>
                     <p id="series-plot" class=" text-alt mt-4">Plot description will load here...</p>
                 </div>
@@ -618,10 +618,10 @@
                  <div>
                     <h3 class="font-semibold mb-2 text-main" data-i18n="settings_language">Language</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <button onclick="changeLanguage('en')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="en">English</button>
-                        <button onclick="changeLanguage('fr')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="fr">Français</button>
-                        <button onclick="changeLanguage('es')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="es">Español</button>
-                        <button onclick="changeLanguage('ar')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="ar">العربية</button>
+                        <button onclick="changeLanguage('en')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="en" lang="en">English</button>
+                        <button onclick="changeLanguage('fr')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="fr" lang="fr">Français</button>
+                        <button onclick="changeLanguage('es')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="es" lang="es">Español</button>
+                        <button onclick="changeLanguage('ar')" class="btn-lang nav-item p-3 font-bold rounded-lg bg-card text-main hover:bg-opacity-80 transition-colors" data-lang="ar" lang="ar">العربية</button>
                     </div>
                 </div>
 
@@ -712,7 +712,7 @@
                 <!-- TOP BAR (UPDATED PER REQUEST) -->
                 <div class="overlay-top w-full flex justify-between items-center p-8 bg-gradient-to-b from-black/80 to-transparent">
                     <div class="flex items-center gap-4">
-                        <img id="overlay-movie-icon" src="" alt="" class="w-16 h-16 object-contain rounded bg-white/10 hidden" onerror="this.classList.add('hidden')">
+                        <img id="overlay-movie-icon" src="" alt="" aria-hidden="true" class="w-16 h-16 object-contain rounded bg-white/10 hidden" onerror="this.classList.add('hidden')">
                         <div id="overlay-movie-fav" class="text-xl font-bold text-white shadow-md mr-2"></div>
                         <div class="meta-left flex flex-col justify-center">
                             <div id="overlay-movie-name" class="text-xl font-bold text-white shadow-md">Unknown Title</div>
@@ -720,37 +720,37 @@
                         </div>
                     </div>
                     <svg class="header-nointernet hidden"><use href="#icon-no-internet"></use></svg>
-                    <div id="overlay-current-clock" class="text-3xl font-semibold text-white/90 font-mono tracking-wide">--:--</div>
+                    <div id="overlay-current-clock" aria-hidden="true" class="text-3xl font-semibold text-white/90 font-mono tracking-wide">--:--</div>
                 </div>
 
                 <!-- BOTTOM BAR -->
                 <div class="overlay-bottom">
                     <div id="tizen-progress-bar-container" class="flex items-center gap-4 w-full mb-4">
-                        <span id="tizen-progress-time" class="">00:00</span>
-                        <div id="tizen-progress-bar" tabindex="0" class="nav-item flex-1 h-3 bg-gray-600 rounded-full cursor-pointer relative">
+                        <span id="tizen-progress-time" class="" aria-hidden="true">00:00</span>
+                        <div id="tizen-progress-bar" tabindex="0" role="slider" aria-label="Playback position" data-i18n-aria-label="aria_seek" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" class="nav-item flex-1 h-3 bg-gray-600 rounded-full cursor-pointer relative">
                             <div id="tizen-progress-fill" class="h-full bg-primary rounded-full" style="width: 0%;"></div>
                             <div id="tizen-progress-thumb" class="w-5 h-5 bg-white rounded-full absolute top-1/2 -translate-y-1/2 -ml-2.5 hidden" style="left: 0%;"></div>
                         </div>
-                        <span id="tizen-progress-duration" class="">00:00</span>
+                        <span id="tizen-progress-duration" class="" aria-hidden="true">00:00</span>
                     </div>
 
                     <div class="controls-row">
                         <div class="flex gap-5 w-60 justify-end">
-                            <button id="btn-sub-settings" class="nav-item p-3 " title="Subtitle Settings">
+                            <button id="btn-sub-settings" class="nav-item p-3 " aria-label="Subtitle settings" data-i18n-aria-label="aria_sub_settings">
                                 <svg class="icon"><use href="#icon-settings"></use></svg>
                             </button>
-                            <button id="btn-subtitles" class="nav-item p-3 " title="Subtitles">
+                            <button id="btn-subtitles" class="nav-item p-3 " aria-label="Subtitles" data-i18n-aria-label="aria_subtitles">
                                 <svg class="icon"><use href="#icon-subtitle"></use></svg>
                             </button>
-                            <button id="btn-audio" class="nav-item p-3 " title="Audio">
+                            <button id="btn-audio" class="nav-item p-3 " aria-label="Audio track" data-i18n-aria-label="aria_audio">
                                 <svg class="icon"><use href="#icon-audio"></use></svg>
                             </button>
                         </div>
                         
-                        <button id="btn-playpause" class="nav-item">
+                        <button id="btn-playpause" class="nav-item" aria-label="Pause">
                             <svg class="icon-lg" id="icon-playpause-svg"><use href="#icon-pause"></use></svg>
                         </button>
-                        <div class="flex items-center gap-2  text-gray-300 w-60">
+                        <div class="flex items-center gap-2  text-gray-300 w-60" aria-hidden="true">
                             <span id="stream-status" class="font-semibold">Idle</span>
                             <span id="stream-resolution">-- x --</span>
                             <span id="stream-quality" class="px-2 py-0.5 bg-gray-800 text-white rounded font-bold">--</span>
@@ -760,7 +760,7 @@
             </div>
 
             <!-- Tizen Player Track Modals (Z-Index 300) -->
-            <div id="tizen-track-modal" dir="ltr" class="hidden fixed inset-0 flex items-center justify-center p-4 z-20">
+            <div id="tizen-track-modal" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="tizen-track-modal-title" class="hidden fixed inset-0 flex items-center justify-center p-4 z-20">
                 <div class="bg-card w-full max-w-md rounded-lg shadow-xl overflow-hidden">
                     <h2 id="tizen-track-modal-title" class="font-bold text-main p-4 bg-alt">Select Track</h2>
                     <div id="tizen-track-modal-list" class="flex flex-col gap-1 p-2 max-h-[60vh] overflow-y-auto"></div>
@@ -768,11 +768,11 @@
                 </div>
             </div>
 
-            <div id="subtitle-settings-modal" dir="ltr" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/80">
+            <div id="subtitle-settings-modal" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="sub-settings-title" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/80">
                 <div class="bg-card w-full max-w-4xl rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
                     <div class="p-4 bg-alt border-b border-gray-700 flex justify-between items-center">
-                        <h2 class="font-bold text-main text-xl" data-i18n="sub_settings_title">Subtitle Appearance</h2>
-                        <div class="p-2 bg-black/50 rounded text-center min-w-[200px]" id="sub-preview-box">
+                        <h2 id="sub-settings-title" class="font-bold text-main text-xl" data-i18n="sub_settings_title">Subtitle Appearance</h2>
+                        <div class="p-2 bg-black/50 rounded text-center min-w-[200px]" id="sub-preview-box" aria-hidden="true">
                             Preview Text
                         </div>
                     </div>
@@ -806,11 +806,11 @@
         </div>
 
         <!-- MODAL: ADD PLAYLIST (FIREBASE QR) -->
-        <div id="modal-add-playlist" class="fixed inset-0 z-50 bg-black/80 p-4 flex items-center justify-center hidden">
+        <div id="modal-add-playlist" role="dialog" aria-modal="true" aria-labelledby="playlist-setup-title" class="fixed inset-0 z-50 bg-black/80 p-4 flex items-center justify-center hidden">
             <div class="bg-slate-900 w-full max-w-7xl rounded-xl shadow-2xl flex flex-wrap overflow-hidden">
                 
                 <!-- Header -->
-                <h2 class="w-full text-center py-6 text-2xl font-bold text-white bg-slate-800/50 border-b border-slate-700" data-i18n="playlist_setup_title">Setup Playlist</h2>
+                <h2 id="playlist-setup-title" class="w-full text-center py-6 text-2xl font-bold text-white bg-slate-800/50 border-b border-slate-700" data-i18n="playlist_setup_title">Setup Playlist</h2>
                 
                 <!-- LEFT HALF: Website & Loader -->
                 <div class="w-full md:w-1/2 flex flex-col items-center justify-center p-8 border-r border-slate-700 min-h-[400px]">
@@ -820,7 +820,7 @@
                     </p>
                     
                     <!-- Loader -->
-                    <div class="loader mb-8 bg-center bg-no-repeat bg-contain" ></div>
+                    <div class="loader mb-8 bg-center bg-no-repeat bg-contain" aria-hidden="true"></div>
                     <p class="text-gray-500 animate-pulse font-medium" data-i18n="waiting_playlist">Waiting for playlist...</p>
 
                 <div class="flex flex-row gap-4 items-center justify-center w-full mt-5">
@@ -840,21 +840,21 @@
                         <span data-i18n="btn_test_mode">Test Mode</span>
                     </button>
 
-                    <button id="btn-playlist-lang" onclick="cycleLanguage()" class="nav-item group px-6 py-3 rounded-xl bg-slate-800 border border-slate-600 text-slate-300 font-bold focus:border-emerald-500 focus:text-emerald-400 focus:bg-slate-700/50 transition-all active:scale-95 flex items-center gap-2" title="Change Language">
+                    <button id="btn-playlist-lang" onclick="cycleLanguage()" class="nav-item group px-6 py-3 rounded-xl bg-slate-800 border border-slate-600 text-slate-300 font-bold focus:border-emerald-500 focus:text-emerald-400 focus:bg-slate-700/50 transition-all active:scale-95 flex items-center gap-2" aria-label="Change language" data-i18n-aria-label="aria_change_language">
                         <svg class="w-5 h-5">
                             <use href="#icon-world"></use>
                         </svg>
                     </button>
                     
                 </div>
-                    <div id="add-playlist-status" class="mt-8"></div>
+                    <div id="add-playlist-status" class="mt-8" role="status" aria-live="polite"></div>
                 </div>
         
                 <!-- RIGHT HALF: QR Code & MAC Address -->
                 <div class="w-full md:w-1/2 flex flex-col items-center justify-center p-8 bg-slate-800 min-h-[400px]">
-                    <div id="qrcode-container" class="bg-white p-4 rounded-lg shadow-lg mb-6" title="">
+                    <div id="qrcode-container" class="bg-white p-4 rounded-lg shadow-lg mb-6" aria-hidden="true">
                         <canvas width="200" height="200" style="display: none;"></canvas>
-                        <img src="" class="block w-48 h-48">
+                        <img src="" alt="" class="block w-48 h-48">
                     </div>
                     
                     <p class="text-gray-300 text-center font-medium mb-4" data-i18n="scan_hint">Scan to add your playlist</p>
@@ -869,13 +869,13 @@
         </div>
         
         <!-- ABOUT MODAL (NEW) -->
-        <div id="modal-about" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+        <div id="modal-about" role="dialog" aria-modal="true" aria-labelledby="about-title" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
             <div class="bg-card w-full max-w-lg p-8 rounded-lg shadow-xl text-center border border-gray-700">
                 <div class="flex flex-col items-center gap-4">
-                    <img src="assets/icon_256.png" class="w-24 h-24 rounded-2xl bg-white/10" alt="Logo">
+                    <img src="assets/icon_256.png" class="w-24 h-24 rounded-2xl bg-white/10" alt="">
                     <div>
-                        <h2 class="text-2xl font-bold text-main" data-i18n="app_name">Speedy IPTV</h2>
-                        <p class="text-alt mt-1"><span data-i18n="about_version">Version</span> 1.0.0 (Tizen)</p>
+                        <h2 id="about-title" class="text-2xl font-bold text-main" data-i18n="app_name">Speedy IPTV</h2>
+                        <p class="text-alt mt-1"><span data-i18n="about_version">Version</span> <span id="about-version-val">0.3.2</span></p>
                     </div>
                     <div class="text-left text-lg text-gray-400 w-full bg-black/30 p-4 rounded mt-2">
                         <p class="mb-2"><strong data-i18n="about_dev">Developer:</strong> Geekspro</p>
@@ -888,13 +888,13 @@
         </div>
 
         <!-- NEW: SPEED TEST MODAL (Pure SVG + CSS for Performance) -->
-        <div id="modal-speedtest" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+        <div id="modal-speedtest" role="dialog" aria-modal="true" aria-labelledby="speedtest-title" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
             <div class="w-full max-w-lg p-8 rounded-lg shadow-xl text-center border border-gray-700 relative overflow-hidden">
                 
-                <h2 class="text-2xl font-bold text-white mb-6" data-i18n="speedtest_title">Network Speed Test</h2>
+                <h2 id="speedtest-title" class="text-2xl font-bold text-white mb-6" data-i18n="speedtest_title">Network Speed Test</h2>
                 
                 <!-- Gauge Container -->
-                <div class="relative w-64 h-32 mx-auto mb-6">
+                <div class="relative w-64 h-32 mx-auto mb-6" aria-hidden="true">
                     <!-- 1. Background Arc (SVG) -->
                     <svg viewBox="0 0 200 100" class="w-full h-full overflow-visible">
                         <!-- Gray Track -->
@@ -905,7 +905,7 @@
                         <defs>
                             <linearGradient id="gradientSpeed" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop id="speed_from" offset="0%" />
-                                <stop id="speed_to"offset="100%" />
+                                <stop id="speed_to" offset="100%" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -934,9 +934,9 @@
         </div>
 
         <!-- PRIVACY POLICY CONSENT MODAL (FIRST RUN) - UPDATED -->
-        <div id="modal-privacy-consent" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9999;">
+        <div id="modal-privacy-consent" role="dialog" aria-modal="true" aria-labelledby="privacy-consent-title" aria-describedby="privacy-consent-text" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9999;">
             <div class="bg-slate-900 w-full max-w-7xl p-8 rounded-lg shadow-2xl border border-gray-700 flex flex-col max-h-[90vh]">
-                <h1 class="text-4xl font-bold text-white mb-4" data-i18n="privacy_terms_title">Terms of Service & Privacy Policy</h1>
+                <h1 id="privacy-consent-title" class="text-4xl font-bold text-white mb-4" data-i18n="privacy_terms_title">Terms of Service & Privacy Policy</h1>
                 <div class="flex-1 overflow-y-auto mb-6 p-4 bg-black/30 rounded text-gray-300 text-lg leading-relaxed" id="privacy-consent-text">
                     <p class="mb-2" data-i18n="privacy_consent_intro">To function properly, <strong>Speedy IPTV</strong> needs to access specific device identifiers. We collect the following data strictly to save your playlists and settings:</p>
                     <ul class="list-disc pl-5 mb-2 space-y-1">
@@ -954,11 +954,11 @@
         </div>
 
         <!-- PRIVACY POLICY VIEW MODAL (SETTINGS) -->
-        <div id="modal-privacy-view" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9990;">
+        <div id="modal-privacy-view" role="dialog" aria-modal="true" aria-labelledby="privacy-view-title" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" style="z-index: 9990;">
             <div class="bg-slate-900 w-full max-w-4xl p-8 rounded-lg shadow-2xl border border-gray-700 flex flex-col h-[80vh]">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h2 class="text-2xl font-bold text-white" data-i18n="settings_privacy_policy">Privacy Policy</h2>
-                    <span class="text-sm text-gray-500">Scroll with Up/Down</span>
+                    <h2 id="privacy-view-title" class="text-2xl font-bold text-white" data-i18n="settings_privacy_policy">Privacy Policy</h2>
+                    <span class="text-sm text-gray-500" aria-hidden="true">Scroll with Up/Down</span>
                 </div>
                 <div class="flex-1 overflow-y-auto p-6 bg-black/20 rounded text-gray-300 text-base leading-relaxed whitespace-pre-wrap" id="privacy-full-text">Loading...</div>
                 <div class="mt-4 text-center">
@@ -967,7 +967,7 @@
             </div>
         </div>
 
-        <div id="modal-error" class="hidden fixed inset-0 z-500 bg-black/90 flex items-center justify-center p-4">
+        <div id="modal-error" role="alertdialog" aria-modal="true" aria-labelledby="modal-error-title" aria-describedby="modal-error-message" class="hidden fixed inset-0 z-500 bg-black/90 flex items-center justify-center p-4">
             <div class="bg-card w-full max-w-md p-6 rounded-xl shadow-2xl text-center border border-gray-700 relative overflow-hidden">
                 
                 <div class="absolute top-0 left-0 right-0 h-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.7)]"></div>
@@ -1001,20 +1001,20 @@
         </div>
 
         <!-- NEW: AUTO-RECOVERY OVERLAY (SAMSUNG REQUIREMENT) -->
-        <div id="modal-reconnecting" class="hidden fixed inset-0 z-500 bg-black/80 flex items-center justify-center flex-col p-6" style="z-index: 600;">
+        <div id="modal-reconnecting" role="alertdialog" aria-modal="true" aria-labelledby="reconnecting-title" aria-describedby="reconnecting-desc" class="hidden fixed inset-0 z-500 bg-black/80 flex items-center justify-center flex-col p-6" style="z-index: 600;">
             <div class="mb-6" style="width: 200px; height: 100px;">
                 <svg class="modal-nointernet" style="width: 200px; height: 100px;"><use href="#icon-no-internet"></use></svg>
             </div>
-            <h1 class="font-bold text-white mb-2" data-i18n="connection_lost">Connection Lost</h1>
-            <div class="text-gray-400 text-xl" data-i18n="waiting_for_network">Waiting for network to recover...</div>
+            <h1 id="reconnecting-title" class="font-bold text-white mb-2" data-i18n="connection_lost">Connection Lost</h1>
+            <div id="reconnecting-desc" class="text-gray-400 text-xl" data-i18n="waiting_for_network">Waiting for network to recover...</div>
             <button onclick="" class="mt-8 nav-item px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold text-lg" data-i18n="btn_close">Close</button>
         </div>
 
         <!-- EXIT CONFIRMATION MODAL -->
-        <div id="modal-exit" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+        <div id="modal-exit" role="dialog" aria-modal="true" aria-labelledby="exit-title" aria-describedby="exit-msg" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
             <div class="bg-card w-full max-w-sm p-6 rounded-lg shadow-xl text-center border border-gray-700 bg-slate-900">
-                <h2 class="text-xl font-bold text-white mb-4" data-i18n="exit_title">Exit App</h2>
-                <p class="text-gray-300 mb-6 font-semibold" data-i18n="exit_msg">Do you want to exit?</p>
+                <h2 id="exit-title" class="text-xl font-bold text-white mb-4" data-i18n="exit_title">Exit App</h2>
+                <p id="exit-msg" class="text-gray-300 mb-6 font-semibold" data-i18n="exit_msg">Do you want to exit?</p>
                 <div class="flex justify-center gap-4">
                     <button id="btn-exit-yes" onclick="exitApp()" class="nav-item px-6 py-2 bg-red-600 text-white font-bold rounded hover:bg-red-700" data-i18n="btn_yes">Yes</button>
                     <button id="btn-exit-no" onclick="hideExitModal()" class="nav-item px-6 py-2 bg-gray-600 text-white font-bold rounded hover:bg-gray-500" data-i18n="btn_no">No</button>
@@ -1025,7 +1025,7 @@
     </div>
 
     <!-- THE LOADER -->
-    <div id="loader-overlay" class="visible indeterminate">
+    <div id="loader-overlay" class="visible indeterminate" aria-hidden="true">
         <div class="loader-box">
             <div class="orbit orbit-outer" id="outer"></div>
             <div class="orbit orbit-inner" id="inner"></div>
@@ -1034,11 +1034,14 @@
     </div>
 
 
-    <div id="error-toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 p-4 rounded-lg shadow bg-red-600 text-white"></div>
-    <div id="alert-toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 p-4 rounded-lg shadow bg-zinc-800 text-white"></div>
+    <div id="error-toast" role="alert" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 p-4 rounded-lg shadow bg-red-600 text-white"></div>
+    <div id="alert-toast" role="status" aria-live="polite" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 p-4 rounded-lg shadow bg-zinc-800 text-white"></div>
+
+    <!-- Screen-reader-only live region used by A11y.announce() -->
+    <div id="a11y-announcer" class="sr-only" role="status" aria-live="assertive" aria-atomic="true"></div>
 
     <!-- Category Manager Modal (Z-Index 300) -->
-    <div id="category-manager-modal" class="hidden fixed inset-0 flex items-center justify-center p-4">
+    <div id="category-manager-modal" role="dialog" aria-modal="true" aria-labelledby="category-manager-title" class="hidden fixed inset-0 flex items-center justify-center p-4">
         <div class="bg-card w-full max-w-4xl h-[80vh] rounded-lg shadow-xl overflow-hidden flex flex-col">
             <div class="p-4 bg-alt border-b border-gray-700 flex justify-between items-center">
                 <h2 id="category-manager-title" class="font-bold text-main" data-i18n="settings_manage_cats">Manage Categories</h2>
@@ -1055,6 +1058,7 @@
     <script src="js/core/state.js"></script>
     <script src="js/core/utils.js"></script>
     <script src="js/core/language.js"></script>
+    <script src="js/core/a11y.js"></script>
     <script src="js/core/loader.js"></script>
     <script src="js/core/data.js"></script>
     <script src="js/core/user.js"></script>

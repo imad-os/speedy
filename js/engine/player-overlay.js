@@ -67,6 +67,7 @@
                   useTag.setAttribute('href', '#icon-play');
               }
           }
+          _updatePlayPauseLabel(state === 'playing');
       }
     
 
@@ -110,9 +111,11 @@
         if ( isPlaying && [null, false].includes(forcePlayPause) ) { 
             webapis.avplay.pause(); 
             updateStreamInfo({ status: 'paused' }); 
+            _announce('aria_pause', 'Pause');
         }else if( isPaused && [null, true].includes(forcePlayPause) ) { 
             webapis.avplay.play(); 
             updateStreamInfo({ status: 'playing' }); 
+            _announce('aria_play', 'Play');
         }
       } catch {}
     }
@@ -122,7 +125,18 @@
 
     let seekAccumulator = 0;
     let seekTimeout;
+    function _isSeekable() {
+        if (PlayerController.currentState.type === 'live') return false;
+        try { return webapis.avplay.getDuration() > 0; } catch (e) { return false; }
+    }
+
     function requestSeek(direction) {
+        if (typeof webapis === 'undefined' || !webapis.avplay) return;
+        // Live streams have no duration: seeking would jump to 0 / break the stream.
+        if (!_isSeekable()) {
+            showAlert(typeof t !== 'undefined' ? t('msg_live_no_seek') : 'Seeking is not available for live channels');
+            return;
+        }
         const state = webapis.avplay.getState();
         if ( !["playing",'paused'].includes( state.toLocaleLowerCase() )  ) return;
         if(isSeeking===false && cache.progressWrapper) { 
@@ -149,6 +163,7 @@
         const newTime = Math.max(0, Math.min(duration, (currenttime || 0) + Math.round(seekAccumulator)));
 
         updateProgressUI(newTime / 1000, duration / 1000);
+        _updateSliderAria(newTime / 1000, duration / 1000);
         
     }
 
@@ -165,7 +180,30 @@
         );
         seekAccumulator = 0;        
         updateProgressUI(newTime / 1000, duration / 1000);
+        _updateSliderAria(newTime / 1000, duration / 1000);
         isSeeking = false;
+    }
+
+    // Only updated on user actions: changing aria values on every progress tick
+    // would make Voice Guide talk continuously.
+    function _updateSliderAria(currentSec, durationSec) {
+        const el = cache.progressWrapper;
+        if (!el) return;
+        el.setAttribute('aria-valuemin', '0');
+        el.setAttribute('aria-valuemax', String(Math.round(durationSec || 0)));
+        el.setAttribute('aria-valuenow', String(Math.round(currentSec || 0)));
+        el.setAttribute('aria-valuetext', `${fmtTimeSec(currentSec)} / ${fmtTimeSec(durationSec)}`);
+    }
+
+    function _updatePlayPauseLabel(isPlayingNow) {
+        if (!cache.btnPlay) return;
+        const key = isPlayingNow ? 'aria_pause' : 'aria_play';
+        cache.btnPlay.setAttribute('aria-label', typeof t !== 'undefined' ? t(key) : (isPlayingNow ? 'Pause' : 'Play'));
+    }
+
+    function _announce(key, fallback) {
+        if (typeof A11y === 'undefined') return;
+        A11y.announce(typeof t !== 'undefined' ? t(key) : fallback);
     }
 
 
@@ -302,6 +340,22 @@
     stopProgressUpdates();
   }
 
+  // Used by STOP: hide every player UI piece regardless of buffering/seeking state.
+  function forceHide() {
+    if (seekTimeout) clearTimeout(seekTimeout);
+    seekTimeout = null;
+    seekAccumulator = 0;
+    isSeeking = false;
+    if (autoHideTimer) clearTimeout(autoHideTimer);
+    autoHideTimer = null;
+    ['tizen-player-overlay', 'tizen-track-modal', 'subtitle-settings-modal'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    overlayVisible = false;
+    stopProgressUpdates();
+  }
+
   function setOverlayDetails() {
     if (!cache.overlay) { init(); if (!cache.overlay) return; }
     const currentItem = PlayerController.currentItem || null;
@@ -337,6 +391,10 @@
         if (!modal || !list) return;
         VideoEngine.parseCurrentTracks();
         list.innerHTML = '';
+        if (title) {
+            const titleKey = type === 'audio' ? 'aria_audio' : 'aria_subtitles';
+            title.textContent = typeof t !== 'undefined' ? t(titleKey) : (type === 'audio' ? 'Audio track' : 'Subtitles');
+        }
         const tracks = VideoEngine.playerTracks[`${type}s`] || [];
         if(type == "subtitle"){
             _addModalOption(list, 'Off', () => _setSubtitle(-1));
@@ -375,6 +433,7 @@
       const btn = document.createElement('button');
       btn.className = `nav-item w-full text-left p-3 rounded ${isActive ? 'bg-primary text-white' : 'bg-card text-main'} hover:bg-opacity-80 mb-1`;
       btn.innerHTML = text;
+      if (isActive) btn.setAttribute('aria-current', 'true');
       btn.onclick = () => {
           onClick.call(btn);
           if(!dontClose){
@@ -503,7 +562,13 @@
       setTimeoutOverlay(true);
       if (key === 'ArrowUp') {
           if (controls.includes(current)) {
-              if(cache.progressWrapper) { cache.progressWrapper.focus(); return true; }
+              if(cache.progressWrapper) {
+                  try {
+                      _updateSliderAria(webapis.avplay.getCurrentTime() / 1000, webapis.avplay.getDuration() / 1000);
+                  } catch (e) {}
+                  cache.progressWrapper.focus();
+                  return true;
+              }
           }else if (current===cache.progressWrapper){
                 hideOverlay();
           }
@@ -540,6 +605,10 @@
   }
 
   function handleKey(key, event) {
+    // STOP must always stop playback, whatever the overlay state.
+    if (key === 'MediaStop') {
+        return PlayerController.stopAndExit();
+    }
     const keys2return = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight", "Caption"];
     if(!InputManager.isBack(key) && cache.overlay && cache.overlay.classList.contains("hidden")){
         showOverlay();
@@ -572,7 +641,9 @@
                return true;
           case 'Enter':
               if (document.activeElement && document.activeElement !== document.body && cache.overlay.contains(document.activeElement)) {
-                  document.activeElement.onclick(); 
+                  // The seek bar has no click action: OK there toggles play/pause.
+                  if (typeof document.activeElement.onclick === 'function') document.activeElement.onclick();
+                  else togglePlayPause();
               } else {
                   togglePlayPause(); 
               }
@@ -586,7 +657,6 @@
 
             case 'Back':
             case 'Escape':
-            case 'MediaStop':
                 if(overlayVisible && !playerOverlay.isBuffering
                     //(streamInfo.status.toLocaleLowerCase() !== 'buffering' ||!PlayerController.isPlaying() )
                 ) {
@@ -760,6 +830,7 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
         const isSelected = (currentVal === key)?'selected':'';
         btn.className = `nav-item sub-setting-btn w-full ${isSelected}`;
         btn.textContent = displayVal;
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
         
         if(settingKey === 'font') btn.style.fontFamily = rawVal;
         if(settingKey === 'color') {
@@ -770,8 +841,9 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
         btn.onclick = () => {
             userSettings.subtitle[settingKey] = key;
             
-            Array.from(list.children).forEach(c => c.classList.remove('selected'));
+            Array.from(list.children).forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
             btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', 'true');
             
             applySubtitleSettings();
         };
@@ -867,6 +939,8 @@ function _renderSettingsList(elementId, dataSrc, settingKey, isArray = false) {
     init, 
     showOverlay, 
     hideOverlay, 
+    forceHide,
+    requestSeek,
     setOverlayDetails, 
     updateStreamInfo, 
     _addModalOption,

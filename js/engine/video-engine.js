@@ -207,22 +207,23 @@ const VideoEngine = (function() {
         });
     }
 
-    function togglePlay() {
+    // forcePlayPause: null = toggle, true = play only, false = pause only
+    function togglePlay(forcePlayPause = null) {
         if (_isTizen) {
             try {
                 const state = webapis.avplay.getState().toLocaleLowerCase();
-                if (state === 'playing') {
+                if (state === 'playing' && forcePlayPause !== true) {
                     webapis.avplay.pause();
-                }else if(state === 'paused'){
+                    if (_callbacks.onStateChange) _callbacks.onStateChange('paused');
+                } else if (state === 'paused' && forcePlayPause !== false) {
                     webapis.avplay.play();
+                    if (_callbacks.onStateChange) _callbacks.onStateChange('playing');
                 }
-                PlayerController.isPlaying( state === 'playing' )
-                
-                if (_callbacks.onStateChange) _callbacks.onStateChange(state === 'playing' ? 'paused' : 'playing');
+                PlayerController.isPlaying( webapis.avplay.getState().toLocaleLowerCase() === 'playing' );
             } catch(e) {}
         } else {
-            if (webPlayer.paused) webPlayer.play();
-            else webPlayer.pause();
+            if (webPlayer.paused && forcePlayPause !== false) webPlayer.play();
+            else if (!webPlayer.paused && forcePlayPause !== true) webPlayer.pause();
             if (_callbacks.onStateChange) _callbacks.onStateChange(webPlayer.paused ? 'paused' : 'playing');
         }
     }

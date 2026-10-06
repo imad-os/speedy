@@ -2,8 +2,8 @@
 
 function registerTizenKeys() {
     if (typeof tizen !== 'undefined' && tizen.tvinputdevice) {
-        Object.values(InputManager.TIZEN_KEY_MAP).forEach(keyName => {
-            try { tizen.tvinputdevice.registerKey(keyName); } catch (e) {}
+        InputManager.KEYS_TO_REGISTER.forEach(keyName => {
+            try { tizen.tvinputdevice.registerKey(keyName); } catch (e) { console.warn("registerKey failed:", keyName, e); }
         });
     }
 }
@@ -11,9 +11,9 @@ function registerTizenKeys() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("App initializing...");
 
-    // FIX: Disable TTS (Voice Guide) by hiding body from accessibility tree
-    // This resolves the Samsung defect where TTS works but is not declared in features.
-    document.body.setAttribute('aria-hidden', 'true');
+    // Voice Guide (TTS) support: never hide the body from the accessibility tree.
+    // A11y hides decorative icons/images so only meaningful labels are spoken.
+    A11y.init();
 
     // Initialize Firebase
     try {
