@@ -6,7 +6,7 @@ Lightweight project for fetching subtitles and organizing media links.
 http://speedy.geekspro.us/
 
 ## My PC app
-The `mypc/` folder is Speedy as an app installed on My PC (TV player, USB films and shows): see [mypc/README.md](mypc/README.md).
+Speedy as an app installed on My PC (TV player, USB films and shows) lives in its own repo: https://github.com/imad-os/g_iptv
 
 ## Features
 - Fetch subtitles from cloud endpoints
